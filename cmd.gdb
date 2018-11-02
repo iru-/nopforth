@@ -31,14 +31,14 @@ end
 
 define dh
   x/zg $arg0
-  x/zb $arg0+8
-  set $namelen = (char)*($arg0+8)
+  x/zg $arg0+8
+  x/zb $arg0+16
+  set $namelen = (char)*($arg0+16)
   set $i = 0
   while $i < $namelen
-    x/c ($arg0+8+1+$i)
+    x/c ($arg0+16+1+$i)
     set $i = $i + 1
   end
-  x/zg $arg0+8+1+$namelen
 end
 
 document dh

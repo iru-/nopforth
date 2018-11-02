@@ -8,13 +8,7 @@ rbp + (n-2)*8: pointer to nth cell on data stack (S+n)
 
 Dictionary structure
 --------------------
-link[cell] namelength[1] name[n] cfa[cell] pfa[cell]
-
-
-TODO
-----
-* names should be aligned to the next cell boundary
-* implement the macro and forth wordlists
+link[cell] cfa[cell] namelength[1] name[n]
 
 
 Input

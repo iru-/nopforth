@@ -305,33 +305,52 @@ dovar:
     pop %rax
     ret
 
-header:
+aligned:
+    add $7, %rax
+    and $~7, %rax
+    ret
+
+anon:
     mov _h(%rip), %rcx
     push %rcx
     call latest
     call comma
 
-    # make room for name length
-    mov _h(%rip), %rcx
-    inc %rcx
-    mov %rcx, _h(%rip)
-
     dup_
+    mov _h(%rip), %rax
+    add $8, %rax           # cfa is next address
+    call comma
+
+    pop %rax
+    ret
+
+header:
+    call anon
+    push %rax
+
+    # make room for name length
+    mov _h(%rip), %rax
+    inc %rax
+    mov %rax, _h(%rip)
+
     mov $' ', %rax
     call word
     mov _h(%rip), %rcx
     movb %al, -1(%rcx)     # name length
-    add %rax, %rcx
+    add %rcx, %rax
+
+    call aligned
+    mov %rax, _h(%rip)     # commit name
+
+    pop %rax
+    mov _latest(%rip), %rcx
+    mov %rax, (%rcx)
+
+    # fix cfa
+    call tocfa
+    mov _h(%rip), %rcx
+    mov %rcx, (%rax)
     drop_
-    mov %rcx, _h(%rip)     # commit name
-
-    mov %rcx, %rax
-    add $8, %rax           # cfa is next address
-    call comma
-
-    pop %rcx
-    mov _latest(%rip), %rbx
-    mov %rcx, (%rbx)
     ret
 
 create:
@@ -378,12 +397,12 @@ dfind:
     jnz 2f
     ret
 2:
-    movzbq 8(%rax), %rdx  # name length
+    movzbq 16(%rax), %rdx  # name length
     cmp %rcx, %rdx
     jne 3f
     push %rsi
     push %rcx
-    lea 9(%rax), %rdi     # pointer to name
+    lea 17(%rax), %rdi     # pointer to name
     repe cmpsb
     pop %rcx
     pop %rsi
@@ -395,9 +414,6 @@ dfind:
 
 tocfa:
     lea 8(%rax), %rax
-    movzbq (%rax), %rcx
-    inc %rax
-    lea (%rcx, %rax), %rax
     ret
 
 here:
