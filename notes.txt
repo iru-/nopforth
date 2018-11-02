@@ -1,0 +1,70 @@
+Register allocation
+-------------------
+rax: top of data stack (T)
+rsp: top of return stack (R)
+rbp: pointer to second cell on data stack (S)
+rbp + (n-2)*8: pointer to nth cell on data stack (S+n)
+
+
+Dictionary structure
+--------------------
+link[cell] namelength[1] name[n] cfa[cell] pfa[cell]
+
+
+TODO
+----
+* names should be aligned to the next cell boundary
+* implement the macro and forth wordlists
+
+
+Input
+-----
+Using the canonical mode input processing (termious(4)) can lead to some
+problems. When we are reading from the keyboard directly, this is ok. When we
+are reading from a file, the newlines appear as input, not as separators.
+Defining separator as either newline, EOT or EOF, a number of solutions are
+possible:
+  1. Two-level buffering. Bytes would be added to a first buffer. Whenever input
+  is required, we return the bytes before the separator from the first buffer
+  and advance the position to after the separator.
+	Pros:
+		* no need to fiddle with terminal settings
+		* automatic processing of control characters
+	Cons:
+		* one level of indirection from the real input
+
+  2. Use non-canonical mode input processing.
+    Pros:
+        * access to real input as soon as it comes
+        * bypassing OS control
+    Cons:
+        * dealing with control characters
+        * dealing with terminal settings
+
+	a) Line at a time. Accumulate bytes until a separator is found. Then, return
+	the bytes accumulated.
+	b) Word at a time. Accumulate bytes until a separator or a space is found.
+
+  If we eval right after option 2b returned, we can spot typing errors as soon
+  as they happen, in a fashion similar to LaForth and colorforth.
+	
+Interpreter
+-----------
+The interpreter can be in two states: executing or compiling.
+When executing:
+  1. Search the word in forth
+  2. If found, execute it
+  3. If not, search in macro
+  4. If found, execute it
+  5. If not, convert to number
+  6. If conversion ok, push number to stack
+  7. If can't convert, abort
+
+When compiling:
+  1. Search the word in macro
+  2. If found, execute it
+  3. If not, search in forth
+  4. If found, compile it
+  5. If not, convert to number
+  6. If conversion ok, compile literal
+  7. If can't convert, abort

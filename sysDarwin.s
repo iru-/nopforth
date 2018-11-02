@@ -1,0 +1,11 @@
+.equ SYSREAD,  0x2000003
+.equ SYSWRITE, 0x2000004
+.equ SYSEXIT,  0x2000001
+.equ SYSMMAP,  0x20000C5
+
+.equ PROT_READ,     0x1
+.equ PROT_WRITE,    0x2
+.equ PROT_EXEC,     0x4
+.equ MAP_SHARED,    0x1
+.equ MAP_PRIVATE,   0x2
+.equ MAP_ANONYMOUS, 0x1000
