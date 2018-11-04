@@ -310,58 +310,70 @@ aligned:
     and $~7, %rax
     ret
 
-anon:
+centry:  # ( a u - a )
+    # copy name to the right place
+    mov (%rbp), %rsi
+    mov _h(%rip), %rdi
+    add $17, %rdi  # link + cfa + name length
+    mov %rax, %rcx
+    cld
+    rep; movsb
+
     mov _h(%rip), %rcx
     push %rcx
     call latest
     call comma
 
-    dup_
-    mov _h(%rip), %rax
-    add $8, %rax           # cfa is next address
-    call comma
-
-    pop %rax
-    ret
-
-header:
-    call anon
-    push %rax
-
-    # make room for name length
-    mov _h(%rip), %rax
-    inc %rax
-    mov %rax, _h(%rip)
-
-    mov $' ', %rax
-    call word
+    # make room for cfa
     mov _h(%rip), %rcx
-    movb %al, -1(%rcx)     # name length
-    add %rcx, %rax
+    add $8, %rcx
+    mov %rcx, _h(%rip)
 
+    dup_
+    call comma1            # store name length
+    mov _h(%rip), %rcx
+    add %rax, %rcx
+    mov %rcx, _h(%rip)     # commit name
+    drop_
+
+    mov _h(%rip), %rax
     call aligned
-    mov %rax, _h(%rip)     # commit name
+    mov %rax, _h(%rip)
 
     pop %rax
     mov _latest(%rip), %rcx
     mov %rax, (%rcx)
 
     # fix cfa
+    dup_
     call tocfa
     mov _h(%rip), %rcx
     mov %rcx, (%rax)
     drop_
     ret
 
-create:
-    call header
+entry:
     dup_
+    mov $' ', %rax
+    call word
+    call centry
+    ret
+
+create:
+    call entry
     lea dovar(%rip), %rax
     call ccall
     ret
 
 colon:
-    call header 
+    call entry
+    call anon
+    drop_
+    ret
+
+anon:
+    dup_
+    mov _h(%rip), %rax
     call startcomp
     ret
 

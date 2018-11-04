@@ -190,29 +190,36 @@ aligned_header:
     .ascii "aligned"
 
     .align 8
-anon_header:
+centry_header:
     .quad aligned_header
-    .quad anon
-    .byte 4
-    .ascii "anon"
+    .quad centry
+    .byte 6
+    .ascii "centry"
 
     .align 8
-header_header:
-    .quad anon_header
-    .quad header
-    .byte 6
-    .ascii "header"
+entry_header:
+    .quad centry_header
+    .quad entry
+    .byte 5
+    .ascii "entry"
 
     .align 8
 create_header:
-    .quad header_header
+    .quad entry_header
     .quad create
     .byte 6
     .ascii "create"
 
     .align 8
-dfind_header:
+anon_header:
     .quad create_header
+    .quad anon
+    .byte 5
+    .ascii "anon:"
+
+    .align 8
+dfind_header:
+    .quad anon_header
     .quad dfind
     .byte 5
     .ascii "dfind"

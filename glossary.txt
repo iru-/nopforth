@@ -92,14 +92,25 @@ dolit  ( - n )
 ,  ( n - )
   Store word sized number in dictionary
 
+2,  ( n - )
+  Store two-byte number in the dictionary
+
 4,  ( n - )
-  Store half-word sized number in the dictionary
+  Store four-byte sized number in the dictionary
 
 b,  ( b - )
   Store byte in dictionary
 
+centry  ( a u - a )
+  Create a new dictionary entry with name a u.
+  Return the address of the entry.
+
+entry  ( - a )  in:
+  Create a new dictionary entry with name given in the input line.
+  Return the address of the entry.
+
 create  ( - )  in:
-  Create a new dictionary entry with name given in the input line
+  Create a new dictionary entry which code returns the next address in the dictionary.
 
 dfind  ( a u da - a'|0 )
   Find entry named a u in dictionary starting at da.
@@ -121,7 +132,10 @@ call,  ( a - )  macro
   Switch to execution mode
 
 :  ( - )  in: macro
-  Execute create and switch to compilation mode
+  Create new definition with name given by next input word
+
+anon:  ( - )  in:
+  Create anonymous definition
 
 exit  ( - )  macro
   Exit defition
