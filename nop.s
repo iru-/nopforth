@@ -428,6 +428,11 @@ tocfa:
     lea 8(%rax), %rax
     ret
 
+h:
+    dup_
+    lea _h(%rip), %rax
+    ret
+
 here:
     dup_
     mov _h(%rip), %rax
@@ -449,6 +454,32 @@ cdup:
     dup_
     mov $0x00458948F86D8D48, %rax
     call comma
+    ret
+
+cdrop:
+    dup_
+    mov $0x086D8D4800458B48, %rax
+    call comma
+    ret
+
+cswap:
+    dup_
+    mov $0x458748, %rax    # xchg %rax, (%rbp)
+    call comma4
+    ret
+
+c0branch:
+    dup_
+    mov $0x74C08548, %rax    # test %rax, %rax; jz ...
+    call comma4
+    call here
+    ret
+
+cbranch:
+    dup_
+    mov $0xEB, %rax    # jmp
+    call comma1
+    call here
     ret
 
 dolit:
@@ -662,6 +693,7 @@ _S0: .quad 0             # parameter stack base
 _Send: .quad 0           # parameter stack end
 
     .text
+
     .global boot
 boot:
     mov %rsp, _R0(%rip)

@@ -232,8 +232,15 @@ tocfa_header:
     .ascii ">cfa"
 
     .align 8
-here_header:
+h_header:
     .quad tocfa_header
+    .quad h
+    .byte 1
+    .ascii "h"
+
+    .align 8
+here_header:
+    .quad h_header
     .quad here
     .byte 4
     .ascii "here"
@@ -404,4 +411,39 @@ colon_header:
     .byte 1
     .ascii ":"
 
-_mlatest: .quad colon_header
+    .align 8
+cdup_header:
+    .quad colon_header
+    .quad cdup
+    .byte 3
+    .ascii "dup"
+
+    .align 8
+cdrop_header:
+    .quad cdup_header
+    .quad cdrop
+    .byte 4
+    .ascii "drop"
+
+    .align 8
+cswap_header:
+    .quad cdrop_header
+    .quad cswap
+    .byte 4
+    .ascii "swap"
+
+   .align 8
+c0branch_header:
+    .quad cswap_header
+    .quad c0branch
+    .byte 7
+    .ascii "0branch"
+
+    .align 8
+cbranch_header:
+    .quad c0branch_header
+    .quad cbranch
+    .byte 6
+    .ascii "branch"
+
+_mlatest: .quad cbranch_header
