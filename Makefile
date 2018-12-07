@@ -7,8 +7,8 @@ all: nop
 nop: nop.o
 	$(LD) $(LDFLAGS) -e boot -o $@ nop.o
 
-%.o: %.s sysdefs.inc dicts.s
-	$(AS) $(ASFLAGS) -o $@ $<
+nop.o: dicts.s sysdefs.inc nop.s
+	$(AS) $(ASFLAGS) -o $@ nop.s
 
 sysdefs.inc: sys$(SYS).s
 	cp $< $@
