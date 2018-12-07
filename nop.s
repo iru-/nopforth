@@ -475,6 +475,20 @@ cover:
    call comma4
    ret
 
+cpop:
+   call cdup
+   dup_
+   mov $0x58, %rax
+   call comma1
+   ret
+
+cpush:
+   dup_
+   mov $0x50, %rax
+   call comma1
+   call cdrop
+   ret
+
 c0branch:
     dup_
     mov $0x74C08548, %rax    # test %rax, %rax; jz ...

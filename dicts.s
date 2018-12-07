@@ -439,9 +439,23 @@ cover_header:
     .byte 4
     .ascii "over"
 
+    .align 8
+cpush_header:
+    .quad cover_header
+    .quad cpush
+    .byte 4
+    .ascii "push"
+
+    .align 8
+cpop_header:
+    .quad cpush_header
+    .quad cpop
+    .byte 3
+    .ascii "pop"
+
    .align 8
 c0branch_header:
-    .quad cover_header
+    .quad cpop_header
     .quad c0branch
     .byte 7
     .ascii "0branch"
