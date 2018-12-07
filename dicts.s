@@ -453,9 +453,23 @@ cpop_header:
     .byte 3
     .ascii "pop"
 
+    .align 8
+cfetch_header:
+    .quad cpop_header
+    .quad cfetch
+    .byte 1
+    .ascii "@"
+
+    .align 8
+cstore_header:
+    .quad cfetch_header
+    .quad cstore
+    .byte 1
+    .ascii "!"
+
    .align 8
 c0branch_header:
-    .quad cpop_header
+    .quad cstore_header
     .quad c0branch
     .byte 7
     .ascii "0branch"

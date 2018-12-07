@@ -489,6 +489,31 @@ cpush:
    call cdrop
    ret
 
+cfetch:
+    # mov (%rax), %rax
+    dup_
+    mov $0x8b48, %rax
+    call comma2
+    dup_
+    xor %rax, %rax
+    call comma1
+    ret
+
+cstore:
+    dup_
+    mov $0x004d8b48, %rax    # mov (%rbp), %rcx
+    call comma4
+    # mov %rcx, (%rax)
+    dup_
+    mov $0x8948, %rax
+    call comma2
+    dup_
+    mov $0x08, %rax
+    call comma1
+    call cdrop
+    call cdrop
+    ret
+
 c0branch:
     dup_
     mov $0x74C08548, %rax    # test %rax, %rax; jz ...
