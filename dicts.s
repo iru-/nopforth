@@ -432,9 +432,16 @@ cswap_header:
     .byte 4
     .ascii "swap"
 
+    .align 8
+cover_header:
+    .quad cswap_header
+    .quad cover
+    .byte 4
+    .ascii "over"
+
    .align 8
 c0branch_header:
-    .quad cswap_header
+    .quad cover_header
     .quad c0branch
     .byte 7
     .ascii "0branch"

@@ -468,6 +468,13 @@ cswap:
     call comma4
     ret
 
+cover:
+   call cdup
+   dup_
+   mov $0x08458b48, %rax   # mov 8(%rbp), %rax
+   call comma4
+   ret
+
 c0branch:
     dup_
     mov $0x74C08548, %rax    # test %rax, %rax; jz ...
