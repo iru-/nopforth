@@ -469,25 +469,25 @@ cswap:
     ret
 
 cover:
-   call cdup
-   dup_
-   mov $0x08458b48, %rax   # mov 8(%rbp), %rax
-   call comma4
-   ret
+    call cdup
+    dup_
+    mov $0x08458b48, %rax   # mov 8(%rbp), %rax
+    call comma4
+    ret
 
 cpop:
-   call cdup
-   dup_
-   mov $0x58, %rax
-   call comma1
-   ret
+    call cdup
+    dup_
+    mov $0x58, %rax
+    call comma1
+    ret
 
 cpush:
-   dup_
-   mov $0x50, %rax
-   call comma1
-   call cdrop
-   ret
+    dup_
+    mov $0x50, %rax
+    call comma1
+    call cdrop
+    ret
 
 cfetch:
     # mov (%rax), %rax
