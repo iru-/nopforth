@@ -368,6 +368,7 @@ create:
 colon:
     call entry
     call anon
+    drop_
     ret
 
 anon:
