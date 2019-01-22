@@ -499,6 +499,12 @@ cfetch:
     call comma1
     ret
 
+cbfetch:
+    dup_
+    mov $0x00b60f48, %rax    # movzbq (%rax), %rax
+    call comma4
+    ret
+
 cstore:
     dup_
     mov $0x004d8b48, %rax    # mov (%rbp), %rcx
@@ -510,6 +516,17 @@ cstore:
     dup_
     mov $0x08, %rax
     call comma1
+    call cdrop
+    call cdrop
+    ret
+
+cbstore:
+    dup_
+    mov $0x004d8b48, %rax    # mov (%rbp), %rcx
+    call comma4
+    dup_
+    mov $0x0888, %rax        # mov %cl, (%rax)
+    call comma2
     call cdrop
     call cdrop
     ret

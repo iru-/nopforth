@@ -32,6 +32,20 @@ key  ( - b )
   Read byte from the standard input.
 
 
+Memory
+------
+@  ( a - n )
+  Fetch cell from address a.
+
+b@  ( a - b )
+  Fetch byte from address a.
+
+!  ( n a - )
+  Store cell n at address a.
+
+b!  ( b a - )
+  Store byte b at address a.
+
 Strings
 -------
 A string is defined as an address and a count on the stack.

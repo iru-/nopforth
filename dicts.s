@@ -468,15 +468,29 @@ cfetch_header:
     .ascii "@"
 
     .align 8
-cstore_header:
+cbfetch_header:
     .quad cfetch_header
+    .quad cbfetch
+    .byte 2
+    .ascii "b@"
+
+    .align 8
+cstore_header:
+    .quad cbfetch_header
     .quad cstore
     .byte 1
     .ascii "!"
 
     .align 8
-clit_header:
+cbstore_header:
     .quad cstore_header
+    .quad cbstore
+    .byte 2
+    .ascii "b!"
+
+    .align 8
+clit_header:
+    .quad cbstore_header
     .quad clit
     .byte 3
     .ascii "lit"
