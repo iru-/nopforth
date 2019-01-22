@@ -371,7 +371,14 @@ sub_header:
     .byte 1
     .ascii "-"
 
-_flatest: .quad sub_header
+    .align 8
+B_header:
+    .quad sub_header
+    .quad B
+    .byte 1
+    .ascii "B"
+
+_flatest: .quad B_header
 
 #
 # Macro

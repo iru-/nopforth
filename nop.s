@@ -819,4 +819,8 @@ sub:
     lea 8(%rbp), %rbp
     ret
 
+B:
+    int3
+    ret
+
 .include "dicts.s"
