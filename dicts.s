@@ -467,9 +467,16 @@ cstore_header:
     .byte 1
     .ascii "!"
 
+    .align 8
+clit_header:
+    .quad cstore_header
+    .quad clit
+    .byte 3
+    .ascii "lit"
+
    .align 8
 c0branch_header:
-    .quad cstore_header
+    .quad clit_header
     .quad c0branch
     .byte 7
     .ascii "0branch"
