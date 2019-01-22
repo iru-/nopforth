@@ -1,11 +1,11 @@
 ASFLAGS=-ggdb
-LDFLAGS=-static
+LDFLAGS=-Bdynamic
 SYS=$(shell uname -s)
 
 all: nop
 
 nop: nop.o
-	$(LD) $(LDFLAGS) -e boot -o $@ nop.o
+	gcc -nostartfiles -nostdlib -o $@ nop.o -e boot
 
 nop.o: dicts.s sysdefs.inc nop.s
 	$(AS) $(ASFLAGS) -o $@ nop.s
