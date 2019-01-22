@@ -310,11 +310,11 @@ aligned:
     and $~7, %rax
     ret
 
-centry:  # ( a u - a )
-    # copy name to the right place
+centry:
+    # copy name to the correct place
     mov (%rbp), %rsi
     mov _h(%rip), %rdi
-    add $17, %rdi  # link + cfa + name length
+    add $17, %rdi        # link + cfa + name length
     mov %rax, %rcx
     cld
     rep; movsb
@@ -345,7 +345,6 @@ centry:  # ( a u - a )
     mov %rax, (%rcx)
 
     # fix cfa
-    dup_
     call tocfa
     mov _h(%rip), %rcx
     mov %rcx, (%rax)
@@ -361,6 +360,7 @@ entry:
 
 create:
     call entry
+    dup_
     lea dovar(%rip), %rax
     call ccall
     ret
@@ -368,7 +368,6 @@ create:
 colon:
     call entry
     call anon
-    drop_
     ret
 
 anon:

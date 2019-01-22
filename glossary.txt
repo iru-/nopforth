@@ -105,7 +105,7 @@ centry  ( a u - a )
   Create a new dictionary entry with name a u.
   Return the address of the entry.
 
-entry  ( - a )  in:
+entry  ( - )  in:
   Create a new dictionary entry with name given in the input line.
   Return the address of the entry.
 
@@ -134,7 +134,7 @@ call,  ( a - )  macro
 :  ( - )  in: macro
   Create new definition with name given by next input word
 
-anon:  ( - )  in:
+anon:  ( - a )  in:
   Create anonymous definition
 
 exit  ( - )  macro
