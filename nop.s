@@ -533,16 +533,23 @@ cbstore:
 
 c0branch:
     dup_
-    mov $0x74C08548, %rax    # test %rax, %rax; jz ...
-    call comma4
+    mov $0x8548, %rax    # test %rax, %rax
+    call comma2
+    dup_
+    mov $0xC0, %rax      # ...
+    call comma1
+    call cdrop
+    dup_
+    mov $0x0074, %rax
+    call comma2
     call here
+    dec %rax
     ret
 
 cbranch:
     dup_
     mov $0xEB, %rax    # jmp
     call comma1
-    call here
     ret
 
 dolit:
@@ -560,7 +567,7 @@ clit:
     call ccall
     call comma
     ret
-    
+
     .data
 .global _compiling
 _compiling: .byte 0
