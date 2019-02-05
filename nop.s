@@ -835,13 +835,13 @@ resetdict:
 
 
 add:
-    add (%rbp), %rax
-    lea 8(%rbp), %rbp
+    add %rax, (%rbp)
+    drop_
     ret
 
 sub:
-    sub (%rbp), %rax
-    lea 8(%rbp), %rbp
+    sub %rax, (%rbp)
+    drop_
     ret
 
 B:
