@@ -489,8 +489,15 @@ cmul_header:
     .ascii "*"
 
     .align 8
-clit_header:
+cdivmod_header:
     .quad cmul_header
+    .quad cdivmod
+    .byte 4
+    .ascii "/mod"
+
+    .align 8
+clit_header:
+    .quad cdivmod_header
     .quad clit
     .byte 3
     .ascii "lit"

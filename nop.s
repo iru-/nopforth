@@ -556,6 +556,18 @@ cmul:
     call comma
     ret
 
+cdivmod:
+    call cswap
+    dup_
+    mov $0x9948, %rax    # cqto
+    call comma2
+    dup_
+    # idivq (%rbp)
+    # xchg %rdx, (%rbp)
+    mov $0x00558748007df748, %rax
+    call comma
+    ret
+
 c0branch:
     dup_
     mov $0x8548, %rax    # test %rax, %rax
