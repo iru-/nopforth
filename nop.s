@@ -545,6 +545,17 @@ csub:
     call cdrop
     ret
 
+cmul:
+    # imul (%rbp),%rax
+    # lea 0x8(%rbp),%rbp
+    dup_
+    mov $0x48, %rax
+    call comma1
+    dup_
+    mov $0x086d8d480045af0f, %rax
+    call comma
+    ret
+
 c0branch:
     dup_
     mov $0x8548, %rax    # test %rax, %rax

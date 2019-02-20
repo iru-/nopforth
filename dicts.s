@@ -482,8 +482,15 @@ csub_header:
     .ascii "-"
 
     .align 8
-clit_header:
+cmul_header:
     .quad csub_header
+    .quad cmul
+    .byte 1
+    .ascii "*"
+
+    .align 8
+clit_header:
+    .quad cmul_header
     .quad clit
     .byte 3
     .ascii "lit"
