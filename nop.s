@@ -531,6 +531,20 @@ cbstore:
     call cdrop
     ret
 
+cadd:
+    dup_
+    mov $0x00450148, %rax    # add %rax, (%rbp)
+    call comma4
+    call cdrop
+    ret
+
+csub:
+    dup_
+    mov $0x00452948, %rax    # add %rax, (%rbp)
+    call comma4
+    call cdrop
+    ret
+
 c0branch:
     dup_
     mov $0x8548, %rax    # test %rax, %rax
@@ -824,17 +838,6 @@ resetdict:
 1:
     mov $1, %rax
     call sysexit
-
-
-add:
-    add %rax, (%rbp)
-    drop_
-    ret
-
-sub:
-    sub %rax, (%rbp)
-    drop_
-    ret
 
 B:
     int3

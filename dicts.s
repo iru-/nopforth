@@ -351,22 +351,8 @@ resetdict_header:
     .ascii "resetdict"
 
     .align 8
-add_header:
-    .quad resetdict_header
-    .quad add
-    .byte 1
-    .ascii "+"
-
-    .align 8
-sub_header:
-    .quad add_header
-    .quad sub
-    .byte 1
-    .ascii "-"
-
-    .align 8
 B_header:
-    .quad sub_header
+    .quad resetdict_header
     .quad B
     .byte 1
     .ascii "B"
@@ -482,8 +468,22 @@ cbstore_header:
     .ascii "b!"
 
     .align 8
-clit_header:
+cadd_header:
     .quad cbstore_header
+    .quad cadd
+    .byte 1
+    .ascii "+"
+
+    .align 8
+csub_header:
+    .quad cadd_header
+    .quad csub
+    .byte 1
+    .ascii "-"
+
+    .align 8
+clit_header:
+    .quad csub_header
     .quad clit
     .byte 3
     .ascii "lit"
