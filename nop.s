@@ -612,7 +612,7 @@ ccmp:
     ret
 
 
-c0branch:
+cif:
     dup_
     mov $0x8548, %rax    # test %rax, %rax
     call comma2
@@ -627,9 +627,10 @@ c0branch:
     dec %rax
     ret
 
-cbranch:
+cjump:
     dup_
     mov $0xEB, %rax    # jmp
+    call comma1
     call comma1
     ret
 

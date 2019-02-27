@@ -545,17 +545,17 @@ clit_header:
     .ascii "lit"
 
    .align 8
-c0branch_header:
+cif_header:
     .quad clit_header
-    .quad c0branch
-    .byte 7
-    .ascii "0branch"
+    .quad cif
+    .byte 2
+    .ascii "if"
 
     .align 8
-cbranch_header:
-    .quad c0branch_header
-    .quad cbranch
-    .byte 6
-    .ascii "branch"
+cjump_header:
+    .quad cif_header
+    .quad cjump
+    .byte 4
+    .ascii "jump"
 
-_mlatest: .quad cbranch_header
+_mlatest: .quad cjump_header
