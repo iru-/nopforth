@@ -496,8 +496,29 @@ cdivmod_header:
     .ascii "/mod"
 
     .align 8
-clit_header:
+ceq_header:
     .quad cdivmod_header
+    .quad ceq
+    .byte 1
+    .ascii "="
+
+    .align 8
+clt_header:
+    .quad ceq_header
+    .quad clt
+    .byte 1
+    .ascii "<"
+
+    .align 8
+cgt_header:
+    .quad clt_header
+    .quad cgt
+    .byte 1
+    .ascii ">"
+
+    .align 8
+clit_header:
+    .quad cgt_header
     .quad clit
     .byte 3
     .ascii "lit"

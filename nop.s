@@ -568,6 +568,35 @@ cdivmod:
     call comma
     ret
 
+clt:
+    dup_
+    mov $0x9c, %rax
+    jmp ccmp
+
+cgt:
+    dup_
+    mov $0x9f, %rax
+    jmp ccmp
+
+ceq:
+    dup_
+    mov $0x94, %rax
+
+ccmp:
+    dup_
+    mov $0x00453948, %rax          # cmp %rax, (%rbp)
+    call comma4
+    dup_
+    mov $0x0f, %rax                # setX %al
+    call comma1
+    or $0xc000, %rax               # ...
+    call comma2
+    dup_
+    mov $0x086d8d48c0b60f48, %rax  # movzbq %al, %rax; lea 8(%rbp), %rbp
+    call comma
+    ret
+
+
 c0branch:
     dup_
     mov $0x8548, %rax    # test %rax, %rax
