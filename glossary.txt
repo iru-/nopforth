@@ -188,6 +188,16 @@ Arithmetic
 /mod  macro
   Compile code for the following stack effect  ( a b -> remainder(a,b) a/b )
 
+Logic
+-----
+=  macro
+  Compile code for the following stack effect  ( a b -> a=b? )
+
+<  macro
+  Compile code for the following stack effect  ( a b -> a<b? )
+
+>  macro
+  Compile code for the following stack effect  ( a b -> a>b? )
 
 Miscellaneous
 -------------
