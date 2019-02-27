@@ -100,9 +100,6 @@ macro  ( - )
 forth  ( - )
   Set forth as the current dictionary
 
-dolit  ( - n )
-  Return literal stored in the address PC+8
-
 ,  ( n - )
   Store word sized number in dictionary
 

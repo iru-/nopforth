@@ -141,22 +141,15 @@ forth_header:
     .ascii "forth"
 
     .align 8
-dolit_header:
-    .quad forth_header
-    .quad dolit
-    .byte 5
-    .ascii "dolit"
-
-    .align 8
 dovar_header:
-    .quad dolit_header
+    .quad forth_header
     .quad dovar
     .byte 5
     .ascii "dovar"
 
     .align 8
 comma_header:
-    .quad dolit_header
+    .quad dovar_header
     .quad comma
     .byte 1
     .ascii ","

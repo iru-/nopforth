@@ -552,19 +552,11 @@ cbranch:
     call comma1
     ret
 
-dolit:
-    dup_
-    pop %rax
-    mov %rax, %rcx
-    add $8, %rcx
-    push %rcx
-    mov (%rax), %rax
-    ret
-
 clit:
+    call cdup
     dup_
-    lea dolit(%rip), %rax
-    call ccall
+    mov $0xb848, %rax
+    call comma2
     call comma
     ret
 
