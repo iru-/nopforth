@@ -568,6 +568,21 @@ cdivmod:
     call comma
     ret
 
+cne:
+    dup_
+    mov $0x95, %rax
+    jmp ccmp
+
+cle:
+    dup_
+    mov $0x9e, %rax
+    jmp ccmp
+
+cge:
+    dup_
+    mov $0x9d, %rax
+    jmp ccmp
+
 clt:
     dup_
     mov $0x9c, %rax

@@ -517,8 +517,29 @@ cgt_header:
     .ascii ">"
 
     .align 8
-clit_header:
+cne_header:
     .quad cgt_header
+    .quad cne
+    .byte 2
+    .ascii "/="
+
+    .align 8
+cle_header:
+    .quad cne_header
+    .quad cle
+    .byte 2
+    .ascii "<="
+
+    .align 8
+cge_header:
+    .quad cle_header
+    .quad cge
+    .byte 2
+    .ascii ">="
+
+    .align 8
+clit_header:
+    .quad cge_header
     .quad clit
     .byte 3
     .ascii "lit"
