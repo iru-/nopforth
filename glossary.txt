@@ -1,82 +1,83 @@
 System calls
 ------------
-sysread  ( a u fd - u' )
+sysread  ( a u fd -> u' )
   Read u bytes from fd into address a.
   Return number of bytes read.
 
-syswrite  ( a u fd - u' )
+syswrite  ( a u fd -> u' )
   Write u bytes starting at address a to fd.
   Return number of bytes read.
 
-sysexit  ( n - )
+sysexit  ( n -> )
   Exit process with status n.
 
-sysmmap  ( u prot flags - a )
+sysmmap  ( u prot flags -> a )
   Memory-map u bytes with protection prot and the given flags.
   Return address of mapped region.
 
 
 I/O
 ---
-expect  ( a u - u' )
+expect  ( a u -> u' )
   Read u bytes from standard input into address a.
   Return number of bytes read.
 
-type  ( a u - )
+type  ( a u -> )
   Write u bytes starting at address a to the standard output.
 
-emit  ( b - )
+emit  ( b -> )
   Write byte to the standard output.
 
-key  ( - b )
+key  ( -> b )
   Read byte from the standard input.
 
 
 Memory
 ------
-@  ( a - n )
+@  ( a -> n )
   Fetch cell from address a.
 
-b@  ( a - b )
+b@  ( a -> b )
   Fetch byte from address a.
 
-!  ( n a - )
+!  ( n a -> )
   Store cell n at address a.
 
-b!  ( b a - )
+b!  ( b a -> )
   Store byte b at address a.
+
 
 Strings
 -------
 A string is defined as an address and a count on the stack.
 
-skip  ( b a u - a' u' )
+skip  ( b a u -> a' u' )
   Skip sequence of b's in string a u.
   Return the remaining string after the sequence.
 
-scan  ( b a u - a' u' )
+scan  ( b a u -> a' u' )
   Scan byte b in string a u.
   Return the remaining string, starting at the first b. If b was not found,
   the top of the stack is zero.
 
-digit  ( b - n | -1 )
+digit  ( b - n | ->1 )
   Convert ascii digit to binary number given the current base.
   If conversion succeeded, return converted number.
   If conversion didn't succeed because b was invalid related to base,
   return -1.
 
-number  ( a u - u' 0|>0 )
+number  ( a u -> u' 0|>0 )
   Convert string a u to number given the current base.
   Return converted number and remaining bytes in string.
   If conversion failed, remaining bytes is greater than 0.
 
-inbuf  ( - a u )
+inbuf  ( -> a u )
   Return the input buffer.
 
-in>  ( - a u )
+in>  ( -> a u )
   Return the next input line from the input buffer.
 
-word  ( b - a u )  in:
+word  ( b -> a u )  in:
   Skip a sequence of the delimiter byte b in the input line and return the
   string up to the next delimiter.
 
@@ -85,108 +86,114 @@ Dictionary
 ----------
 The current dictionary is where definitions are compiled
 
-flatest  ( - a )
+flatest  ( -> a )
   Return the address of latest word defined in the forth dictionary
 
-mlatest  ( - a )
+mlatest  ( -> a )
   Return the address of latest word defined in the macro dictionary
 
-latest  ( - a )
+latest  ( -> a )
   Return the address of latest word defined in the current dictionary
 
-macro  ( - )
+macro  ( -> )
   Set macro as the current dictionary
 
-forth  ( - )
+forth  ( -> )
   Set forth as the current dictionary
 
-,  ( n - )
+,  ( n -> )
   Store word sized number in dictionary
 
-2,  ( n - )
+2,  ( n -> )
   Store two-byte number in the dictionary
 
-4,  ( n - )
+4,  ( n -> )
   Store four-byte sized number in the dictionary
 
-b,  ( b - )
+b,  ( b -> )
   Store byte in dictionary
 
-centry  ( a u - a )
+centry  ( a u -> a )
   Create a new dictionary entry with name a u.
   Return the address of the entry.
 
-entry  ( - )  in:
+entry  ( -> )  in:
   Create a new dictionary entry with name given in the input line.
   Return the address of the entry.
 
-create  ( - )  in:
+create  ( -> )  in:
   Create a new dictionary entry which code returns the next address in the dictionary.
 
-dfind  ( a u da - a'|0 )
+dfind  ( a u da -> a'|0 )
   Find entry named a u in dictionary starting at da.
   If found, return entry address. If not, return 0.
 
->cfa  ( a - a )
+>cfa  ( a -> a )
   Convert entry address to the entry's code field address (CFA)
 
-here  ( - a )
+here  ( -> a )
   Return the next address available in the dictionary
 
-call,  ( a - )  macro
+call,  ( a -> )  macro
   Compile a call to address a
 
-]  ( - )  macro
+]  ( -> )  macro
   Switch to compilation mode
 
-[  ( - )  macro
+[  ( -> )  macro
   Switch to execution mode
 
-:  ( - )  in: macro
+:  ( -> )  in: macro
   Create new definition with name given by next input word
 
-anon:  ( - a )  in:
+anon:  ( -> a )  in:
   Create anonymous definition
 
-exit  ( - )  macro
+exit  ( -> )  macro
   Exit defition
 
-;  ( - )  macro
+;  ( -> )  macro
   Compile exit and switch to execution mode
 
 
 Intepreter
 ----------
-abort  ( - )
+abort  ( -> )
   Reset data and return stacks and jump to the interpreter loop.
 
-abort"  ( n - )
+abort"  ( n -> )
   If n is zero, do nothing.
   If not, output string delimited by " and abort.
 
-eval  ( a u - ... )
+eval  ( a u -> ... )
   Evaluate string.
   If string is valid, return the results of evaluation. If not, abort.
 
-compile  ( a u - ... )
+compile  ( a u -> ... )
   Compile string.
   If string is valid, return the result of compilation. If not, abort.
 
-execute  ( a - ... )
+execute  ( a -> ... )
   Jump to word at address a.
 
 
 Arithmetic
 ----------
-+  ( a b - a+b )
--  ( a b - a-b )
++  macro
+  Compile code for the following stack effect  ( a b -> a+b )
+-  macro
+  Compile code for the following stack effect  ( a b -> a-b )
+*  macro
+  Compile code for the following stack effect  ( a b -> a*b )
+/mod  macro
+  Compile code for the following stack effect  ( a b -> remainder(a,b) a/b )
 
 
 Miscellaneous
 -------------
-banner  ( - )
+banner  ( -> )
   Output nop forth banner.
 
-bye  ( n - )
+bye  ( n -> )
   Exit nop forth with zero status.
 
