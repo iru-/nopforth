@@ -34,6 +34,20 @@ sysexit:
     movq $SYSEXIT, %rax
     syscall
 
+sysopen:
+    mov %rax, %rsi
+    drop_
+    mov %rax, %rdi
+    mov $SYSOPEN, %rax
+    syscall
+    ret
+
+sysclose:
+    mov %rax, %rdi
+    mov $SYSCLOSE, %rax
+    syscall
+    ret
+
 sysmmap:
     push %rdx
     mov $0, %rdi         # addr
@@ -621,7 +635,7 @@ cif:
     call comma1
     call cdrop
     dup_
-    mov $0x0074, %rax
+    mov $0x0074, %rax    # jz 0
     call comma2
     call here
     dec %rax

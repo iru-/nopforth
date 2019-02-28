@@ -8,6 +8,14 @@ syswrite  ( a u fd -> u' )
   Write u bytes starting at address a to fd.
   Return number of bytes read.
 
+sysopen  ( a u -> fd )
+  Open file named in the nul-terminated string at a with mode u.
+  Return file descriptor fd.
+
+sysclose  ( fd -> n )
+  Close file descriptor fd.
+  Return error n.
+
 sysexit  ( n -> )
   Exit process with status n.
 

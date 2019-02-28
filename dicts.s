@@ -18,8 +18,22 @@ syswrite_header:
     .ascii "syswrite"
 
     .align 8
-sysexit_header:
+sysopen_header:
     .quad syswrite_header
+    .quad sysopen
+    .byte 7
+    .ascii "sysopen"
+
+    .align 8
+sysclose_header:
+    .quad sysopen_header
+    .quad sysclose
+    .byte 8
+    .ascii "sysclose"
+
+   .align 8
+sysexit_header:
+    .quad sysclose_header
     .quad sysexit
     .byte 7
     .ascii "sysexit"
