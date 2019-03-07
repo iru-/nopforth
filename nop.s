@@ -650,27 +650,26 @@ clit:
 _compiling: .byte 0
 
     .text
-abortq:
-    push %rax
-    mov $'"', %rax
-    call word
+_errmsg: .ascii " ?\n"
+_errmsglen = . - _errmsg
+
+    .text
+errmsg:
     dup_
-    pop %rax
-    test %rax, %rax
-    jnz 1f
-    drop_
-    drop_
-    drop_
-    ret
-1:
-    drop_
+    lea _inbuf(%rip), %rax
+    dup_
+    movzwq _inpos(%rip), %rax
     call type
     dup_
-    mov $' ', %rax
-    call emit
+    lea _errmsg(%rip), %rax
+    dup_
+    mov $_errmsglen, %rax
+    call type
+    ret
 
-# TODO print caller
 abort:
+    call errmsg
+    call resetinput
     call resetstacks
     jmp readloop
 
@@ -710,17 +709,8 @@ eval:
     pop %rcx
     ret
 4:
-    drop_
-    pop %rax
-    dup_
-    pop %rax
-    call type
-    dup_
-    mov $'?', %rax
-    call emit
-    dup_
-    mov $'\n', %rax
-    call emit
+    pop %rcx
+    pop %rcx
     jmp abort
 
 compile:
@@ -766,18 +756,19 @@ compile:
     call clit
     ret
 4:
-    drop_
-    pop %rax
-    dup_
-    pop %rax
-    call type
-    dup_
-    mov $'?', %rax
-    call emit
-    dup_
-    mov $'\n', %rax
-    call emit
+    pop %rcx
+    pop %rcx
+    call dictrewind
     jmp abort
+
+dictrewind:
+    call latest                # rax = pointer to latest entry
+    mov (%rax), %rax           # rax = pointer to next to latest entry
+    mov _latest(%rip), %rcx
+    mov %rax, (%rcx)
+    drop_
+    ret
+
 
 execute:
     mov %rax, %rbx
