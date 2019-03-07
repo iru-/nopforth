@@ -109,15 +109,8 @@ inbuf_header:
     .ascii "inbuf"
 
     .align 8
-infrom_header:
-    .quad inbuf_header
-    .quad infrom
-    .byte 3
-    .ascii "in>"
-
-    .align 8
 word_header:
-    .quad infrom_header
+    .quad inbuf_header
     .quad word
     .byte 4
     .ascii "word"
@@ -295,22 +288,36 @@ execute_header:
     .ascii "execute"
 
     .align 8
-readloop_header:
+resetinput_header:
     .quad execute_header
+    .quad resetinput
+    .byte 11
+    .ascii "reset-input"
+
+    .align 8
+qrefill_header:
+    .quad resetinput_header
+    .quad qrefill
+    .byte 7
+    .ascii "?refill"
+
+    .align 8
+refill_header:
+    .quad qrefill_header
+    .quad refill
+    .byte 6
+    .ascii "refill"
+
+    .align 8
+readloop_header:
+    .quad refill_header
     .quad readloop
     .byte 8
     .ascii "readloop"
 
     .align 8
-parseloop_header:
-    .quad readloop_header
-    .quad parseloop
-    .byte 9
-    .ascii "parseloop"
-
-    .align 8
 banner_header:
-    .quad parseloop_header
+    .quad readloop_header
     .quad banner
     .byte 6
     .ascii "banner"

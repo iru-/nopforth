@@ -36,9 +36,17 @@ type  ( a u -> )
 emit  ( b -> )
   Write byte to the standard output.
 
-key  ( -> b )
+key  ( -> b|-1 )
   Read byte from the standard input.
+  Return byte or -1 if read failed.
 
+reset-input  ( -> )
+  Reset input pointers.
+
+refill  ( -> u|0 )
+  Read standard input up to a new line (ascii 10) byte or the end of input.
+  Return positive number u if read was successful, 0 otherwise.
+  
 
 Memory
 ------

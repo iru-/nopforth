@@ -94,7 +94,11 @@ key:
     dup_
     mov $1, %rax
     call expect
-    movzbq _buf1(%rip), %rax    
+    test %rax, %rax  # EOF
+    jz 1f
+    movzbq _buf1(%rip), %rax
+    ret
+1:  movb $-1, %al
     ret
 
 skip:
@@ -117,8 +121,8 @@ scan:
     mov %rax, %rdi
     drop_
     repne scasb
-    jnz 1f            # if we found a delimiter
-    dec %rdi          # revert to first non delimiter
+    jnz 1f            # if we found a delimiter,
+    dec %rdi          # %rdi is after it, so we revert
     inc %rcx
 1:  mov %rdi, %rax
     dup_
@@ -208,26 +212,9 @@ inbuf:
     xor %rax, %rax
 1:  ret
 
-infrom:
-    dup_
-    mov $'\n', %rax
-    call inbuf
-    push (%rbp)
-    push %rax
-    call scan
-    pop %rcx
-    sub %rax, %rcx  
-    jns 1f
-    xor %rcx, %rcx 
-1:  drop_
-    pop %rax
-    dup_
-    mov %rcx, %rax
-    ret
-
 word:
     dup_
-    call infrom
+    call inbuf
     push %rax
     call skip
     pop %rcx
@@ -240,11 +227,13 @@ word:
     call scan
     pop %rcx
     sub %rax, %rcx          # rcx = consumed bytes
-    inc %rcx                # consume c
     add %rcx, _inpos(%rip)
-    dec %rcx                # exclude c from string
 
-    pop %rsi
+    test %rax, %rax         # c was not found
+    jz 1f
+    add $1, _inpos(%rip)    # consume c
+
+1:  pop %rsi
     push %rcx
     mov _h(%rip), %rdi
     mov %rdi, (%rbp)
@@ -678,7 +667,7 @@ abortq:
     call type
     dup_
     mov $' ', %rax
-    call emit  
+    call emit
 
 # TODO print caller
 abort:
@@ -795,36 +784,78 @@ execute:
     drop_
     jmp *%rbx
 
-readloop:
+resetinput:
+    xor %rcx, %rcx
+    movw %cx, _inbuflen(%rip)
+    movw %cx, _inpos(%rip)
+    ret
+
+qrefill:
+    movzwq _inpos(%rip), %rcx
+    movzwq _inbuflen(%rip), %rdx
+    cmp %rcx, %rdx
+    je refill
     dup_
+    mov $1, %rax
+    ret
+
+refill:
+    call resetinput
+
+1:  # if we filled the whole input, exit
+    movzwq _inbuflen(%rip), %rcx
+    movzwq _inbuftot(%rip), %rdx
+    cmp %rcx, %rdx
+    jne 2f
+    dup_
+    mov $1, %rax
+    ret
+
+2:  call key
+    cmpb $-1, %al   # EOF
+    jne 3f
+    mov $0, %rax
+    movzwq _inbuflen(%rip), %rcx
+    or %rcx, %rax
+    ret
+
+3:  cmpb $10, %al
+    jne 4f
+    mov $1, %rax
+    ret
+
+4:  mov %rax, %rdx
     lea _inbuf(%rip), %rax
-    dup_
-    movzwq _inbuftot(%rip), %rax
-    call expect
-    test %rax, %rax
+    movzwq _inbuflen(%rip), %rcx
+    lea (%rcx, %rax), %rax          # rax = pointer to next byte to be used
+    mov %dl, (%rax)
+    drop_
+    inc %rcx
+    movw %cx, _inbuflen(%rip)
+    jmp 1b
+
+readloop:
+    call qrefill
+    cmp $0, %rax
     jz bye
 
-    movw $0, _inpos(%rip)
-    movw %ax, _inbuflen(%rip)
-    drop_
-
-parseloop:
-    dup_
     mov $' ', %rax
     call word
     test %rax, %rax
-    jz 3f
-    movb _compiling(%rip), %cl
-    test %cl, %cl
     jnz 1f
-    call eval
-    jmp 2f
-1:  call compile
-2:  call checkstacks
-    jmp parseloop
-3:  drop_
+    drop_
     drop_
     jmp readloop
+
+1:  movb _compiling(%rip), %cl
+    test %cl, %cl
+    jnz 2f
+    call eval
+    jmp 3f
+2:  call compile
+3:  call checkstacks
+    jmp readloop
+
 
     .data
 _banner:     .ascii "nop forth\n"
