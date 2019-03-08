@@ -98,7 +98,7 @@ key:
     jz 1f
     movzbq _buf1(%rip), %rax
     ret
-1:  movb $-1, %al
+1:  mov $-1, %rax
     ret
 
 skip:
