@@ -381,8 +381,15 @@ anon:
     ret
 
 cexit:
-    dup_
-    mov $0xC3, %rax
+    call here
+    sub $2, %rax
+    movw (%rax), %cx
+    cmp $0xD1FF, %cx      # is it a call?
+    jne 1f
+    movw $0xE1FF, (%rax)  # convert to a jump
+    drop_
+    ret
+1:  mov $0xC3, %rax       # or compile a ret
     call comma1
     ret
 
