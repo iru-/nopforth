@@ -19,10 +19,6 @@ sysclose  ( fd -> n )
 sysexit  ( n -> )
   Exit process with status n.
 
-sysmmap  ( u prot flags -> a )
-  Memory-map u bytes with protection prot and the given flags.
-  Return address of mapped region.
-
 
 I/O
 ---

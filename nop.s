@@ -10,6 +10,13 @@
 
 .include "sysdefs.inc"
 
+    .bss
+    .global bss0
+bss0: .space 0x2000
+
+    .global _end
+    .global _edata
+
     .text
 sysread:
     mov $SYSREAD, %rcx
@@ -46,21 +53,6 @@ sysclose:
     mov %rax, %rdi
     mov $SYSCLOSE, %rax
     syscall
-    ret
-
-sysmmap:
-    push %rdx
-    mov $0, %rdi         # addr
-    mov %rax, %r10
-    drop_
-    mov %rax, %rdx
-    drop_
-    mov %rax, %rsi
-    mov $-1, %r8         # fd
-    mov $0, %r9          # offset (ignored)
-    mov $SYSMMAP, %rax
-    syscall
-    pop %rdx
     ret
 
 expect:
@@ -242,7 +234,9 @@ word:
     ret
 
     .data
-_h: .quad 0              # next dictionary address
+_h: .quad bss0      # next dictionary address
+_hend: .quad _end   # last dictionary address
+
 _latest: .quad _flatest
 
     .text
@@ -382,14 +376,14 @@ anon:
 
 cexit:
     call here
-    sub $2, %rax
-    movw (%rax), %cx
-    cmp $0xD1FF, %cx      # is it a call?
+    sub $5, %rax
+    mov (%rax), %cl
+    cmp $0xE8, %cl      # is it a call?
     jne 1f
-    movw $0xE1FF, (%rax)  # convert to a jump
+    movb $0xE9, (%rax)  # convert to a jump
     drop_
     ret
-1:  mov $0xC3, %rax       # or compile a ret
+1:  mov $0xC3, %rax     # or compile a ret
     call comma1
     ret
 
@@ -450,14 +444,13 @@ here:
 
 ccall:
     dup_
-    # compile move immediate to rcx
-    mov $0xB948, %rax
-    call comma2
-    call comma
-    # compile absolute call to rcx
-    dup_
-    mov $0xD1FF, %rax
-    call comma2
+    mov $0xE8, %rax
+    call comma1
+    call here
+    add $4, %rax
+    sub %rax, (%rbp)
+    drop_
+    call comma4
     ret
 
 cdup:
@@ -935,20 +928,9 @@ checkstacks:
     jmp abort
     
 resetdict:
-    dup_
-    mov $0x2000, %rax
-    dup_
-    mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rax
-    dup_
-    mov $(MAP_ANONYMOUS | MAP_SHARED), %rax
-    call sysmmap
-    jz 1f
-    mov %rax, _h(%rip)
-    drop_
+    lea bss0(%rip), %rcx
+    mov %rcx, _h(%rip)
     ret
-1:
-    mov $1, %rax
-    call sysexit
 
 B:
     int3

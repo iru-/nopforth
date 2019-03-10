@@ -39,15 +39,8 @@ sysexit_header:
     .ascii "sysexit"
 
     .align 8
-sysmmap_header:
-    .quad sysexit_header
-    .quad sysmmap
-    .byte 7
-    .ascii "sysmmap"
-
-    .align 8
 expect_header:
-    .quad sysmmap_header
+    .quad sysexit_header
     .quad expect
     .byte 6
     .ascii "expect"
