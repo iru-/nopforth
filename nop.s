@@ -268,32 +268,28 @@ forth:
 comma:
     mov _h(%rip), %rdx
     mov %rax, (%rdx)
-    add $8, %rdx
-    mov %rdx, _h(%rip)
+    add $8, _h(%rip)
     drop_
     ret
 
 comma4:
     mov _h(%rip), %rdx
     mov %eax, (%rdx)
-    add $4, %rdx
-    mov %rdx, _h(%rip)
+    add $4, _h(%rip)
     drop_
     ret
 
 comma1:
     mov _h(%rip), %rdx
     movb %al, (%rdx)
-    inc %rdx
-    mov %rdx, _h(%rip)
+    incq _h(%rip)
     drop_
     ret
 
 comma2:
     mov _h(%rip), %rdx
     movw %ax, (%rdx)
-    add $2, %rdx
-    mov %rdx, _h(%rip)
+    add $2, _h(%rip)
     drop_
     ret
 
