@@ -46,17 +46,35 @@ refill  ( -> u|0 )
 
 Memory
 ------
-@  ( a -> n )
+@  ( a -> n )  macro
   Fetch cell from address a.
 
-b@  ( a -> b )
+b@  ( a -> b )  macro
   Fetch byte from address a.
 
-!  ( n a -> )
+!  ( n a -> )  macro
   Store cell n at address a.
 
-b!  ( b a -> )
+b!  ( b a -> )  macro
   Store byte b at address a.
+
+a  ( -> n )  macro
+  Return contents of register a.
+
+a!  ( n -> )  macro
+  Store n into register a.
+
+@+  ( -> n )  macro
+  Fetch cell from address in register a. Increment a by cell.
+
+b@+  ( -> b )  macro
+  Fetch byte from address in register a. Increment a by 1.
+
+!+  ( n -> )  macro
+  Store n into address in register a. Increment a by cell.
+
+b!+  ( b -> )  macro
+  Store byte into address in register a. Increment a by 1.
 
 
 Strings

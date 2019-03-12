@@ -494,16 +494,53 @@ cpush:
     call cdrop
     ret
 
-cfetch:
-    # mov (%rax), %rax
+ca:
+    call cdup
     dup_
-    mov $0x008B48, %rax
+    mov $0xE8894C, %rax    # mov %r13, %rax
     call comma3
+    ret
+
+castore:
+    dup_
+    mov $0xC58949, %rax    # mov %rax, %r13
+    call comma3
+    call cdrop
+    ret
+
+cfetch:
+    dup_
+    mov $0x008B48, %rax    # mov (%rax), %rax
+    call comma3
+    ret
+
+cfetchplus:
+    call cdup
+    dup_
+    mov $0x00458B49, %rax    # mov (%r13), %rax
+    call comma4
+    dup_
+    mov $0x086D8D4D, %rax    # lea 8(%r13), %r13
+    call comma4
     ret
 
 cbfetch:
     dup_
     mov $0x00B60F48, %rax    # movzbq (%rax), %rax
+    call comma4
+    ret
+
+cbfetchplus:
+    call cdup
+    # movzbq (%r13), %rax
+    dup_
+    mov $0x49, %rax
+    call comma1
+    dup_
+    mov $0x0045B60F, %rax
+    call comma4
+    dup_
+    mov $0x016D8D4D, %rax    # lea 1(%r13), %r13
     call comma4
     ret
 
@@ -518,6 +555,16 @@ cstore:
     call cdrop
     ret
 
+cstoreplus:
+    dup_
+    mov $0x00458949, %rax    # mov %rax, (%r13)
+    call comma4
+    dup_
+    mov $0x086D8D4D, %rax    # lea 8(%r13), %r13
+    call comma4
+    call cdrop
+    ret
+
 cbstore:
     dup_
     mov $0x004D8B48, %rax    # mov (%rbp), %rcx
@@ -526,6 +573,16 @@ cbstore:
     mov $0x0888, %rax        # mov %cl, (%rax)
     call comma2
     call cdrop
+    call cdrop
+    ret
+
+cbstoreplus:
+    dup_
+    mov $0x00458841, %rax    # mov %al, (%r13)
+    call comma4
+    dup_
+    mov $0x016D8D4D, %rax    # lea 1(%r13), %r13
+    call comma4
     call cdrop
     ret
 

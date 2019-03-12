@@ -454,36 +454,76 @@ cpop_header:
     .ascii "pop"
 
     .align 8
-cfetch_header:
+ca_header:
     .quad cpop_header
+    .quad ca
+    .byte 1
+    .ascii "a"
+
+    .align 8
+castore_header:
+    .quad ca_header
+    .quad castore
+    .byte 2
+    .ascii "a!"
+
+    .align 8
+cfetch_header:
+    .quad castore_header
     .quad cfetch
     .byte 1
     .ascii "@"
 
+cfetchplus_header:
+    .quad cfetch_header
+    .quad cfetchplus
+    .byte 2
+    .ascii "@+"
+
     .align 8
 cbfetch_header:
-    .quad cfetch_header
+    .quad cfetchplus_header
     .quad cbfetch
     .byte 2
     .ascii "b@"
 
+cbfetchplus_header:
+    .quad cbfetch_header
+    .quad cbfetchplus
+    .byte 3
+    .ascii "b@+"
+
     .align 8
 cstore_header:
-    .quad cbfetch_header
+    .quad cbfetchplus_header
     .quad cstore
     .byte 1
     .ascii "!"
 
     .align 8
-cbstore_header:
+cstoreplus_header:
     .quad cstore_header
+    .quad cstoreplus
+    .byte 2
+    .ascii "!+"
+
+    .align 8
+cbstore_header:
+    .quad cstoreplus_header
     .quad cbstore
     .byte 2
     .ascii "b!"
 
     .align 8
-cadd_header:
+cbstoreplus_header:
     .quad cbstore_header
+    .quad cbstoreplus
+    .byte 3
+    .ascii "b!+"
+
+    .align 8
+cadd_header:
+    .quad cbstoreplus_header
     .quad cadd
     .byte 1
     .ascii "+"
