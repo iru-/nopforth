@@ -433,8 +433,15 @@ cswap_header:
     .ascii "swap"
 
     .align 8
-cover_header:
+cnip_header:
     .quad cswap_header
+    .quad cnip
+    .byte 3
+    .ascii "nip"
+
+    .align 8
+cover_header:
+    .quad cnip_header
     .quad cover
     .byte 4
     .ascii "over"

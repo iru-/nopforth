@@ -469,7 +469,13 @@ cdrop:
 
 cswap:
     dup_
-    mov $0x458748, %rax    # xchg %rax, (%rbp)
+    mov $0x00458748, %rax    # xchg %rax, (%rbp)
+    call comma4
+    ret
+
+cnip:
+    dup_
+    mov $0x086D8D48, %rax    # lea 8(%rbp), %rbp
     call comma4
     ret
 
@@ -595,7 +601,7 @@ cadd:
 
 csub:
     dup_
-    mov $0x00452948, %rax    # add %rax, (%rbp)
+    mov $0x00452948, %rax    # sub %rax, (%rbp)
     call comma4
     call cdrop
     ret
