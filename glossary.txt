@@ -137,6 +137,9 @@ forth  ( -> )
 2,  ( n -> )
   Store two-byte number in the dictionary
 
+3,  ( n-> )
+  Store three-byte number in the dictionary
+
 4,  ( n -> )
   Store four-byte sized number in the dictionary
 
