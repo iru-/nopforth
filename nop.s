@@ -57,7 +57,7 @@ sysclose:
 
 expect:
     dup_
-    xor %rax, %rax  # stdin
+    mov _infd(%rip), %rax
     call sysread
     ret
 
@@ -94,29 +94,41 @@ key:
     ret
 
 skip:
+    cmp $0, (%rbp)     # empty string
+    jnz 1f
+    drop_
+    ret
+1:  mov %rax, %rdx
+    drop_
     mov %rax, %rcx
     drop_
     mov %rax, %rdi
-    drop_
+    mov %rdx, %rax
     repe scasb
-    jz 1f
-    dec %rdi
+    jz 2f              # if we didn't find a delimiter,
+    dec %rdi           # %rdi is after the first non-delimiter, so we revert
     inc %rcx
-1:  mov %rdi, %rax
+2:  mov %rdi, %rax
     dup_
     mov %rcx, %rax
     ret
 
 scan:
+    cmp $0, (%rbp)     # empty string
+    jnz 1f
+    drop_
+    ret
+1:  mov %rax, %rdx
+    drop_
     mov %rax, %rcx
     drop_
     mov %rax, %rdi
-    drop_
+    mov %rdx, %rax
     repne scasb
-    jnz 1f            # if we found a delimiter,
-    dec %rdi          # %rdi is after it, so we revert
+    jnz 2f             # if we found a delimiter,
+    dec %rdi           # %rdi is after it, so we revert
     inc %rcx
-1:  mov %rdi, %rax
+2:  mov %rdi, %rax
     dup_
     mov %rcx, %rax
     ret
@@ -185,52 +197,98 @@ number:
     ret
 
     .data
-_inbuf: .space 256, 0    # input buffer
-_inbuftot: .short 256    # input buffer total size
-_inbuflen: .short 0      # input buffer used size
-_inpos: .short 0         # current input pointer
-_base: .byte 10          # numeric base
+_infd:   .quad 0    # file descriptor feeding the input
+_inbuf:  .quad 0    # pointer to input buffer
+_intot:  .quad 0    # input buffer total size
+_inused: .quad 0    # input buffer used size
+_inpos:  .quad 0    # input buffer position
+
+_termbuf: .space 256, 0    # terminal input buffer
+_termtot: .quad 256        # terminal input buffer total size
+
+_base: .byte 10      # numeric base
 
     .text
+infd:
+    dup_
+    lea _infd(%rip), %rax
+    ret
+
 inbuf:
     dup_
     lea _inbuf(%rip), %rax
-    movzwq _inpos(%rip), %rcx
+    ret
+
+intot:
+    dup_
+    lea _intot(%rip), %rax
+    ret
+
+inused:
+    dup_
+    lea _inused(%rip), %rax
+    ret
+
+inpos:
+    dup_
+    lea _inpos(%rip), %rax
+    ret
+
+termbuf:
+    dup_
+    lea _termbuf(%rip), %rax
+    ret
+
+termtot:
+    dup_
+    lea _termtot(%rip), %rax
+    ret
+
+source:
+    dup_
+    mov _inbuf(%rip), %rax
+    mov _inpos(%rip), %rcx
     lea (%rcx, %rax), %rax
     dup_
-    movzwq _inbuflen(%rip), %rax
+    mov _inused(%rip), %rax
     sub %rcx, %rax                 # rax = positions consumed
     jns 1f
     xor %rax, %rax
 1:  ret
 
 word:
+    push %rax               # save delimiter
+    drop_
+    call source
+    test %rax, %rax
+    jnz 1f
+    pop %rcx
+    ret
+1:  push %rax
     dup_
-    call inbuf
-    push %rax
+    mov 8(%rsp), %rax       # retrieve delimiter
     call skip
     pop %rcx
     sub %rax, %rcx          # rcx = consumed bytes
     add %rcx, _inpos(%rip)
 
-    # stack is: c a' n'
+    pop %rcx                # retrieve delimiter
+    # save start and count of string
     push (%rbp)
     push %rax
+    dup_
+    mov %rcx, %rax
     call scan
     pop %rcx
     sub %rax, %rcx          # rcx = consumed bytes
     add %rcx, _inpos(%rip)
 
     test %rax, %rax         # c was not found
-    jz 1f
+    jz 2f
     add $1, _inpos(%rip)    # consume c
 
-1:  pop %rsi
-    push %rcx
-    mov _h(%rip), %rdi
-    mov %rdi, (%rbp)
-    rep movsb
-    pop %rax
+2:  pop (%rbp)
+    mov %rcx, %rax
     ret
 
     .data
@@ -711,9 +769,9 @@ _errmsglen = . - _errmsg
     .text
 errmsg:
     dup_
-    lea _inbuf(%rip), %rax
+    mov _inbuf(%rip), %rax
     dup_
-    movzwq _inpos(%rip), %rax
+    mov _inpos(%rip), %rax
     call type
     dup_
     lea _errmsg(%rip), %rax
@@ -832,13 +890,13 @@ execute:
 
 resetinput:
     xor %rcx, %rcx
-    movw %cx, _inbuflen(%rip)
-    movw %cx, _inpos(%rip)
+    mov %rcx, _inused(%rip)
+    mov %rcx, _inpos(%rip)
     ret
 
 qrefill:
-    movzwq _inpos(%rip), %rcx
-    movzwq _inbuflen(%rip), %rdx
+    mov _inpos(%rip), %rcx
+    mov _inused(%rip), %rdx
     cmp %rcx, %rdx
     je refill
     dup_
@@ -849,8 +907,8 @@ refill:
     call resetinput
 
 1:  # if we filled the whole input, exit
-    movzwq _inbuflen(%rip), %rcx
-    movzwq _inbuftot(%rip), %rdx
+    mov _inused(%rip), %rcx
+    mov _intot(%rip), %rdx
     cmp %rcx, %rdx
     jne 2f
     dup_
@@ -861,7 +919,7 @@ refill:
     cmpb $-1, %al   # EOF
     jne 3f
     mov $0, %rax
-    movzwq _inbuflen(%rip), %rcx
+    mov _inused(%rip), %rcx
     or %rcx, %rax
     ret
 
@@ -871,13 +929,13 @@ refill:
     ret
 
 4:  mov %rax, %rdx
-    lea _inbuf(%rip), %rax
-    movzwq _inbuflen(%rip), %rcx
+    mov _inbuf(%rip), %rax
+    mov _inused(%rip), %rcx
     lea (%rcx, %rax), %rax          # rax = pointer to next byte to be used
     mov %dl, (%rax)
     drop_
     inc %rcx
-    movw %cx, _inbuflen(%rip)
+    mov %rcx, _inused(%rip)
     jmp 1b
 
 readloop:
@@ -935,6 +993,14 @@ boot:
     call resetstacks
     call resetdict
     call banner
+
+    xor %rcx, %rcx
+    mov %rcx, _infd(%rip)
+    lea _termbuf(%rip), %rcx
+    mov %rcx, _inbuf(%rip)
+    mov _termtot(%rip), %rcx
+    mov %rcx, _intot(%rip)
+    call resetinput
 
     jmp readloop
 

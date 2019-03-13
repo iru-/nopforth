@@ -42,7 +42,31 @@ reset-input  ( -> )
 refill  ( -> u|0 )
   Read standard input up to a new line (ascii 10) byte or the end of input.
   Return positive number u if read was successful, 0 otherwise.
-  
+
+infd  variable
+  File descriptor feeding the input
+
+inbuf  variable
+  Pointer to input buffer
+
+intot  variable
+  Total number of bytes in input buffer
+
+inused  variable
+  Number of filled bytes in input buffer
+
+inpos  variable
+  Input buffer position
+
+termbuf  variable
+  Terminal input buffer
+
+termtot  variable
+  Number of bytes in terminal input buffer
+
+source  ( -> a u )
+  Return a string describing the part of the input buffer yet to be processed.
+
 
 Memory
 ------
@@ -81,11 +105,11 @@ Strings
 -------
 A string is defined as an address and a count on the stack.
 
-skip  ( b a u -> a' u' )
-  Skip sequence of b's in string a u.
+skip  ( a u b -> a' u' )
+  Skip sequence of the byte b in string a u.
   Return the remaining string after the sequence.
 
-scan  ( b a u -> a' u' )
+scan  ( a u b -> a' u' )
   Scan byte b in string a u.
   Return the remaining string, starting at the first b. If b was not found,
   the top of the stack is zero.
@@ -100,12 +124,6 @@ number  ( a u -> u' 0|>0 )
   Convert string a u to number given the current base.
   Return converted number and remaining bytes in string.
   If conversion failed, remaining bytes is greater than 0.
-
-inbuf  ( -> a u )
-  Return the input buffer.
-
-in>  ( -> a u )
-  Return the next input line from the input buffer.
 
 word  ( b -> a u )  in:
   Skip a sequence of the delimiter byte b in the input line and return the

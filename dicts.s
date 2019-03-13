@@ -95,15 +95,64 @@ number_header:
     .ascii "number"
 
     .align 8
-inbuf_header:
+infd_header:
     .quad number_header
+    .quad infd
+    .byte 4
+    .ascii "infd"
+
+    .align 8
+inbuf_header:
+    .quad infd_header
     .quad inbuf
     .byte 5
     .ascii "inbuf"
 
     .align 8
-word_header:
+intot_header:
     .quad inbuf_header
+    .quad intot
+    .byte 5
+    .ascii "intot"
+
+    .align 8
+inused_header:
+    .quad intot_header
+    .quad inused
+    .byte 6
+    .ascii "inused"
+
+    .align 8
+inpos_header:
+    .quad inused_header
+    .quad inpos
+    .byte 5
+    .ascii "inpos"
+
+    .align 8
+termbuf_header:
+    .quad inpos_header
+    .quad termbuf
+    .byte 7
+    .ascii "termbuf"
+
+    .align 8
+termtot_header:
+    .quad termbuf_header
+    .quad termtot
+    .byte 7
+    .ascii "termtot"
+
+    .align 8
+source_header:
+    .quad termtot_header
+    .quad source
+    .byte 6
+    .ascii "source"
+
+    .align 8
+word_header:
+    .quad source_header
     .quad word
     .byte 4
     .ascii "word"
