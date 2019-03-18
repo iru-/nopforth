@@ -784,7 +784,7 @@ abort:
     call errmsg
     call resetinput
     call resetstacks
-    jmp readloop
+    jmp termloop
 
 eval:
     # save string
@@ -941,23 +941,25 @@ refill:
 readloop:
     call qrefill
     cmp $0, %rax
-    jz bye
+    jnz 1f
+    drop_
+    ret
 
-    mov $' ', %rax
+1:  mov $' ', %rax
     call word
     test %rax, %rax
-    jnz 1f
+    jnz 2f
     drop_
     drop_
     jmp readloop
 
-1:  movb _compiling(%rip), %cl
+2:  movb _compiling(%rip), %cl
     test %cl, %cl
-    jnz 2f
+    jnz 3f
     call eval
-    jmp 3f
-2:  call compile
-3:  call checkstacks
+    jmp 4f
+3:  call compile
+4:  call checkstacks
     jmp readloop
 
 
@@ -994,6 +996,7 @@ boot:
     call resetdict
     call banner
 
+termsetup:
     xor %rcx, %rcx
     mov %rcx, _infd(%rip)
     lea _termbuf(%rip), %rcx
@@ -1002,7 +1005,9 @@ boot:
     mov %rcx, _intot(%rip)
     call resetinput
 
-    jmp readloop
+termloop:
+    call readloop
+    jmp termsetup
 
 resetstacks:
     lea dstack0(%rip), %rbp
