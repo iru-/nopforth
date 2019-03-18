@@ -148,7 +148,7 @@ digit:
     or (%rbp), %rax
     lea 8(%rbp), %rbp     # discard S
 2:
-    cmpb _base(%rip), %al
+    cmp _base(%rip), %rax
     jl 3f
     mov $-1, %rax
 3:
@@ -206,9 +206,14 @@ _inpos:  .quad 0    # input buffer position
 _termbuf: .space 256, 0    # terminal input buffer
 _termtot: .quad 256        # terminal input buffer total size
 
-_base: .byte 10      # numeric base
+_base: .quad 10      # numeric base
 
     .text
+base:
+    dup_
+    lea _base(%rip), %rax
+    ret
+
 infd:
     dup_
     lea _infd(%rip), %rax

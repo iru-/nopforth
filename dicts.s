@@ -95,8 +95,15 @@ number_header:
     .ascii "number"
 
     .align 8
-infd_header:
+base_header:
     .quad number_header
+    .quad base
+    .byte 4
+    .ascii "base"
+
+    .align 8
+infd_header:
+    .quad base_header
     .quad infd
     .byte 4
     .ascii "infd"
