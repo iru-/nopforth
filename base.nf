@@ -124,4 +124,15 @@ variable fd
 
 : include  ( "name" -> )  bl word included ;
 
+
+( Pictured numeric conversion )
+: digit  ( n -> n' )  dup 9 > 7 and + 48 + ;
+
+: hold  ( count rem b -> b count+1 rem )  swap push  swap 1 + pop ;
+
+: <#  ( n -> 0 n )    0 swap ;
+: #   ( n -> ... count rem )  base @ /mod swap digit hold ;
+: #>  ( ... count rem -> a u )  drop  here a!  dup push for b!+ next  here pop ;
+: #s  ( n -> ... count rem )  begin # dup while repeat ;
+
 bye
