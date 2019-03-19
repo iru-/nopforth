@@ -451,11 +451,31 @@ semicolon:
     jmp stopcomp
 
 stopcomp:
-    movb $0, _compiling(%rip)
+    lea _flatest(%rip), %rcx
+    mov %rcx, _search(%rip)
+    lea _mlatest(%rip), %rcx
+    mov %rcx, _search+8(%rip)
+    lea execute(%rip), %rcx
+    mov %rcx, _action(%rip)
+    mov %rcx, _action+8(%rip)
+    lea nil(%rip), %rcx
+    mov %rcx, _action+16(%rip)
+    mov %rcx, _action+24(%rip)
     ret
 
 startcomp:
-    movb $1, _compiling(%rip)
+    lea _mlatest(%rip), %rcx
+    mov %rcx, _search(%rip)
+    lea _flatest(%rip), %rcx
+    mov %rcx, _search+8(%rip)
+    lea execute(%rip), %rcx
+    mov %rcx, _action(%rip)
+    lea ccall(%rip), %rcx
+    mov %rcx, _action+8(%rip)
+    lea clit(%rip), %rcx
+    mov %rcx, _action+16(%rip)
+    lea dictrewind(%rip), %rcx
+    mov %rcx, _action+24(%rip)
     ret
 
 dfind:
@@ -730,10 +750,6 @@ clit:
     call comma2
     jmp comma
 
-    .data
-.global _compiling
-_compiling: .byte 0
-
     .text
 _errmsg: .ascii " ?\n"
 _errmsglen = . - _errmsg
@@ -757,86 +773,65 @@ abort:
     call resetstacks
     jmp termloop
 
+    .data
+_search:
+  .quad _flatest
+  .quad _mlatest
+_action:
+  .quad execute    # action on 1st search found
+  .quad execute    # action on 2nd search found
+  .quad nil        # action on number found
+  .quad nil        # abort action
+
+    .text
+nil: ret
+
 eval:
     # save string
     push %rax
     push (%rbp)
 
-    call flatest
+    dup_
+    mov _search(%rip), %rax
     call dfind
     test %rax, %rax
-    jnz 2f
-    mov (%rsp), %rax
+    jz 1f
+    mov 8(%rax), %rax    # get CFA
+    pop %rcx
+    pop %rcx
+    mov _action(%rip), %rcx
+    jmp *%rcx
+
+1:  mov (%rsp), %rax
     dup_
     mov 8(%rsp), %rax
-    call mlatest
-    call dfind
-    test %rax, %rax
-    jz 3f
-
-2:  pop %rcx
-    pop %rcx
-    call tocfa
-    mov (%rax), %rax
-    jmp execute
-
-3:  mov (%rsp), %rax
     dup_
-    mov 8(%rsp), %rax
-    call number
-    test %rax, %rax
-    jnz 4f
-    drop_
-    pop %rcx
-    pop %rcx
-    ret
-
-4:  pop %rcx
-    pop %rcx
-    jmp abort
-
-compile:
-    # save string
-    push %rax
-    push (%rbp)
-
-    call mlatest
+    mov _search+8(%rip), %rax
     call dfind
     test %rax, %rax
     jz 2f
+    mov 8(%rax), %rax    # get CFA
     pop %rcx
     pop %rcx
-    call tocfa
-    mov (%rax), %rax
-    jmp execute
+    mov _action+8(%rip), %rcx
+    jmp *%rcx
 
 2:  mov (%rsp), %rax
     dup_
     mov 8(%rsp), %rax
-    call flatest
-    call dfind
-    test %rax, %rax
-    jz 3f
-    pop %rcx
-    pop %rcx
-    call tocfa
-    mov (%rax), %rax
-    jmp ccall
-
-3:  mov (%rsp), %rax
-    dup_
-    mov 8(%rsp), %rax
     call number
     test %rax, %rax
     jnz 4f
     drop_
     pop %rcx
     pop %rcx
-    jmp clit
+    mov _action+16(%rip), %rcx
+    jmp *%rcx
 
 4:  pop %rcx
     pop %rcx
-    call dictrewind
+    mov _action+24(%rip), %rcx
+    call *%rcx
     jmp abort
 
 dictrewind:
@@ -908,7 +903,6 @@ readloop:
     jnz 1f
     drop_
     ret
-
 1:  mov $' ', %rax
     call word
     test %rax, %rax
@@ -916,16 +910,9 @@ readloop:
     drop_
     drop_
     jmp readloop
-
-2:  movb _compiling(%rip), %cl
-    test %cl, %cl
-    jnz 3f
-    call eval
-    jmp 4f
-3:  call compile
-4:  call checkstacks
+2:  call eval
+    call checkstacks
     jmp readloop
-
 
     .data
 _banner:     .ascii "nop forth\n"
@@ -958,6 +945,7 @@ boot:
     call resetstacks
     call resetdict
     call banner
+    call stopcomp
 
 termsetup:
     xor %rcx, %rcx

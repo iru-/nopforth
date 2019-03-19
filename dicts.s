@@ -323,15 +323,8 @@ eval_header:
     .ascii "eval"
 
     .align 8
-compile_header:
-    .quad eval_header
-    .quad compile
-    .byte 7
-    .ascii "compile"
-
-    .align 8
 execute_header:
-    .quad compile_header
+    .quad eval_header
     .quad execute
     .byte 7
     .ascii "execute"
