@@ -53,6 +53,15 @@ macro
 : again  ( 'begin -> )  here reljmp, ;
 : repeat  ( 'if 'begin -> )  [compile] again [compile] then ;
 
+: for
+  [compile] begin [compile] dup
+  [compile] while [compile] push ;
+
+: next
+  [compile] pop    1 [compile] lit  [compile] -
+  [compile] repeat  [compile] drop ;
+
+
 : [char]  bl word drop b@ [compile] lit ;
 : [']     ' [compile] lit ;
 
