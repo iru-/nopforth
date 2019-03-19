@@ -100,6 +100,9 @@ b@+  ( -> b )  macro
 b!+  ( b -> )  macro
   Store byte into address in register a. Increment a by 1.
 
+move  ( src dst u -> )
+  Copy u bytes from src to dst.
+
 
 Strings
 -------
@@ -114,11 +117,9 @@ scan  ( a u b -> a' u' )
   Return the remaining string, starting at the first b. If b was not found,
   the top of the stack is zero.
 
-digit  ( b - n | ->1 )
+digit  ( b -> n|-1 )
   Convert ascii digit to binary number given the current base.
-  If conversion succeeded, return converted number.
-  If conversion didn't succeed because b was invalid related to base,
-  return -1.
+  If conversion succeeded, return converted number. If not, return -1.
 
 number  ( a u -> u' 0|>0 )
   Convert string a u to number given the current base.
@@ -150,36 +151,53 @@ forth  ( -> )
   Set forth as the current dictionary
 
 ,  ( n -> )
-  Store word sized number in dictionary
+  Store cell sized number in dictionary
 
 2,  ( n -> )
   Store two-byte number in the dictionary
 
-3,  ( n-> )
+3,  ( n -> )
   Store three-byte number in the dictionary
 
 4,  ( n -> )
-  Store four-byte sized number in the dictionary
+  Store four-byte number in the dictionary
 
 b,  ( b -> )
   Store byte in dictionary
 
-centry  ( a u -> a )
+centry  ( a u -> a' )
   Create a new dictionary entry with name a u.
   Return the address of the entry.
 
 entry  ( -> )  in:
-  Create a new dictionary entry with name given in the input line.
-  Return the address of the entry.
+  Create a new empty entry in the current dictionary with the name given in the
+  next input word
 
 create  ( -> )  in:
-  Create a new dictionary entry which code returns the next address in the dictionary.
+  Create a new entry in the current dictionary with name given in the next input
+  word. When executed, the entry returns the address after its header.
 
-dfind  ( a u da -> a'|0 )
-  Find entry named a u in dictionary starting at da.
-  If found, return entry address. If not, return 0.
+dfind  ( a1 u a2 -> a|0 )
+  Find entry named a1 u in dictionary starting at a2.
+  If found, return the entry's address. If not, return 0.
 
->cfa  ( a -> a )
+found  ( a u -> a'|0 )
+  Search the current dictionary for the entry named a u.
+  If found, return the entry's address. If not, return 0.
+
+find  ( -> a'|0 ) in:
+  Search the current dictionary for the entry named by the next input word.
+  If found, return the entry's address. If not, abort.
+
+'  ( -> a'|0 )  in:
+  Search the current dictionary for the entry named by the next input word.
+  If found, return the entry's code field address (CFA). If not, return 0.
+
+[']  ( -> )  macro
+  Search the current dictionary for the entry named by the next input word.
+  If found, compile the entry's code field address (CFA). If not, abort.
+
+>cfa  ( a -> a' )
   Convert entry address to the entry's code field address (CFA)
 
 here  ( -> a )
@@ -194,11 +212,12 @@ call,  ( a -> )  macro
 [  ( -> )  macro
   Switch to execution mode
 
-:  ( -> )  in: macro
-  Create new definition with name given by next input word
+:  ( -> )  in:  macro
+  Create new definition with name given by the next input word
 
 anon:  ( -> a )  in:
-  Create anonymous definition
+  Create anonymous definition.
+  Return address of the definition.
 
 exit  ( -> )  macro
   Exit defition
@@ -210,22 +229,36 @@ exit  ( -> )  macro
 Intepreter
 ----------
 abort  ( -> )
-  Reset data and return stacks and jump to the interpreter loop.
+  Reset data and return stacks and jump to the interpreter loop
 
 abort"  ( n -> )
   If n is zero, do nothing.
   If not, output string delimited by " and abort.
 
 eval  ( a u -> ... )
-  Evaluate string.
-  If string is valid, return the results of evaluation. If not, abort.
+  Evaluate string as the interpreter would.
+  When executing:
+  1. Search the word in the forth dictionary
+  2. If found, execute it
+  3. If not, search in the macro dictionary
+  4. If found, execute it
+  5. If not, convert to number
+  6. If conversion succeeded, push number to stack
+  7. If not, abort
 
-compile  ( a u -> ... )
-  Compile string.
-  If string is valid, return the result of compilation. If not, abort.
+  When compiling:
+  1. Search the word in the macro dictionary
+  2. If found, execute it
+  3. If not, search in the forth dictionary
+  4. If found, compile it
+  5. If not, convert to number
+  6. If conversion succeeded, compile literal
+  7. If not, abort
+
+  The itens left on the stack are the results from the evaluation.
 
 execute  ( a -> ... )
-  Jump to word at address a.
+  Jump to word at address a
 
 
 Arithmetic
@@ -238,6 +271,7 @@ Arithmetic
   Compile code for the following stack effect  ( a b -> a*b )
 /mod  macro
   Compile code for the following stack effect  ( a b -> remainder(a,b) a/b )
+
 
 Logic
 -----
@@ -259,11 +293,18 @@ Logic
 >=  macro
   Compile code for the following stack effect  ( a b -> a>=b? )
 
+
 Miscellaneous
 -------------
 banner  ( -> )
-  Output nop forth banner.
+  Output nop forth banner
+
+hex  ( -> )
+  Set base to 16
+
+decimal  ( -> )
+  Set base to 10
 
 bye  ( n -> )
-  Exit nop forth with zero status.
+  Exit nop forth with zero status
 
