@@ -2,6 +2,8 @@ macro
 : \  refill drop ;
 : (  41 word drop drop ;
 
+: then  ( a -> )  here  over 1 + -  swap b! ;
+
 forth
 : dup   dup ;
 : drop  drop ;
@@ -26,16 +28,23 @@ forth
 : /     /mod nip ;
 : mod   /mod drop ;
 
-: cr  10 emit ;
 : bl  32 ;
+: cr  10 emit ;
+
+: decimal  10 base ! ;
+: hex      16 base ! ;
 
 : char  bl word drop b@ ;
 
-: reljmp,  ( dst src -> )  5 + -  233 b, 4, ;
+hex
+: reljmp,  ( dst src -> )  5 + -  E9 b, 4, ;
+decimal
+
+: found  ( a u -> a'|0 )     latest dfind ;
+: find  ( "name" -> a' )     bl word found ;
+: '  ( "name" -> a'|0 )      find dup 0 = if abort then >cfa @ ;
 
 macro
-: then  ( a -> )  here  over 1 + -  swap b! ;
-
 : [compile]  ( "name" -> )
   bl word mlatest dfind dup if >cfa @ call, exit then drop ;
 
@@ -45,6 +54,7 @@ macro
 : repeat  ( 'if 'begin -> )  [compile] again [compile] then ;
 
 : [char]  bl word drop b@ [compile] lit ;
+: [']     ' [compile] lit ;
 
 forth
 
