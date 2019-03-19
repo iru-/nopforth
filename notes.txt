@@ -41,24 +41,3 @@ possible:
 
   If we eval right after option 2b returned, we can spot typing errors as soon
   as they happen, in a fashion similar to LaForth and colorforth.
-	
-Interpreter
------------
-The interpreter can be in two states: executing or compiling.
-When executing:
-  1. Search the word in forth
-  2. If found, execute it
-  3. If not, search in macro
-  4. If found, execute it
-  5. If not, convert to number
-  6. If conversion ok, push number to stack
-  7. If can't convert, abort
-
-When compiling:
-  1. Search the word in macro
-  2. If found, execute it
-  3. If not, search in forth
-  4. If found, compile it
-  5. If not, convert to number
-  6. If conversion ok, compile literal
-  7. If can't convert, abort
