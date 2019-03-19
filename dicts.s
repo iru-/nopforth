@@ -592,8 +592,36 @@ cdivmod_header:
     .ascii "/mod"
 
     .align 8
-ceq_header:
+cor_header:
     .quad cdivmod_header
+    .quad cor
+    .byte 2
+    .ascii "or"
+
+    .align 8
+cand_header:
+    .quad cor_header
+    .quad cand
+    .byte 3
+    .ascii "and"
+
+    .align 8
+cxor_header:
+    .quad cand_header
+    .quad cxor
+    .byte 3
+    .ascii "xor"
+
+    .align 8
+cnot_header:
+    .quad cxor_header
+    .quad cnot
+    .byte 3
+    .ascii "not"
+
+    .align 8
+ceq_header:
+    .quad cnot_header
     .quad ceq
     .byte 1
     .ascii "="

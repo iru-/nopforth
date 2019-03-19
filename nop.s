@@ -672,6 +672,29 @@ cdivmod:
     mov $0x00558748007DF748, %rax
     jmp comma
 
+cor:
+   dup_
+   mov $0x00450B48, %rax    # or (%rbp), %rax
+   call comma4
+   jmp cnip
+
+cand:
+    dup_
+    mov $0x00452348, %rax    # and (%rbp), %rax
+    call comma4
+    jmp cnip
+
+cxor:
+    dup_
+    mov $0x00453348, %rax    # xor (%rbp), %rax
+    call comma4
+    jmp cnip
+
+cnot:
+    dup_
+    mov $0xD0F748, %rax    # not %rax
+    jmp comma3
+
 cne:
     dup_
     mov $0x95, %rax
