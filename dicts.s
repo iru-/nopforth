@@ -197,15 +197,8 @@ forth_header:
     .ascii "forth"
 
     .align 8
-dovar_header:
-    .quad forth_header
-    .quad dovar
-    .byte 5
-    .ascii "dovar"
-
-    .align 8
 comma_header:
-    .quad dovar_header
+    .quad forth_header
     .quad comma
     .byte 1
     .ascii ","
@@ -250,7 +243,7 @@ centry_header:
     .quad aligned_header
     .quad centry
     .byte 6
-    .ascii "centry"
+    .ascii "entry,"
 
     .align 8
 entry_header:
@@ -260,15 +253,8 @@ entry_header:
     .ascii "entry"
 
     .align 8
-create_header:
-    .quad entry_header
-    .quad create
-    .byte 6
-    .ascii "create"
-
-    .align 8
 anon_header:
-    .quad create_header
+    .quad entry_header
     .quad anon
     .byte 5
     .ascii "anon:"

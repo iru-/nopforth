@@ -360,11 +360,6 @@ comma3:
     decq _h(%rip)
     ret
 
-dovar:
-    dup_
-    pop %rax
-    ret
-
 aligned:
     add $7, %rax
     and $~7, %rax
@@ -416,12 +411,6 @@ entry:
     mov $' ', %rax
     call word
     jmp centry
-
-create:
-    call entry
-    dup_
-    lea dovar(%rip), %rax
-    jmp ccall
 
 colon:
     call entry

@@ -70,6 +70,13 @@ forth
 ( Dictionary )
 : +!  ( n a -> )  swap over  @ +  swap ! ;
 
+: dovar    ( -> a )    pop ;
+: created  ( a u -> )  entry, ['] dovar call, ;
+: create               bl word created ;
+
+: (value)  pop @ ;
+: value  ( n -> )  entry ['] (value) call, , ;
+: to  ( n -> )  ' 5 + ! ;
 
 : variable  create 0 , ;
 
