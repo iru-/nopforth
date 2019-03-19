@@ -58,8 +58,7 @@ sysclose:
 expect:
     dup_
     mov _infd(%rip), %rax
-    call sysread
-    ret
+    jmp sysread
 
 type:
     dup_
@@ -77,8 +76,7 @@ emit:
     lea _buf1(%rip), %rax
     dup_
     mov $1, %rax
-    call type
-    ret
+    jmp type
 
 key:
     dup_
@@ -417,15 +415,13 @@ entry:
     dup_
     mov $' ', %rax
     call word
-    call centry
-    ret
+    jmp centry
 
 create:
     call entry
     dup_
     lea dovar(%rip), %rax
-    call ccall
-    ret
+    jmp ccall
 
 colon:
     call entry
@@ -436,8 +432,7 @@ colon:
 anon:
     dup_
     mov _h(%rip), %rax
-    call startcomp
-    ret
+    jmp startcomp
 
 cexit:
     call here
@@ -449,13 +444,11 @@ cexit:
     drop_
     ret
 1:  mov $0xC3, %rax     # or compile a ret
-    call comma1
-    ret
+    jmp comma1
 
 semicolon:
     call cexit
-    call stopcomp
-    ret
+    jmp stopcomp
 
 stopcomp:
     movb $0, _compiling(%rip)
@@ -515,73 +508,62 @@ ccall:
     add $4, %rax
     sub %rax, (%rbp)
     drop_
-    call comma4
-    ret
+    jmp comma4
 
 cdup:
     dup_
     mov $0x00458948F86D8D48, %rax
-    call comma
-    ret
+    jmp comma
 
 cdrop:
     dup_
     mov $0x086D8D4800458B48, %rax
-    call comma
-    ret
+    jmp comma
 
 cswap:
     dup_
     mov $0x00458748, %rax    # xchg %rax, (%rbp)
-    call comma4
-    ret
+    jmp comma4
 
 cnip:
     dup_
     mov $0x086D8D48, %rax    # lea 8(%rbp), %rbp
-    call comma4
-    ret
+    jmp comma4
 
 cover:
     call cdup
     dup_
     mov $0x08458B48, %rax   # mov 8(%rbp), %rax
-    call comma4
-    ret
+    jmp comma4
 
 cpop:
     call cdup
     dup_
     mov $0x58, %rax
-    call comma1
-    ret
+    jmp comma1
 
 cpush:
     dup_
     mov $0x50, %rax
     call comma1
-    call cdrop
-    ret
+    jmp cdrop
 
 ca:
     call cdup
     dup_
     mov $0xE8894C, %rax    # mov %r13, %rax
-    call comma3
-    ret
+    jmp comma3
 
 castore:
     dup_
     mov $0xC58949, %rax    # mov %rax, %r13
     call comma3
-    call cdrop
-    ret
+    jmp cdrop
 
 cfetch:
     dup_
     mov $0x008B48, %rax    # mov (%rax), %rax
-    call comma3
-    ret
+    jmp comma3
 
 cfetchplus:
     call cdup
@@ -590,14 +572,12 @@ cfetchplus:
     call comma4
     dup_
     mov $0x086D8D4D, %rax    # lea 8(%r13), %r13
-    call comma4
-    ret
+    jmp comma4
 
 cbfetch:
     dup_
     mov $0x00B60F48, %rax    # movzbq (%rax), %rax
-    call comma4
-    ret
+    jmp comma4
 
 cbfetchplus:
     call cdup
@@ -610,8 +590,7 @@ cbfetchplus:
     call comma4
     dup_
     mov $0x016D8D4D, %rax    # lea 1(%r13), %r13
-    call comma4
-    ret
+    jmp comma4
 
 cstore:
     dup_
@@ -621,8 +600,7 @@ cstore:
     mov $0x088948, %rax      # mov %rcx, (%rax)
     call comma3
     call cdrop
-    call cdrop
-    ret
+    jmp cdrop
 
 cstoreplus:
     dup_
@@ -631,8 +609,7 @@ cstoreplus:
     dup_
     mov $0x086D8D4D, %rax    # lea 8(%r13), %r13
     call comma4
-    call cdrop
-    ret
+    jmp cdrop
 
 cbstore:
     dup_
@@ -642,8 +619,7 @@ cbstore:
     mov $0x0888, %rax        # mov %cl, (%rax)
     call comma2
     call cdrop
-    call cdrop
-    ret
+    jmp cdrop
 
 cbstoreplus:
     dup_
@@ -652,22 +628,19 @@ cbstoreplus:
     dup_
     mov $0x016D8D4D, %rax    # lea 1(%r13), %r13
     call comma4
-    call cdrop
-    ret
+    jmp cdrop
 
 cadd:
     dup_
     mov $0x00450148, %rax    # add %rax, (%rbp)
     call comma4
-    call cdrop
-    ret
+    jmp cdrop
 
 csub:
     dup_
     mov $0x00452948, %rax    # sub %rax, (%rbp)
     call comma4
-    call cdrop
-    ret
+    jmp cdrop
 
 cmul:
     # imul (%rbp),%rax
@@ -677,8 +650,7 @@ cmul:
     call comma1
     dup_
     mov $0x086D8D480045AF0F, %rax
-    call comma
-    ret
+    jmp comma
 
 cdivmod:
     call cswap
@@ -689,8 +661,7 @@ cdivmod:
     # idivq (%rbp)
     # xchg %rdx, (%rbp)
     mov $0x00558748007DF748, %rax
-    call comma
-    ret
+    jmp comma
 
 cne:
     dup_
@@ -732,9 +703,7 @@ ccmp:
     call comma2
     dup_
     mov $0x086D8D48C0B60F48, %rax  # movzbq %al, %rax; lea 8(%rbp), %rbp
-    call comma
-    ret
-
+    jmp comma
 
 cif:
     dup_
@@ -752,16 +721,14 @@ cjump:
     dup_
     mov $0xEB, %rax    # jmp
     call comma1
-    call comma1
-    ret
+    jmp comma1
 
 clit:
     call cdup
     dup_
     mov $0xB848, %rax
     call comma2
-    call comma
-    ret
+    jmp comma
 
     .data
 .global _compiling
@@ -782,8 +749,7 @@ errmsg:
     lea _errmsg(%rip), %rax
     dup_
     mov $_errmsglen, %rax
-    call type
-    ret
+    jmp type
 
 abort:
     call errmsg
@@ -807,16 +773,14 @@ eval:
     call dfind
     test %rax, %rax
     jz 3f
-2:
-    pop %rcx
+
+2:  pop %rcx
     pop %rcx
     call tocfa
     mov (%rax), %rax
-    call execute
-    ret
+    jmp execute
 
-3:
-    mov (%rsp), %rax
+3:  mov (%rsp), %rax
     dup_
     mov 8(%rsp), %rax
     call number
@@ -826,8 +790,8 @@ eval:
     pop %rcx
     pop %rcx
     ret
-4:
-    pop %rcx
+
+4:  pop %rcx
     pop %rcx
     jmp abort
 
@@ -844,11 +808,9 @@ compile:
     pop %rcx
     call tocfa
     mov (%rax), %rax
-    call execute
-    ret
+    jmp execute
 
-2:
-    mov (%rsp), %rax
+2:  mov (%rsp), %rax
     dup_
     mov 8(%rsp), %rax
     call flatest
@@ -859,10 +821,9 @@ compile:
     pop %rcx
     call tocfa
     mov (%rax), %rax
-    call ccall
-    ret
-3:
-    mov (%rsp), %rax
+    jmp ccall
+
+3:  mov (%rsp), %rax
     dup_
     mov 8(%rsp), %rax
     call number
@@ -871,10 +832,9 @@ compile:
     drop_
     pop %rcx
     pop %rcx
-    call clit
-    ret
-4:
-    pop %rcx
+    jmp clit
+
+4:  pop %rcx
     pop %rcx
     call dictrewind
     jmp abort
@@ -886,7 +846,6 @@ dictrewind:
     mov %rax, (%rcx)
     drop_
     ret
-
 
 execute:
     mov %rax, %rbx
@@ -978,8 +937,7 @@ banner:
     lea _banner(%rip), %rax
     dup_
     mov $_blen, %rax
-    call type
-    ret
+    jmp type
 
 bye:
     xor %rax, %rax
