@@ -106,8 +106,8 @@ forth
 : close-file  ( fd -> u )  sysclose ;
 
 
-create   /buf  256 ,
-create   buf  /buf @ allot
+256 value /buf
+create   buf  /buf allot
 variable fd
 
 : input@  ( -> fd buf tot used pos )
@@ -119,7 +119,7 @@ variable fd
 : included  ( a u -> )
   push push input@ pop pop
   0 open-file dup 0 < if abort then
-  dup buf /buf @ 0 0 input!  readloop
+  dup buf /buf 0 0 input!  readloop
   close-file drop  input! ;
 
 : include  ( "name" -> )  bl word included ;
