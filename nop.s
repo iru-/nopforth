@@ -307,10 +307,16 @@ word:
     .data
 _h: .quad bss0      # next dictionary address
 _hend: .quad _end   # last dictionary address
-
 _latest: .quad _flatest
 
+_hole: .quad _hole    # address of last optimizable instruction
+
     .text
+hole:
+    dup_
+    lea _hole(%rip), %rax
+    ret
+
 flatest:
     dup_
     mov _flatest(%rip), %rax
@@ -436,6 +442,8 @@ anon:
 cexit:
     call here
     sub $5, %rax
+    cmp %rax, _hole(%rip)
+    jne 1f
     mov (%rax), %cl
     cmp $0xE8, %cl      # is it a call?
     jne 1f
@@ -520,6 +528,8 @@ here:
     ret
 
 ccall:
+    mov _h(%rip), %rdx
+    mov %rdx, _hole(%rip)
     dup_
     mov $0xE8, %rax
     call comma1

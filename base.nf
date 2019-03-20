@@ -2,7 +2,7 @@ macro
 : \  refill drop ;
 : (  41 word drop drop ;
 
-: then  ( a -> )  here  over 1 + -  swap b! ;
+: then  ( a -> )  0 hole !  here  over 1 + -  swap b! ;
 
 forth
 : dup   dup ;

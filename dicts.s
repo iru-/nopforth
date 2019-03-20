@@ -199,14 +199,23 @@ mlatest_header:
     .byte 7
     .ascii "mlatest"
 
+    .align 8
 latest_header:
     .quad mlatest_header
     .quad latest
     .byte 6
     .ascii "latest"
 
-macro_header:
+    .align 8
+hole_header:
     .quad latest_header
+    .quad hole
+    .byte 4
+    .ascii "hole"
+
+    .align 8
+macro_header:
+    .quad hole_header
     .quad macro
     .byte 5
     .ascii "macro"
