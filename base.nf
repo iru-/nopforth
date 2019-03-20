@@ -46,8 +46,7 @@ decimal
 
 macro
 hex
-: negate  ( n -> n' )  D8F748 3, ;
-decimal
+: negate  ( n -> n' )  D8F748 3, ;  \ neg %rax
 
 : [compile]  ( "name" -> )
   bl word mlatest dfind dup if >cfa @ call, exit then drop ;
@@ -134,7 +133,7 @@ variable fd
 
 
 ( Pictured numeric conversion )
-: digit  ( n -> n' )  dup 9 > 7 and + 48 + ;
+: digit  ( n -> n' )  dup 9 >  if  7 +  then  48 + ;
 
 : hold  ( count rem b -> b count+1 rem )  swap push  swap 1 + pop ;
 
@@ -148,6 +147,5 @@ variable fd
 : sign  0 < if  [char] - hold  then ;
 
 : space  bl emit ;
-: .  dup push abs <#  #s pop sign #> type ;
-
-bye
+: (.)  dup push abs <#  #s pop sign  #> ;
+: .  (.) type space ;
