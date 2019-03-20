@@ -101,9 +101,14 @@ forth
 : ."  [char] " word type ;
 
 ( File )
-: open-file  ( a u mode -> fd )  push  s>z here pop  2 syscall2 ;
+: (open-create)  ( a u mode n# -> fd )  push push s>z here pop pop syscall2 ;
+: create-file  ( a u mode -> fd )  85 (open-create) ;
+: open-file  ( a u mode -> fd )  2 (open-create) ;
 : read-file  ( a u fd -> u )  sysread ;
 : close-file  ( fd -> u )  3 syscall1 ;
+: position-file  ( n rel? fd -> n' )  swap push swap pop 8 syscall3 ;
+: file-position  ( fd -> n' )  push 0 1 pop position-file ;
+
 
 256 value /buf
 create   buf  /buf allot
