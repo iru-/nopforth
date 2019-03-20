@@ -45,6 +45,10 @@ decimal
 : '  ( "name" -> a'|0 )      find dup 0 = if abort then >cfa @ ;
 
 macro
+hex
+: negate  ( n -> n' )  D8F748 3, ;
+decimal
+
 : [compile]  ( "name" -> )
   bl word mlatest dfind dup if >cfa @ call, exit then drop ;
 
@@ -138,5 +142,12 @@ variable fd
 : #   ( n -> ... count rem )  base @ /mod swap digit hold ;
 : #>  ( ... count rem -> a u )  drop  here a!  dup push for b!+ next  here pop ;
 : #s  ( n -> ... count rem )  begin # dup while repeat ;
+
+: negate  negate ;
+: abs  ( n -> |n| )  dup 0 < if negate then ;
+: sign  0 < if  [char] - hold  then ;
+
+: space  bl emit ;
+: .  dup push abs <#  #s pop sign #> type ;
 
 bye
