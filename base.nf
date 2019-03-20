@@ -68,6 +68,8 @@ hex
 : [char]  bl word drop b@ [compile] lit ;
 : [']     ' [compile] lit ;
 
+: r@  [compile] dup  24048B48 4, ;  \ mov (%rsp), %rax
+
 forth
 
 ( Dictionary )
