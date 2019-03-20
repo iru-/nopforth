@@ -101,10 +101,9 @@ forth
 : ."  [char] " word type ;
 
 ( File )
-: open-file  ( a u mode -> fd )  push s>z here pop sysopen ;
+: open-file  ( a u mode -> fd )  push  s>z here pop  2 syscall2 ;
 : read-file  ( a u fd -> u )  sysread ;
-: close-file  ( fd -> u )  sysclose ;
-
+: close-file  ( fd -> u )  3 syscall1 ;
 
 256 value /buf
 create   buf  /buf allot

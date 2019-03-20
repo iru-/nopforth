@@ -41,19 +41,29 @@ sysexit:
     movq $SYSEXIT, %rax
     syscall
 
-sysopen:
+sys5:
+    mov %rax, %r8
+    drop_
+sys4:
+    mov %rax, %rcx
+    drop_
+sys3:
+    mov %rax, %rdx
+    drop_
+sys2:
     mov %rax, %rsi
     drop_
+sys1:
     mov %rax, %rdi
-    mov $SYSOPEN, %rax
+    pop %rax
     syscall
     ret
 
-sysclose:
-    mov %rax, %rdi
-    mov $SYSCLOSE, %rax
-    syscall
-    ret
+syscall5:  push %rax; drop_; jmp sys5
+syscall4:  push %rax; drop_; jmp sys4
+syscall3:  push %rax; drop_; jmp sys3
+syscall2:  push %rax; drop_; jmp sys2
+syscall1:  push %rax; drop_; jmp sys1
 
 expect:
     dup_

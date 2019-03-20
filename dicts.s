@@ -17,30 +17,51 @@ syswrite_header:
     .byte 8
     .ascii "syswrite"
 
-    .align 8
-sysopen_header:
-    .quad syswrite_header
-    .quad sysopen
-    .byte 7
-    .ascii "sysopen"
-
-    .align 8
-sysclose_header:
-    .quad sysopen_header
-    .quad sysclose
-    .byte 8
-    .ascii "sysclose"
-
    .align 8
 sysexit_header:
-    .quad sysclose_header
+    .quad syswrite_header
     .quad sysexit
     .byte 7
     .ascii "sysexit"
 
+   .align 8
+syscall5_header:
+    .quad sysexit_header
+    .quad syscall5
+    .byte 8
+    .ascii "syscall5"
+
+   .align 8
+syscall4_header:
+    .quad syscall5_header
+    .quad syscall4
+    .byte 8
+    .ascii "syscall4"
+
+   .align 8
+syscall3_header:
+    .quad syscall4_header
+    .quad syscall3
+    .byte 8
+    .ascii "syscall3"
+
+   .align 8
+syscall2_header:
+    .quad syscall3_header
+    .quad syscall2
+    .byte 8
+    .ascii "syscall2"
+
+   .align 8
+syscall1_header:
+    .quad syscall2_header
+    .quad syscall1
+    .byte 8
+    .ascii "syscall1"
+
     .align 8
 expect_header:
-    .quad sysexit_header
+    .quad syscall1_header
     .quad expect
     .byte 6
     .ascii "expect"
