@@ -135,6 +135,7 @@ variable fd
 
 
 ( Pictured numeric conversion )
+decimal
 : digit  ( n -> n' )  dup 9 >  if  7 +  then  48 + ;
 
 : hold  ( count rem b -> b count+1 rem )  swap push  swap 1 + pop ;
