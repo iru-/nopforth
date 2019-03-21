@@ -51,6 +51,9 @@ hex
 : [compile]  ( "name" -> )
   bl word mlatest dfind dup if >cfa @ call, exit then drop ;
 
+: asave  [compile] a  [compile] push ;
+: arest  [compile] pop  [compile] a! ;
+
 : begin  ( -> 'begin )  here ;
 : while  ( 'begin -> 'if 'begin )  [compile] if swap ;
 : again  ( 'begin -> )  here reljmp, ;
@@ -73,6 +76,7 @@ hex
 forth
 
 ( Dictionary )
+decimal
 : +!  ( n a -> )  swap over  @ +  swap ! ;
 
 : dovar    ( -> a )    pop ;
@@ -142,7 +146,7 @@ decimal
 
 : <#  ( n -> 0 n )    0 swap ;
 : #   ( n -> ... count rem )  base @ /mod swap digit hold ;
-: #>  ( ... count rem -> a u )  drop  here a!  dup push for b!+ next  here pop ;
+: #>  ( ... count rem -> a u )  asave  drop  here a!  dup push for b!+ next  here pop  arest ;
 : #s  ( n -> ... count rem )  begin # dup while repeat ;
 
 : negate  negate ;
@@ -152,3 +156,6 @@ decimal
 : space  bl emit ;
 : (.)  dup push abs <#  #s pop sign  #> ;
 : .  (.) type space ;
+
+: depth  ( -> u )  S0 sp@ - 8 /  2 - ;
+: .S  depth S0 16 - swap for  dup @ . 8 -  next drop ;

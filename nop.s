@@ -1037,6 +1037,16 @@ checkstacks:
 3:
     call type
     jmp abort
+
+S0:
+    dup_
+    mov _S0(%rip), %rax
+    ret
+
+spfetch:
+    dup_
+    mov %rbp, %rax
+    ret
     
 resetdict:
     lea bss0(%rip), %rcx

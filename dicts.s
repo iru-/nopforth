@@ -402,8 +402,22 @@ checkstacks_header:
     .ascii "checkstacks"
 
     .align 8
-resetdict_header:
+S0_header:
     .quad checkstacks_header
+    .quad S0
+    .byte 2
+    .ascii "S0"
+
+    .align 8
+spfetch_header:
+    .quad S0_header
+    .quad spfetch
+    .byte 3
+    .ascii "sp@"
+
+    .align 8
+resetdict_header:
+    .quad spfetch_header
     .quad resetdict
     .byte 9
     .ascii "resetdict"
