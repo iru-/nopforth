@@ -388,29 +388,8 @@ bye_header:
     .ascii "bye"
 
     .align 8
-dstack_header:
-    .quad bye_header
-    .quad dstack
-    .byte 6
-    .ascii ".space"
-
-    .align 8
-dstack0_header:
-    .quad dstack_header
-    .quad dstack0
-    .byte 7
-    .ascii "dstack0"
-
-    .align 8
-boot_header:
-    .quad dstack0_header
-    .quad boot
-    .byte 4
-    .ascii "boot"
-
-    .align 8
 resetstacks_header:
-    .quad boot_header
+    .quad bye_header
     .quad resetstacks
     .byte 11
     .ascii "resetstacks"
