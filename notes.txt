@@ -1,9 +1,24 @@
+TODO
+----
+- [ ] `.S`
+- [ ] fix `to` to work inside definitions
+- [ ] string literals
+- [ ] `s"` macro
+- [ ] `."` macro
+- [ ] `within`
+- [ ] `[compile]` on forth words
+- [ ] reorganize base.nf in order of need
+- [ ] try if using the processor flags and preserving T
+- [ ] make pictured numeric words preserve the A register
+- [ ] fix the behavior on stack overflow
+
+
 Register allocation
 -------------------
 rax: top of data stack (T)
 rsp: top of return stack (R)
 rbp: pointer to second cell on data stack (S)
-rbp + (n-2)*8: pointer to nth cell on data stack (S+n)
+r13: register A
 
 
 Dictionary structure
@@ -13,7 +28,7 @@ link[cell] cfa[cell] namelength[1] name[n]
 
 Input
 -----
-Using the canonical mode input processing (termious(4)) can lead to some
+Using the canonical mode input processing (termios(4)) can lead to some
 problems. When we are reading from the keyboard directly, this is ok. When we
 are reading from a file, the newlines appear as input, not as separators.
 Defining separator as either newline, EOT or EOF, a number of solutions are
