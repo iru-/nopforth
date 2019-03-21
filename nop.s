@@ -1043,7 +1043,7 @@ resetdict:
     mov %rcx, _h(%rip)
     ret
 
-B:
+Br:
     int3
     ret
 

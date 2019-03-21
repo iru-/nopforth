@@ -409,13 +409,13 @@ resetdict_header:
     .ascii "resetdict"
 
     .align 8
-B_header:
+Br_header:
     .quad resetdict_header
-    .quad B
-    .byte 1
-    .ascii "B"
+    .quad Br
+    .byte 2
+    .ascii "Br"
 
-_flatest: .quad B_header
+_flatest: .quad Br_header
 
 #
 # Macro
