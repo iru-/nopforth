@@ -10,7 +10,7 @@ end
 
 define rstk
   set $p = $rsp
-  while $p <= $R0
+  while $p < $R0
     x/gx $p
     set $p = $p + 8
   end

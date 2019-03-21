@@ -860,7 +860,9 @@ eval:
     mov _action+16(%rip), %rcx
     jmp *%rcx
 
-4:  pop %rcx
+4:  drop_
+    drop_
+    pop %rcx
     pop %rcx
     mov _action+24(%rip), %rcx
     call *%rcx
@@ -964,7 +966,8 @@ bye:
 
     .data
 dstack: .space 8192, 0
-dstack0:
+dstack0: .quad 0
+
 _R0: .quad 0             # return stack base
 _S0: .quad 0             # parameter stack base
 _Send: .quad 0           # parameter stack end
@@ -993,15 +996,14 @@ termloop:
     jmp termsetup
 
 resetstacks:
-    lea dstack0(%rip), %rbp
+    #
+    # we used dstack0+8 so as when something is pushed to S,
+    # %rbp becomes dstack0
+    #
+    lea dstack0+8(%rip), %rbp
     mov %rbp, _S0(%rip)
     lea dstack(%rip), %rax
     mov %rax, _Send(%rip)
-
-    # markers for debugging
-    mov $0xFEED, %rax
-    dup_
-    mov $0xBEEF, %rax
 
     pop %rbx
     mov _R0(%rip), %rsp
