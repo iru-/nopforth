@@ -48,8 +48,13 @@ macro
 hex
 : negate  ( n -> n' )  D8F748 3, ;  \ neg %rax
 
+forth : entry>call,  ( a -> )  >cfa @ call, ;
+macro
 : [compile]  ( "name" -> )
-  bl word mlatest dfind dup if >cfa @ call, exit then drop ;
+  bl word over over
+  mlatest dfind dup if  entry>call, drop drop exit  then drop
+  flatest dfind dup if  entry>call, exit  then drop abort ;
+
 
 : asave  [compile] a  [compile] push ;
 : arest  [compile] pop  [compile] a! ;
