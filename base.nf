@@ -159,7 +159,7 @@ macro hex
 : negate  ( n -> n' )  D8F748 3, ;  \ neg %rax
 
 forth decimal
-: digit  ( n -> n' )  dup 9 >  if  7 +  then  48 + ;
+: digit  ( n -> n' )  dup 9 >  7 and +  48 + ;
 
 : hold  ( count rem b -> b count+1 rem )  swap push  swap 1 + pop ;
 

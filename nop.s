@@ -752,7 +752,10 @@ ccmp:
     call comma3
     dup_
     mov $0x086D8D48C0B60F48, %rax  # movzbq %al, %rax; lea 8(%rbp), %rbp
-    jmp comma
+    call comma
+    dup_
+    mov $0xD8F748, %rax            # neg %rax
+    jmp comma3
 
 cif:
     dup_
