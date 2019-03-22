@@ -717,42 +717,39 @@ cnot:
 
 cne:
     dup_
-    mov $0x95, %rax
+    mov $0x9500, %rax
     jmp ccmp
 
 cle:
     dup_
-    mov $0x9E, %rax
+    mov $0x9E00, %rax
     jmp ccmp
 
 cge:
     dup_
-    mov $0x9D, %rax
+    mov $0x9D00, %rax
     jmp ccmp
 
 clt:
     dup_
-    mov $0x9C, %rax
+    mov $0x9C00, %rax
     jmp ccmp
 
 cgt:
     dup_
-    mov $0x9F, %rax
+    mov $0x9F00, %rax
     jmp ccmp
 
 ceq:
     dup_
-    mov $0x94, %rax
+    mov $0x9400, %rax
 
 ccmp:
     dup_
     mov $0x00453948, %rax          # cmp %rax, (%rbp)
     call comma4
-    dup_
-    mov $0x0F, %rax                # setX %al
-    call comma1
-    or $0xC000, %rax               # ...
-    call comma2
+    or $0xC0000F, %rax             # setX %al
+    call comma3
     dup_
     mov $0x086D8D48C0B60F48, %rax  # movzbq %al, %rax; lea 8(%rbp), %rbp
     jmp comma
