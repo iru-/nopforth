@@ -1,7 +1,7 @@
 TODO
 ----
 - [x] `.S`
-- [ ] fix `to` to work inside definitions
+- [x] fix `to` to work inside definitions
 - [ ] string literals
 - [ ] `s"` macro
 - [ ] `."` macro
