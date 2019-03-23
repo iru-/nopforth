@@ -7,7 +7,7 @@ TODO
 - [ ] `."` macro
 - [ ] `within`
 - [x] `[compile]` on forth words
-- [ ] reorganize base.nf in order of need
+- [x] reorganize base.nf in order of need
 - [ ] try if using the processor flags and preserving T
 - [x] make pictured numeric words preserve the A register
 - [ ] fix the behavior on stack overflow

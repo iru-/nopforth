@@ -102,6 +102,7 @@ forth
   drop drop ;
 
 : +!  ( n a -> )  swap over  @ +  swap ! ;
+: mem,  ( a u -> )  here over allot  swap move ;
 
 
 ( Strings )
@@ -119,6 +120,15 @@ forth
 : s>z  ( a u -> )  dup push  here swap move  0 here pop + b! ;
 
 : ."  [char] " word type ;
+
+
+macro hex
+: slit  ( a u -> )  \ u is limited to 127 bytes because of the jump
+  EB b, 0 b,  here push dup push  mem,  pop pop dup 1 -
+  [compile] then [compile] lit [compile] lit ;
+
+: s"  ( a u -> )  [char] " word  [compile] slit ;
+forth
 
 
 ( Pictured numeric conversion )
