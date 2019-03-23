@@ -114,14 +114,37 @@ macro
 : [char]  bl word drop b@ [compile] lit ;
 forth
 
-
-( Strings )
-forth
 : ,"  ( -> u )  [char] " word  dup push  here swap move  pop ;
 : z"  ( -> u )  ,"  0 over here + b!  1 + ;
 : s>z  ( a u -> )  dup push  here swap move  0 here pop + b! ;
 
 : ."  [char] " word type ;
+
+
+( Pictured numeric conversion )
+macro hex
+: negate  ( n -> n' )  D8F748 3, ;  \ neg %rax
+
+forth decimal
+: digit  ( n -> n' )  dup 9 >  7 and +  48 + ;
+
+: hold  ( count rem b -> b count+1 rem )  swap push  swap 1 + pop ;
+
+: <#  ( n -> 0 n )    0 swap ;
+: #   ( n -> ... count rem )  base @ /mod swap digit hold ;
+: #>  ( ... count rem -> a u )  asave  drop  here a!  dup push for b!+ next  here pop  arest ;
+: #s  ( n -> ... count rem )  begin # dup while repeat ;
+
+: negate  negate ;
+: abs  ( n -> |n| )  dup 0 < if negate then ;
+: sign  0 < if  [char] - hold  then ;
+
+: space  bl emit ;
+: (.)  dup push abs <#  #s pop sign  #> ;
+: .  (.) type space ;
+
+: depth  ( -> u )  S0 sp@ - 8 /  2 - ;
+: .S  depth S0 16 - swap for  dup @ . 8 -  next drop ;
 
 
 ( File )
@@ -155,27 +178,3 @@ variable fd
 : include  ( "name" -> )  bl word included ;
 
 
-( Pictured numeric conversion )
-macro hex
-: negate  ( n -> n' )  D8F748 3, ;  \ neg %rax
-
-forth decimal
-: digit  ( n -> n' )  dup 9 >  7 and +  48 + ;
-
-: hold  ( count rem b -> b count+1 rem )  swap push  swap 1 + pop ;
-
-: <#  ( n -> 0 n )    0 swap ;
-: #   ( n -> ... count rem )  base @ /mod swap digit hold ;
-: #>  ( ... count rem -> a u )  asave  drop  here a!  dup push for b!+ next  here pop  arest ;
-: #s  ( n -> ... count rem )  begin # dup while repeat ;
-
-: negate  negate ;
-: abs  ( n -> |n| )  dup 0 < if negate then ;
-: sign  0 < if  [char] - hold  then ;
-
-: space  bl emit ;
-: (.)  dup push abs <#  #s pop sign  #> ;
-: .  (.) type space ;
-
-: depth  ( -> u )  S0 sp@ - 8 /  2 - ;
-: .S  depth S0 16 - swap for  dup @ . 8 -  next drop ;
