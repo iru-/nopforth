@@ -146,10 +146,11 @@ variable fd
   inpos ! inused ! intot ! inbuf ! infd ! ;
 
 : included  ( a u -> )
-  push push input@ pop pop
+  input@ push push push push push
   0 open-file dup 0 < if abort then
-  dup buf /buf 0 0 input!  readloop
-  close-file drop  input! ;
+  dup buf /buf 0 0 input!
+  push  readloop  pop close-file drop
+  pop pop pop pop pop input! ;
 
 : include  ( "name" -> )  bl word included ;
 
