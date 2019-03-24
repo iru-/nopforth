@@ -154,7 +154,7 @@ forth decimal
 : .  (.) type space ;
 
 : depth  ( -> u )  S0 sp@ - 8 /  2 - ;
-: .S  depth S0 16 - swap for  dup @ . 8 -  next drop ;
+: .S  depth S0 16 - swap for  dup @ . 8 -  next drop  s" <- top " type ;
 
 
 ( File )
