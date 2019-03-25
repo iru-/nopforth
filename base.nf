@@ -162,7 +162,16 @@ forth decimal
 : (open-create)  ( a u mode n# -> fd )  push push s>z here pop pop syscall2 ;
 : create-file  ( a u mode -> fd )  85 (open-create) ;
 : open-file  ( a u mode -> fd )  2 (open-create) ;
+
 : read-file  ( a u fd -> u )  sysread ;
+: read-byte  ( fd -> b|-1 )
+  push here 1 pop read-file 1 = if here b@ exit then -1 ;
+
+: write-file  ( a u fd -> u )  syswrite ;
+: write-byte  ( b fd -> n )   push  here b!  here 1 pop write-file ;
+: write-line  ( a u fd -> n )
+  dup push write-file  10 pop write-byte -1 = if drop -1 exit then  1 + ;
+
 : close-file  ( fd -> u )  3 syscall1 ;
 : position-file  ( n rel? fd -> n' )  swap push swap pop 8 syscall3 ;
 : file-position  ( fd -> n' )  push 0 1 pop position-file ;
