@@ -167,6 +167,15 @@ forth decimal
 : read-byte  ( fd -> b|-1 )
   push here 1 pop read-file 1 = if here b@ exit then -1 ;
 
+: eol?  ( b -> t )  dup -1 =  swap 10 =  or ;
+: read-line  ( a u fd -> n )
+  push push a! pop pop over
+  for
+    dup read-byte dup eol? if  drop drop pop - exit  then
+    b!+
+  next
+  drop ;
+
 : write-file  ( a u fd -> u )  syswrite ;
 : write-byte  ( b fd -> n )   push  here b!  here 1 pop write-file ;
 : write-line  ( a u fd -> n )
