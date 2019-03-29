@@ -10,14 +10,8 @@ macro
 macro hex
 : then ( a -> )   0 hole !  here  over 1 + -  swap b! ;
 
-forth
-: entry>call, ( a -> )   >cfa @ call, ;
-macro
-
 : [compile] ( -> )
-   20 word over over
-   mlatest dfind dup if  entry>call, drop drop exit  then drop
-   flatest dfind dup if  entry>call, exit  then drop abort ;
+   20 word mlatest dfind dup 0 = if abort then  >cfa @ call, ;
 
 : r@ ( -> )      [compile] dup  24048B48 4, ;  \ mov (%rsp), %rax
 : rdrop ( -> )   48 b, 0824648D 4, ;  \ lea 8(%rsp), %rsp
@@ -71,8 +65,12 @@ forth hex
 : find ( -> a )           20 word found ;
 : ' ( -> a|0 )            find dup 0 = if abort then >cfa @ ;
 
+: f' ( -> a|0 )
+   flatest push 20 word pop dfind dup 0 = if abort then >cfa @ ;
+
 macro
 : ['] ( -> )   '  [compile] lit ;
+: [f'] ( -> )   f' [compile] lit ;
 forth
 
 : allot ( n -> )   here +  h ! ;
@@ -129,6 +127,15 @@ macro hex
    [compile] then [compile] lit [compile] lit ;
 
 : s" ( a u -> )   [char] " word  [compile] slit ;
+
+: abort" ( t -> )
+   [char] " word [compile] slit [compile] push [compile] push
+   [compile] if
+      [compile] pop [compile] pop
+      [f'] type call, [f'] abort call,
+      [compile] exit
+   [compile] then
+   [compile] rdrop [compile] rdrop ;
 forth
 
 
