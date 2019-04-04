@@ -129,7 +129,7 @@ macro hex
 : s" ( a u -> )   [char] " word  [compile] slit ;
 
 : abort" ( t -> )
-   [char] " word [compile] slit [compile] push [compile] push
+   [compile] s" [compile] push [compile] push
    [compile] if
       [compile] pop [compile] pop
       [f'] type call, [f'] abort call,
