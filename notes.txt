@@ -2,10 +2,9 @@ TODO
 ----
 - [x] `.S`
 - [x] fix `to` to work inside definitions
-- [ ] string literals
-- [ ] `s"` macro
-- [ ] `."` macro
-- [ ] `within`
+- [x] string literals
+- [x] `s"` macro
+- [x] `."` macro
 - [x] `[compile]` on forth words
 - [x] reorganize base.nf in order of need
 - [ ] try if using the processor flags and preserving T
