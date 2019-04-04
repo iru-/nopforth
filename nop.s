@@ -783,7 +783,7 @@ clit:
     jmp comma
 
     .text
-_errmsg: .ascii " ?\n"
+_errmsg: .ascii "?\n"
 _errmsglen = . - _errmsg
 
     .text
@@ -800,7 +800,6 @@ errmsg:
     jmp type
 
 abort:
-    call errmsg
     call resetinput
     call resetstacks
     jmp termloop
@@ -866,6 +865,7 @@ eval:
     pop %rcx
     mov _action+24(%rip), %rcx
     call *%rcx
+    call errmsg
     jmp abort
 
 dictrewind:
