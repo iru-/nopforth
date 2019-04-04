@@ -133,8 +133,8 @@ macro hex
    [compile] s" [compile] push [compile] push
    [compile] if
       [compile] pop [compile] pop
-      [f'] type call, [f'] abort call,
-      [compile] exit
+      [f'] type call,  A [compile] lit [f'] emit call,
+      [f'] abort call,  [compile] exit
    [compile] then
    [compile] rdrop [compile] rdrop ;
 forth
