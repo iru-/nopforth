@@ -47,6 +47,5 @@ variable remaining
 : hdumped  ( a u -> )  2dup fsize 0 swap 10 (hdump)  /line negate allot ;
 : hdump  bl word hdumped ;
 
-hto 1516
 hdump notes.txt
 bye
