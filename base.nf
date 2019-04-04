@@ -126,7 +126,8 @@ macro hex
    EB b, 0 b,  here push dup push  mem,  pop pop dup 1 -
    [compile] then [compile] lit [compile] lit ;
 
-: s" ( a u -> )   [char] " word  [compile] slit ;
+: s" ( -> )   [char] " word  [compile] slit ;
+: ." ( -> )   [compile] s" [f'] type call, ;
 
 : abort" ( t -> )
    [compile] s" [compile] push [compile] push
