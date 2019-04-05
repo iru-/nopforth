@@ -4,7 +4,7 @@
 : within ( u lo hi -> flag )  push over <=  swap pop <  and ;
 : 2dup  over over ;
 8 value cell
-: min ( a b -> a|b )   2dup > if nip exit then drop ;
+: min ( a b -> a|b )   2dup < if drop drop exit then drop nip ;
 
 : fsize ( a u -> u' )
   r/o open-file  dup file-size  swap close-file abort" can't retrieve file size" ;
@@ -17,7 +17,7 @@ hex
 : align ( u -> )     /line swap - 3 * spaces ;
 : h. ( u -> )        <# # # #> type space ;
 : bytes ( a u -> )   swap a! for b@+ h. next ;
-: c. ( c -> )        dup bl 7F within not if drop [char] . then emit ;
+: c. ( c -> )        dup bl 7F within not if [char] . swap then drop emit ;
 : text ( a u -> )    swap a! for b@+ c. next ;
 : line ( a u -> )    .off 2 spaces 2dup bytes dup align 2 spaces text ;
 decimal
@@ -41,7 +41,7 @@ variable remaining
   push open  pop position  0 off ! hex ;
 
 : (hdump)  ( a u start end width -> )
-  setup  begin read dup while 'buf swap line cr repeat
+  setup  begin read while 'buf swap line cr repeat
   drop close  /line negate allot ;
 
 : hdumped  ( a u -> )  2dup fsize 0 swap 10 (hdump)  /line negate allot ;

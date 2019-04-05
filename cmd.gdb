@@ -51,6 +51,6 @@ define go
 end
 
 break boot
-run
+run < base.nf
 set $R0 = $rsp
 
