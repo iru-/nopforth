@@ -551,8 +551,11 @@ cdrop:
 
 cswap:
     dup_
-    mov $0x00458748, %rax    # xchg %rax, (%rbp)
-    jmp comma4
+    mov $0x00458948005D8B48, %rax     # mov (%rbp), %rbx; mov %rax, (%rbp)
+    call comma
+    dup_
+    mov $0xD88948, %rax               # mov %rbx, %rax
+    jmp comma3
 
 cnip:
     dup_
