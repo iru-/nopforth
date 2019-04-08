@@ -156,11 +156,11 @@ forth decimal
 
 : negate   negate ;
 : abs ( n -> |n| )   dup 0 < if swap negate swap then drop ;
-: sign ( n -> )   0 < if  [char] - hold  then drop ;
+: sign ( n -> )   0 < if  drop [char] - hold exit  then drop ;
 
 : space ( -> )   bl emit ;
 
-: (.) ( n -> )   dup push abs <#  #s pop sign  #> ;
+: (.) ( n -> )   dup push abs <#  #s pop sign #> ;
 : . ( n -> )     (.) type space ;
 
 : depth ( -> u )   S0 sp@ - 8 /  2 - ;
