@@ -1,5 +1,5 @@
 macro
-: \  refill drop ;
+: \  0 word drop drop ;
 : (  41 word drop drop ;
 
 : decimal ( -> )   10 base ! ;
@@ -211,7 +211,7 @@ variable fd
 : included ( a u -> )
    input@ push push push push push
    0 open-file dup 0 < if abort then drop
-   dup buf /buf 0 0 input!
+   dup buf /buf 0 0 input!  ['] termkey 'key !
    push  readloop  pop close-file drop
    pop pop pop pop pop input! ;
 

@@ -81,8 +81,22 @@ emit_header:
     .ascii "emit"
 
     .align 8
-key_header:
+termkey_header:
     .quad emit_header
+    .quad termkey
+    .byte 7
+    .ascii "termkey"
+
+    .align 8
+keyxt_header:
+    .quad termkey_header
+    .quad keyxt
+    .byte 4
+    .ascii "'key"
+
+    .align 8
+key_header:
+    .quad keyxt_header
     .quad key
     .byte 3
     .ascii "key"

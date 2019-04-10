@@ -12,7 +12,7 @@
 
     .bss
     .global bss0
-bss0: .space 0x2000
+bss0: .space 0xA000
 
     .global _end
     .global _edata
@@ -88,7 +88,7 @@ emit:
     mov $1, %rax
     jmp type
 
-key:
+termkey:
     dup_
     lea _buf1(%rip), %rax
     dup_
@@ -100,6 +100,33 @@ key:
     ret
 1:  mov $-1, %rax
     ret
+
+    .data
+_binpos:  .word 0
+    .text
+binkey:
+    movzwq _binpos(%rip), %rcx
+    mov $_kerntot, %rdx
+    cmp %rcx, %rdx
+    dup_
+    jne 1f
+    mov $-1, %rax
+    ret
+1:  lea _kernbuf(%rip), %rax
+    movzbq (%rcx, %rax), %rax
+    incw _binpos(%rip)
+    ret
+
+    .data
+_keyxt: .quad 0
+    .text
+keyxt:
+    dup_
+    lea _keyxt(%rip), %rax
+    ret
+
+key:
+    jmp *_keyxt(%rip)
 
 skip:
     cmp $0, (%rbp)     # empty string
@@ -984,18 +1011,25 @@ boot:
     call banner
     call stopcomp
 
-termsetup:
+    # setup reading of the kernel
     xor %rcx, %rcx
     mov %rcx, _infd(%rip)
     lea _termbuf(%rip), %rcx
     mov %rcx, _inbuf(%rip)
     mov _termtot(%rip), %rcx
     mov %rcx, _intot(%rip)
+    lea binkey(%rip), %rcx
+    mov %rcx, _keyxt(%rip)
     call resetinput
+    call readloop
 
 termloop:
+    # setup reading from stdin
+    lea termkey(%rip), %rcx
+    mov %rcx, _keyxt(%rip)
+    call resetinput
     call readloop
-    jmp termsetup
+    jmp bye
 
 resetstacks:
     #
@@ -1060,3 +1094,8 @@ Br:
     ret
 
 .include "dicts.s"
+
+    .data
+_kernbuf:
+.incbin "base.nf"
+_kerntot = . - _kernbuf
