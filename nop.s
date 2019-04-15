@@ -148,6 +148,30 @@ skip:
     mov %rcx, %rax
     ret
 
+skipws:
+    mov (%rbp), %rdx
+1:  test %rax, %rax
+    jz 2f
+    movzbq (%rdx), %rbx
+    cmp $0x20, %bl       # ascii space
+    jg 2f
+    inc %rdx
+    dec %rax
+    jmp 1b
+
+scanws:
+    mov (%rbp), %rdx
+1:  test %rax, %rax
+    jz 2f
+    movzbq (%rdx), %rbx
+    cmp $0x20, %bl       # ascii space
+    jle 2f
+    inc %rdx
+    dec %rax
+    jmp 1b
+2:  mov %rdx, (%rbp)
+3:  ret
+
 scan:
     cmp $0, (%rbp)     # empty string
     jnz 1f
@@ -295,6 +319,33 @@ source:
     jns 1f
     xor %rax, %rax
 1:  ret
+
+nextword:
+    call source
+    test %rax, %rax
+    jnz 1f
+    ret
+1:  push %rax
+    call skipws
+    pop %rcx
+    sub %rax, %rcx          # rcx = consumed bytes
+    add %rcx, _inpos(%rip)
+
+    # save start and count of string
+    push (%rbp)
+    push %rax
+    call scanws
+    pop %rcx
+    sub %rax, %rcx          # rcx = consumed bytes
+    add %rcx, _inpos(%rip)
+
+    test %rax, %rax         # c was not found
+    jz 2f
+    add $1, _inpos(%rip)    # consume c
+
+2:  pop (%rbp)
+    mov %rcx, %rax
+    ret
 
 word:
     push %rax               # save delimiter
@@ -963,11 +1014,10 @@ refill:
 readloop:
     call qrefill
     cmp $0, %rax
-    jnz 1f
     drop_
+    jnz 1f
     ret
-1:  mov $' ', %rax
-    call word
+1:  call nextword
     test %rax, %rax
     jnz 2f
     drop_

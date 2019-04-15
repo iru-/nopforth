@@ -193,8 +193,15 @@ source_header:
     .ascii "source"
 
     .align 8
-word_header:
+nextword_header:
     .quad source_header
+    .quad nextword
+    .byte 9
+    .ascii "next-word"
+
+    .align 8
+word_header:
+    .quad nextword_header
     .quad word
     .byte 4
     .ascii "word"
