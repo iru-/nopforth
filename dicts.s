@@ -25,8 +25,29 @@ sysexit_header:
     .ascii "sysexit"
 
    .align 8
-syscall5_header:
+_dlclose_header:
     .quad sysexit_header
+    .quad _dlclose
+    .byte 7
+    .ascii "dlclose"
+
+   .align 8
+_dlsym_header:
+    .quad _dlclose_header
+    .quad _dlsym
+    .byte 5
+    .ascii "dlsym"
+
+   .align 8
+_dlopen_header:
+    .quad _dlsym_header
+    .quad _dlopen
+    .byte 6
+    .ascii "dlopen"
+
+   .align 8
+syscall5_header:
+    .quad _dlopen_header
     .quad syscall5
     .byte 8
     .ascii "syscall5"

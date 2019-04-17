@@ -5,7 +5,7 @@ SYS=$(shell uname -s)
 all: nop
 
 nop: nop.o
-	gcc -nostartfiles -nostdlib -o $@ nop.o -e boot
+	gcc -nostartfiles -nostdlib -o $@ nop.o -e boot -ldl
 
 nop.o: dicts.s sysdefs.inc nop.s base.nf
 	$(AS) $(ASFLAGS) -o $@ nop.s

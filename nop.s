@@ -65,6 +65,22 @@ syscall3:  push %rax; drop_; jmp sys3
 syscall2:  push %rax; drop_; jmp sys2
 syscall1:  push %rax; drop_; jmp sys1
 
+_dlopen:
+    mov %rax, %rsi
+    drop_
+    mov %rax, %rdi
+    jmp dlopen
+
+_dlsym:
+    mov %rax, %rsi
+    drop_
+    mov %rax, %rdi
+    jmp dlsym
+
+_dlclose:
+    mov %rax, %rdi
+    jmp dlclose
+
 expect:
     dup_
     mov _infd(%rip), %rax

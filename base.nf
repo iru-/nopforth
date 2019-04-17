@@ -10,6 +10,11 @@ macro
 macro hex
 : then ( a -> )   0 hole !  here  over 1 + -  swap b! ;
 
+: if0 ( -> a )
+  C08548 3,  \ test %rax, %rax
+  0075 2,    \ jnz
+  here 1 - ;
+
 : [compile] ( -> )
    20 word mlatest dfind if  >cfa @ call, exit  then abort ;
 
