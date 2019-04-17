@@ -31,6 +31,9 @@ macro hex
    240CFF48 4,  \ decq (%rsp)
    [compile] repeat [compile] rdrop [compile] drop ;
 
+: 2push ( -> )   [compile] push [compile] push ;
+: 2pop ( -> )    [compile] pop [compile] pop ;
+: 2dup ( -> )    [compile] over [compile] over ;
 
 ( macro -> forth )
 \ We define forth words using the macros, so they can be used interactively
@@ -115,9 +118,9 @@ macro
 : [char] ( -> b )   bl word drop b@ [compile] lit ;
 forth
 
-: ," ( -> u )      [char] " word  dup push  here swap move  pop ;
-: z" ( -> u )      ,"  0 over here + b!  1 + ;
-: s>z ( a u -> )   dup push  here swap move  0 here pop + b! ;
+: ," ( -> a u )       [char] " word  here swap 2dup 2push  move  2pop ;
+: z" ( -> a )         ,"  over +  0 swap b! ;
+: s>z ( a u -> a' )   here swap 2dup 2push  move  2pop over +  0 swap b! ;
 
 : ." ( -> )   [char] " word type ;
 
@@ -169,7 +172,7 @@ forth decimal
 
 ( Files )
 forth decimal
-: (open-create) ( a u mode n# -> fd )   push push s>z here pop pop syscall2 ;
+: (open-create) ( a u mode n# -> fd )   push push s>z pop pop syscall2 ;
 : create-file ( a u mode -> fd )   85 (open-create) ;
 : open-file ( a u mode -> fd )   2 (open-create) ;
 
