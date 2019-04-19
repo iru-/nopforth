@@ -878,24 +878,17 @@ clit:
     call comma2
     jmp comma
 
-    .text
-_errmsg: .ascii "?\n"
-_errmsglen = . - _errmsg
+    .data
+_qmsg: .ascii "?\n"
+_qmsglen = . - _qmsg
 
     .text
-errmsg:
-    dup_
-    mov _inbuf(%rip), %rax
-    dup_
-    mov _inpos(%rip), %rax
-    call type
-    dup_
-    lea _errmsg(%rip), %rax
-    dup_
-    mov $_errmsglen, %rax
-    jmp type
-
 abort:
+    dup_
+    lea _qmsg(%rip), %rax
+    dup_
+    mov $_qmsglen, %rax
+    call type
     call resetinput
     call resetstacks
     jmp termloop
@@ -955,13 +948,12 @@ eval:
     mov _action+16(%rip), %rcx
     jmp *%rcx
 
-4:  drop_
-    drop_
-    pop %rcx
-    pop %rcx
+4:  pop %rax
+    dup_
+    pop %rax
     mov _action+24(%rip), %rcx
     call *%rcx
-    call errmsg
+    call type
     jmp abort
 
 dictrewind:
@@ -1078,8 +1070,6 @@ boot:
     call stopcomp
 
     # setup reading of the kernel
-    xor %rcx, %rcx
-    mov %rcx, _infd(%rip)
     lea _termbuf(%rip), %rcx
     mov %rcx, _inbuf(%rip)
     mov _termtot(%rip), %rcx
@@ -1091,6 +1081,12 @@ boot:
 
 termloop:
     # setup reading from stdin
+    xor %rcx, %rcx
+    mov %rcx, _infd(%rip)
+    lea _termbuf(%rip), %rcx
+    mov %rcx, _inbuf(%rip)
+    mov _termtot(%rip), %rcx
+    mov %rcx, _intot(%rip)
     lea termkey(%rip), %rcx
     mov %rcx, _keyxt(%rip)
     call resetinput
