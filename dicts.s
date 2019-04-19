@@ -423,8 +423,15 @@ banner_header:
     .ascii "banner"
 
     .align 8
-bye_header:
+promptxt_header:
     .quad banner_header
+    .quad promptxt
+    .byte 7
+    .ascii "'prompt"
+
+    .align 8
+bye_header:
+    .quad promptxt_header
     .quad bye
     .byte 3
     .ascii "bye"

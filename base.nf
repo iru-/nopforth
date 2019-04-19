@@ -218,11 +218,13 @@ create   buf  /buf allot
 variable fd
 
 : included ( a u -> )
+   'prompt @ push  0 'prompt !
    input@ push push push push push push
    0 open-file dup 0 < abort" can't include file"
    dup buf /buf 0 0 ['] file-key input!
    push  readloop  pop close-file drop
-   pop pop pop pop pop pop input! ;
+   pop pop pop pop pop pop input!
+   pop 'prompt ! ;
 
 : include ( -> )   bl word included ;
 

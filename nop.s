@@ -985,6 +985,7 @@ qrefill:
     ret
 
 refill:
+    call prompt
     call resetinput
 
 1:  # if we filled the whole input, exit
@@ -1019,6 +1020,17 @@ refill:
     mov %rcx, _inused(%rip)
     jmp 1b
 
+readkern:
+    xor %rcx, %rcx
+    mov %rcx, _infd(%rip)
+    lea _termbuf(%rip), %rcx
+    mov %rcx, _inbuf(%rip)
+    mov _termtot(%rip), %rcx
+    mov %rcx, _intot(%rip)
+    lea binkey(%rip), %rcx
+    mov %rcx, _keyxt(%rip)
+    call resetinput
+
 readloop:
     call qrefill
     cmp $0, %rax
@@ -1036,8 +1048,12 @@ readloop:
     jmp readloop
 
     .data
-_banner:     .ascii "nop forth\n"
-_blen =      . - _banner
+_banner:    .ascii "nop forth\n"
+_blen =     . - _banner
+
+_promptxt:      .quad 0
+_promptmsg:     .ascii "ok "
+_promptlen =    . - _promptmsg
 
     .text
 banner:
@@ -1045,6 +1061,25 @@ banner:
     lea _banner(%rip), %rax
     dup_
     mov $_blen, %rax
+    jmp type
+
+promptxt:
+    dup_
+    lea _promptxt(%rip), %rax
+    ret
+
+prompt:
+    mov _promptxt(%rip), %rcx
+    test %rcx, %rcx
+    jnz 1f
+    ret
+1:  jmp *%rcx
+
+okprompt:
+    dup_
+    lea _promptmsg(%rip), %rax
+    dup_
+    mov $_promptlen, %rax
     jmp type
 
 bye:
@@ -1069,17 +1104,12 @@ boot:
     call banner
     call stopcomp
 
-    # setup reading of the kernel
-    lea _termbuf(%rip), %rcx
-    mov %rcx, _inbuf(%rip)
-    mov _termtot(%rip), %rcx
-    mov %rcx, _intot(%rip)
-    lea binkey(%rip), %rcx
-    mov %rcx, _keyxt(%rip)
-    call resetinput
-    call readloop
+    call readkern
 
 termloop:
+    lea okprompt(%rip), %rcx
+    mov %rcx, _promptxt(%rip)
+
     # setup reading from stdin
     xor %rcx, %rcx
     mov %rcx, _infd(%rip)
