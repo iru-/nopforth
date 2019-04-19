@@ -211,6 +211,12 @@ forth decimal
 : input! ( fd buf tot used pos 'key -> )
    'key ! inpos ! inused ! intot ! inbuf ! infd ! ;
 
+: save-input ( -> )
+   pop pop  input@ push push push push push push  push push ;
+
+: restore-input ( -> )
+   pop pop  pop pop pop pop pop pop input!  push push ;
+
 : file-key ( -> b )   infd @ read-byte ;
 
 256 value /buf
@@ -218,13 +224,11 @@ create   buf  /buf allot
 variable fd
 
 : included ( a u -> )
-   'prompt @ push  0 'prompt !
-   input@ push push push push push push
+   'prompt @ push  0 'prompt !  save-input
    0 open-file dup 0 < abort" can't include file"
    dup buf /buf 0 0 ['] file-key input!
    push  readloop  pop close-file drop
-   pop pop pop pop pop pop input!
-   pop 'prompt ! ;
+   restore-input  pop 'prompt ! ;
 
 : include ( -> )   bl word included ;
 
