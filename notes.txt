@@ -1,14 +1,11 @@
 TODO
 ----
-- [x] `.S`
-- [x] fix `to` to work inside definitions
-- [x] string literals
-- [x] `s"` macro
-- [x] `."` macro
-- [x] `[compile]` on forth words
-- [x] reorganize base.nf in order of need
-- [ ] try if using the processor flags and preserving T
-- [x] make pictured numeric words preserve the A register
+- [ ] simplify reading of base.nf
+- [ ] prompt
+- [ ] command-line arguments
+- [ ] environment variables
+- [ ] should file support return errors?
+- [ ] search path for include
 - [ ] fix the behavior on stack overflow
 
 
