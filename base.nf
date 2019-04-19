@@ -205,23 +205,24 @@ forth decimal
 
 
 ( File loading )
-: input@ ( -> fd buf tot used pos )
-   infd @ inbuf @ intot @ inused @ inpos @ ;
+: input@ ( -> fd buf tot used pos 'key )
+   infd @ inbuf @ intot @ inused @ inpos @ 'key @ ;
 
-: input! ( fd buf tot used pos -> )
-   inpos ! inused ! intot ! inbuf ! infd ! ;
+: input! ( fd buf tot used pos 'key -> )
+   'key ! inpos ! inused ! intot ! inbuf ! infd ! ;
 
+: file-key ( -> b )   infd @ read-byte ;
 
 256 value /buf
 create   buf  /buf allot
 variable fd
 
 : included ( a u -> )
-   input@ push push push push push
-   0 open-file dup 0 < if abort then drop
-   dup buf /buf 0 0 input!  ['] termkey 'key !
+   input@ push push push push push push
+   0 open-file dup 0 < abort" can't include file"
+   dup buf /buf 0 0 ['] file-key input!
    push  readloop  pop close-file drop
-   pop pop pop pop pop input! ;
+   pop pop pop pop pop pop input! ;
 
 : include ( -> )   bl word included ;
 
