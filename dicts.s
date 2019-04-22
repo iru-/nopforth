@@ -32,8 +32,15 @@ _dlclose_header:
     .ascii "dlclose"
 
    .align 8
-_dlsym_header:
+_dlerror_header:
     .quad _dlclose_header
+    .quad _dlerror
+    .byte 7
+    .ascii "dlerror"
+
+   .align 8
+_dlsym_header:
+    .quad _dlerror_header
     .quad _dlsym
     .byte 5
     .ascii "dlsym"

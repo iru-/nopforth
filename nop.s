@@ -69,17 +69,24 @@ _dlopen:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    jmp dlopen
+    call dlopen
+    ret
 
 _dlsym:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    jmp dlsym
+    call dlsym
+    ret
 
 _dlclose:
     mov %rax, %rdi
-    jmp dlclose
+    call dlclose
+    ret
+
+_dlerror:
+    call dlerror
+    ret
 
 expect:
     dup_
