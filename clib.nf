@@ -1,5 +1,12 @@
 1 value RTLD_LAZY
-: load-clib ( a u -> handle )   s>z RTLD_LAZY dlopen ;
+
+: zlen ( a -> u )   a! 0 begin  b@+  while  drop 1 +  repeat drop ;
+: z>s ( a -> a u )   dup zlen ;
+: .dlerror ( -> )   dlerror if z>s type exit then drop ;
+
+: load-clib ( a u -> handle )
+   s>z RTLD_LAZY dlopen if exit then  .dlerror abort ;
+
 : clib-func ( handle a u -> 'func )
    s>z dlsym  dup 0 = abort" C function not found" ;
 
@@ -17,7 +24,6 @@ hex
    BB48 2, ,  \ mov $'func, %rbx
    E3FF 2, ;  \ jmp *%rbx
 
-decimal
 : callC, ( #args 'func -> )
    push
    dup 5 > abort" too many arguments to C function"
