@@ -8,7 +8,7 @@
    s>z RTLD_LAZY dlopen if exit then  .dlerror abort ;
 
 : clib-func ( handle a u -> 'func )
-   s>z dlsym  dup 0 = abort" C function not found" ;
+   s>z dlsym if exit then  .dlerror abort ;
 
 : Cfunc>entry ( handle a u -> 'func )
    2dup 2push  clib-func  2pop entry, ;
