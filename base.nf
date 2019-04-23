@@ -130,6 +130,8 @@ forth
 : ," ( -> a u )       [char] " word  here swap 2dup 2push  move  2pop ;
 : z" ( -> a )         ,"  over +  0 swap b! ;
 : s>z ( a u -> a' )   here swap 2dup 2push  move  2pop over +  0 swap b! ;
+: zlen ( a -> u )     a! 0 begin b@+ while drop 1 + repeat drop ;
+: z>s ( a -> a' u )   dup zlen ;
 
 : ." ( -> )   [char] " word type ;
 
@@ -237,3 +239,6 @@ variable fd
 : include ( -> )   bl word included ;
 
 
+( Shell utilities )
+: #args ( -> u )   S0 @ @ ;
+: arg ( u -> a u' )   1 + cells  S0 @ +  @  z>s ;
