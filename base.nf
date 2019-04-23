@@ -2,6 +2,7 @@ macro
 : \  0 word drop drop ;
 : (  41 word drop drop ;
 
+forth
 : decimal ( -> )   10 base ! ;
 : hex ( -> )       16 base ! ;
 
@@ -98,7 +99,10 @@ forth
 
 
 ( Memory utilities )
+8 value cell
+
 forth
+: cells ( -> u )   cell * ;
 : advance ( a u n -> a+n u-n )   swap over  - push + pop ;
 
 : move ( src dst u -> )
