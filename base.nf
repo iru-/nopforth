@@ -116,6 +116,11 @@ forth
 : +! ( n a -> )   swap over  @ +  swap ! ;
 : mem, ( a u -> )   here over allot  swap move ;
 
+: mem= ( a1 a2 u -> f )
+   if0  drop drop drop -1 exit  then
+   push  over b@ over b@ /= if  drop drop drop rdrop 0 exit then drop
+   1 + swap  1 + swap  pop 1 -  mem= ;
+
 
 ( Strings )
 forth decimal
@@ -134,6 +139,9 @@ forth
 : z>s ( a -> a' u )   dup zlen ;
 
 : ." ( -> )   [char] " word type ;
+
+: str= ( a1 u1 a2 u2 -> f )
+   push swap pop over /= if  drop drop drop drop 0 exit  then drop mem= ;
 
 macro hex
 : slit ( a u -> )   \ u is limited to 127 bytes because of the jump
