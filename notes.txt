@@ -1,11 +1,11 @@
 TODO
 ----
-- [ ] simplify reading of base.nf
-- [ ] prompt
-- [ ] command-line arguments
+- [x] prompt
+- [x] command-line arguments
 - [ ] environment variables
 - [ ] should file support return errors?
 - [ ] search path for include
+- [ ] remove syscalls from nop.s
 - [ ] fix the behavior on stack overflow
 
 
