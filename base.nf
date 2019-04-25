@@ -140,8 +140,16 @@ forth
 
 : ." ( -> )   [char] " word type ;
 
-: str= ( a1 u1 a2 u2 -> f )
+: s= ( a1 u1 a2 u2 -> f )
    push swap pop over /= if  drop drop drop drop 0 exit  then drop mem= ;
+
+: search ( b a u -> a' u' )
+   if0  push nip pop exit  then
+   push  over over b@ = if  drop nip pop exit  then drop  pop
+   1 advance search ;
+
+: -tail ( b a u -> a u' )   over push search drop pop swap over - ;
+: -head ( b a u -> a u' )   search  1 advance ;
 
 macro hex
 : slit ( a u -> )   \ u is limited to 127 bytes because of the jump
