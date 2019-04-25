@@ -256,5 +256,17 @@ variable fd
 
 
 ( Shell utilities )
-: #args ( -> u )   S0 @ @ ;
-: arg ( u -> a u' )   1 + cells  S0 @ +  @  z>s ;
+: #args ( -> u )      S0 @ @ ;
+: 'arg ( u -> a )     1 + cells  S0 @ + ;
+: arg ( u -> a u' )   'arg @ z>s ;
+: 'env ( u -> a )     #args 1 + + 'arg @ ;
+
+: env-name ( a -> a u )      [char] = swap z>s -tail ;
+: env-value ( a -> a' u' )   [char] = swap z>s -head ;
+
+: (getenv) ( a u env# -> a' u'|0 )
+   push  r@ 'env if0  drop drop rdrop 0 exit  then
+   push 2dup pop env-name s= if  drop drop drop pop 'env env-value exit  then drop
+   pop 1 + (getenv) ;
+
+: getenv ( a u -> a' u'|0 )   0 (getenv) ;
