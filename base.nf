@@ -6,18 +6,20 @@ forth
 : decimal ( -> )   10 base ! ;
 : hex ( -> )       16 base ! ;
 
+: cfa  >cfa @ ;
+
 
 ( Control flow )
 macro hex
 : then ( a -> )   0 hole !  here  over 1 + -  swap b! ;
 
 : if0 ( -> a )
-  C08548 3,  \ test %rax, %rax
-  0075 2,    \ jnz
-  here 1 - ;
+   C08548 3,  \ test %rax, %rax
+   0075 2,    \ jnz
+   here 1 - ;
 
 : [compile] ( -> )
-   20 word mlatest dfind if  >cfa @ call, exit  then abort ;
+   20 word mlatest dfind if0 abort then  cfa call, ;
 
 : r@ ( -> )      [compile] dup  24048B48 4, ;  \ mov (%rsp), %rax
 : rdrop ( -> )   48 b, 0824648D 4, ;  \ lea 8(%rsp), %rsp
@@ -70,15 +72,13 @@ forth
 
 ( Dictionary )
 forth hex
-: found ( a u -> a'|0 )   latest dfind ;
-: find ( -> a )           20 word found ;
-: ' ( -> a|0 )            find if  >cfa @ exit  then abort ;
+: find ( a u -> a'|0 )   latest dfind ;
 
-: f' ( -> a|0 )
-   flatest push 20 word pop dfind if  >cfa @ exit  then abort ;
+: ' ( -> a )   20 word find if0 abort then  cfa ;
+: f' ( -> a|0 )   20 word flatest dfind if0 abort then  cfa ;
 
 macro
-: ['] ( -> )   '  [compile] lit ;
+: ['] ( -> )    '  [compile] lit ;
 : [f'] ( -> )   f' [compile] lit ;
 forth
 
@@ -129,7 +129,7 @@ forth decimal
 
 : char ( -> b )     bl word drop b@ ;
 macro
-: [char] ( -> b )   bl word drop b@ [compile] lit ;
+: [char] ( -> b )   char [compile] lit ;
 forth
 
 : ," ( -> a u )       [char] " word  here swap 2dup 2push  move  2pop ;
