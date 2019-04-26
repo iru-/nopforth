@@ -256,6 +256,8 @@ variable fd
 
 
 ( Shell utilities )
+: #!  [compile] \ ;
+
 : #args ( -> u )      S0 @ @ ;
 : 'arg ( u -> a )     1 + cells  S0 @ + ;
 : arg ( u -> a u' )   'arg @ z>s ;
@@ -270,3 +272,8 @@ variable fd
    pop 1 + (getenv) ;
 
 : getenv ( a u -> a' u'|0 )   0 (getenv) ;
+
+anon:
+  #args 1 = if  banner  ['] okprompt 'prompt ! exit  then
+  1 arg included bye ;
+execute

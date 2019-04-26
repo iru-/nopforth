@@ -430,8 +430,15 @@ banner_header:
     .ascii "banner"
 
     .align 8
-promptxt_header:
+okprompt_header:
     .quad banner_header
+    .quad okprompt
+    .byte 8
+    .ascii "okprompt"
+
+    .align 8
+promptxt_header:
+    .quad okprompt_header
     .quad promptxt
     .byte 7
     .ascii "'prompt"

@@ -1108,15 +1108,11 @@ boot:
     mov %rsp, _R0(%rip)
     call resetstacks
     call resetdict
-    call banner
     call stopcomp
 
     call readkern
 
 termloop:
-    lea okprompt(%rip), %rcx
-    mov %rcx, _promptxt(%rip)
-
     # setup reading from stdin
     xor %rcx, %rcx
     mov %rcx, _infd(%rip)
