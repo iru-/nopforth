@@ -886,16 +886,24 @@ clit:
     jmp comma
 
     .data
-_qmsg: .ascii "?\n"
-_qmsglen = . - _qmsg
-
+_qmsg:     .ascii "?"
+_qlen =    . - _qmsg
     .text
 abort:
+    test %rax, %rax
+    jnz 1f
+    mov _inbuf(%rip), %rcx
+    mov %rcx, (%rbp)
+    mov _inpos(%rip), %rax
+    call type
     dup_
     lea _qmsg(%rip), %rax
     dup_
-    mov $_qmsglen, %rax
-    call type
+    mov $_qlen, %rax
+1:  call type
+    dup_
+    mov $'\n', %rax
+    call emit
     call resetinput
     call resetstacks
     jmp termloop
@@ -955,12 +963,13 @@ eval:
     mov _action+16(%rip), %rcx
     jmp *%rcx
 
-4:  pop %rax
-    dup_
-    pop %rax
+4:  pop %rcx
+    pop %rcx
     mov _action+24(%rip), %rcx
     call *%rcx
-    call type
+    dup_
+    xor %rax, %rax
+    dup_
     jmp abort
 
 dictrewind:
@@ -1113,6 +1122,8 @@ boot:
     call readkern
 
 termloop:
+    lea okprompt(%rip), %rcx
+    mov %rcx, _promptxt(%rip)
     # setup reading from stdin
     xor %rcx, %rcx
     mov %rcx, _infd(%rip)
@@ -1166,7 +1177,6 @@ checkstacks:
     dup_
     mov $_overerrlen, %rax
 3:
-    call type
     jmp abort
 
 S0:

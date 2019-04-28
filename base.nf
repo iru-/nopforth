@@ -6,8 +6,8 @@ forth
 : decimal ( -> )   10 base ! ;
 : hex ( -> )       16 base ! ;
 
-: cfa  >cfa @ ;
-
+: abort0 ( -> )   0 0 abort ;
+: cfa ( a -> a' )   >cfa @ ;
 
 ( Control flow )
 macro hex
@@ -19,7 +19,7 @@ macro hex
    here 1 - ;
 
 : [compile] ( -> )
-   20 word mlatest dfind if0 abort then  cfa call, ;
+   20 word mlatest dfind if0 abort0 then  cfa call, ;
 
 : r@ ( -> )      [compile] dup  24048B48 4, ;  \ mov (%rsp), %rax
 : rdrop ( -> )   48 b, 0824648D 4, ;  \ lea 8(%rsp), %rsp
@@ -74,8 +74,8 @@ forth
 forth hex
 : find ( a u -> a'|0 )   latest dfind ;
 
-: ' ( -> a )   20 word find if0 abort then  cfa ;
-: f' ( -> a|0 )   20 word flatest dfind if0 abort then  cfa ;
+: ' ( -> a )   20 word find if0 abort0 then  cfa ;
+: f' ( -> a|0 )   20 word flatest dfind if0 abort0 then  cfa ;
 
 macro
 : ['] ( -> )    '  [compile] lit ;
@@ -159,15 +159,8 @@ macro hex
 : s" ( -> )   [char] " word  [compile] slit ;
 : ." ( -> )   [compile] s" [f'] type call, ;
 
-: abort" ( t -> )
-   [compile] s" [compile] push [compile] push
-   [compile] if
-      [compile] pop [compile] pop
-      [f'] type call,  A [compile] lit [f'] emit call,
-      [f'] abort call,  [compile] exit
-   [compile] then
-   [compile] drop [compile] rdrop [compile] rdrop ;
 forth
+: ?abort ( flag a u -> )   2push if 2pop abort then  drop rdrop rdrop ;
 
 
 ( Pictured numeric conversion )
@@ -247,7 +240,7 @@ variable fd
 
 : included ( a u -> )
    'prompt @ push  0 'prompt !  save-input
-   0 open-file dup 0 < abort" can't include file"
+   0 open-file dup 0 <  s" can't include file" ?abort
    dup buf /buf 0 0 ['] file-key input!
    push  readloop  pop close-file drop
    restore-input  pop 'prompt ! ;
@@ -274,6 +267,6 @@ variable fd
 : getenv ( a u -> a' u'|0 )   0 (getenv) ;
 
 anon:
-  #args 1 = if  banner  ['] okprompt 'prompt ! exit  then
+  #args 1 = if banner exit then
   1 arg included bye ;
 execute
