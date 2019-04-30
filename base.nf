@@ -267,6 +267,6 @@ variable fd
 : getenv ( a u -> a' u'|0 )   0 (getenv) ;
 
 anon:
-  #args 1 = if banner exit then
+  #args 1 = if drop banner exit then drop
   1 arg included bye ;
 execute
