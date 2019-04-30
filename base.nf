@@ -75,6 +75,7 @@ forth
 
 : +      + ;
 : -      - ;
+: *      * ;
 : /mod   /mod ;
 : /      /mod nip ;
 : mod    /mod drop ;
