@@ -26,7 +26,7 @@ hex
 
 : callC, ( #args 'func -> )
    push
-   dup 5 > abort" too many arguments to C function"
+   dup 5 > s" too many arguments to C function" ?abort
    dup 4 > if callC5 then drop
    dup 3 > if callC4 then drop
    dup 2 > if callC3 then drop
