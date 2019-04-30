@@ -43,6 +43,16 @@ macro hex
 : 2pop ( -> )    [compile] pop [compile] pop ;
 : 2dup ( -> )    [compile] over [compile] over ;
 
+: rshift ( n #places -> n' )
+   C18948 3,    \ mov %rax, %rcx
+   [compile] drop
+   E8D348 3, ;  \ shr %cl, %rax
+
+: lshift ( n #places -> n' )
+   C18948 3,    \ mov %rax, %rcx
+   [compile] drop
+   E0D348 3, ;  \ shl %cl, %rax
+
 ( macro -> forth )
 \ We define forth words using the macros, so they can be used interactively
 forth
@@ -69,6 +79,8 @@ forth
 : /      /mod nip ;
 : mod    /mod drop ;
 
+: lshift   lshift ;
+: rshift   rshift ;
 
 ( Dictionary )
 forth hex
