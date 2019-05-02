@@ -269,6 +269,11 @@ variable fd
 : arg ( u -> a u' )   'arg @ z>s ;
 : 'env ( u -> a )     #args 1 + + 'arg @ ;
 
+variable arg-offset
+: next-arg ( -> a u )
+   arg-offset @  dup #args >= if  drop drop 0 0 exit  then drop
+   arg  1 arg-offset +! ;
+
 : env-name ( a -> a u )      [char] = swap z>s -tail ;
 : env-value ( a -> a' u' )   [char] = swap z>s -head ;
 
@@ -281,5 +286,5 @@ variable fd
 
 anon:
   #args 1 = if drop banner exit then drop
-  1 arg included bye ;
+  2 arg-offset !  1 arg included bye ;
 execute
