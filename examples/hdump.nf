@@ -1,3 +1,5 @@
+#! /usr/bin/env nop
+
 0 value r/o
 : file-size ( fd -> u )   push 0 2 pop position-file ;
 : spaces ( u -> )   for space next ;
@@ -7,17 +9,17 @@
 : min ( a b -> a|b )   2dup < if drop drop exit then drop nip ;
 
 : fsize ( a u -> u' )
-  r/o open-file  dup file-size  swap close-file abort" can't retrieve file size" ;
+  r/o open-file  dup file-size  swap close-file s" can't retrieve file size" ?abort ;
 
 0 value /line
 variable off
 
 hex
-: .off               off @ <# cell for # # next #> type ;
+: .off ( -> )        off @ <# cell for # # next #> type ;
 : align ( u -> )     /line swap - 3 * spaces ;
 : h. ( u -> )        <# # # #> type space ;
 : bytes ( a u -> )   swap a! for b@+ h. next ;
-: c. ( c -> )        dup bl 7F within not if [char] . swap then drop emit ;
+: c. ( c -> )        dup bl 7F within not if  [char] . nip swap  then drop emit ;
 : text ( a u -> )    swap a! for b@+ c. next ;
 : line ( a u -> )    .off 2 spaces 2dup bytes dup align 2 spaces text ;
 decimal
@@ -31,21 +33,21 @@ variable remaining
 : off+ ( u -> )         off +! ;
 : update ( u -> )       dup remaining- off+ ;
 
-: open ( a u -> )     r/o open-file dup 0 < abort" can't open file" to fd ;
-: position ( u -> )   0 fd position-file 0 < abort" can't position file" ;
+: open ( a u -> )     r/o open-file dup 0 < s" can't open file" ?abort to fd ;
+: position ( u -> )   0 fd position-file 0 < s" can't position file" ?abort ;
 : close               fd close-file drop ;
-: read ( a -> u )     'buf size fd read-file dup 0 < abort" can't read from file"  dup update ;
+: read ( a -> u )     'buf size fd read-file dup 0 < s" can't read from file" ?abort  dup update ;
 
-: setup  ( a u start end width -> )
-  here to 'buf dup allot  to /line  over - remaining !
+: setup ( a u start end width -> )
+  here to 'buf  dup allot  to /line  over - remaining !
   push open  pop position  0 off ! hex ;
 
-: (hdump)  ( a u start end width -> )
-  setup  begin read while 'buf swap line cr repeat
-  drop close  /line negate allot ;
+: (hdump) ( a u start end width -> )
+  dup push setup
+  begin read while  'buf swap line cr  repeat  drop close
+  pop negate allot ;
 
-: hdumped  ( a u -> )  2dup fsize 0 swap 10 (hdump)  /line negate allot ;
-: hdump  bl word hdumped ;
+: hdumped ( a u -> )   2dup fsize 0 swap 10 (hdump) ;
 
-hdump notes.txt
-bye
+
+anon: begin next-arg while  hdumped repeat drop drop ;  execute
