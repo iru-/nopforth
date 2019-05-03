@@ -1,5 +1,5 @@
 macro
-: \  0 word drop drop ;
+: \  10 word drop drop ;
 : (  41 word drop drop ;
 
 forth
@@ -25,7 +25,7 @@ macro hex
    here  0 4, ;  \ ...0
 
 : [compile] ( -> )
-   20 word mlatest @ dfind if0 abort0 then  cfa call, ;
+   next-word mlatest dfind if0 abort0 then  cfa call, ;
 
 : r@ ( -> )      [compile] dup  24048B48 4, ;  \ mov (%rsp), %rax
 : rdrop ( -> )   48 b, 0824648D 4, ;  \ lea 8(%rsp), %rsp
@@ -93,8 +93,8 @@ forth
 forth hex
 : find ( a u -> a'|0 )   latest @ dfind ;
 
-: ' ( -> a )   20 word find if0 abort0 then  cfa ;
-: f' ( -> a|0 )   20 word flatest @ dfind if0 abort0 then  cfa ;
+: ' ( -> a )   next-word find if0 abort0 then  cfa ;
+: f' ( -> a|0 )   next-word flatest @ dfind if0 abort0 then  cfa ;
 
 macro
 : ['] ( -> )    '  [compile] lit ;
@@ -105,7 +105,7 @@ forth
 
 : dovar ( -> n )       pop ;
 : created ( a u -> )   entry, ['] dovar call, ;
-: create ( -> )        20 word created ;
+: create ( -> )        next-word created ;
 
 : variable ( -> )   create 0 , ;
 
@@ -240,11 +240,11 @@ forth decimal
 
 
 ( File loading )
-: input@ ( -> fd buf tot used pos 'key )
-   infd @ inbuf @ intot @ inused @ inpos @ 'key @ ;
+: input@ ( -> fd buf tot used pos 'refill )
+   infd @ inbuf @ intot @ inused @ inpos @ 'refill @ ;
 
-: input! ( fd buf tot used pos 'key -> )
-   'key ! inpos ! inused ! intot ! inbuf ! infd ! ;
+: input! ( fd buf tot used pos 'refill -> )
+   'refill ! inpos ! inused ! intot ! inbuf ! infd ! ;
 
 : save-input ( -> )
    pop pop  input@ push push push push push push  push push ;
@@ -252,15 +252,16 @@ forth decimal
 : restore-input ( -> )
    pop pop  pop pop pop pop pop pop input!  push push ;
 
-: file-key ( -> b )   infd @ read-byte ;
+: file-refill ( -> n )
+   0 inpos !  inbuf @ intot @ infd @ read-line  dup inused ! ;
 
 256 value /buf
-create   buf  /buf allot
+create buf /buf allot
 
 : included ( a u -> )
    'prompt @ push  0 'prompt !  save-input
-   0 open-file dup 0 <  s" can't include file" ?abort
-   dup buf /buf 0 0 ['] file-key input!
+   0 open-file  dup 0 <  s" can't include file" ?abort
+   dup buf /buf 0 0 ['] file-refill input!
    push  readloop  pop close drop
    restore-input  pop 'prompt ! ;
 

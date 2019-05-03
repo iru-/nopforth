@@ -525,9 +525,7 @@ centry:
     ret
 
 entry:
-    dup_
-    mov $' ', %rax
-    call word
+    call nextword
     jmp centry
 
 colon:
@@ -993,6 +991,15 @@ resetinput:
     mov %rcx, _inpos(%rip)
     ret
 
+    .data
+_refillxt:  .quad 0
+    .text
+
+refillxt:
+    dup_
+    lea _refillxt(%rip), %rax
+    ret
+
 qrefill:
     mov _inpos(%rip), %rcx
     mov _inused(%rip), %rdx
@@ -1003,6 +1010,15 @@ qrefill:
     ret
 
 refill:
+    mov _refillxt(%rip), %rcx
+    test %rcx, %rcx
+    jnz 1f
+    dup_
+    xor %rax, %rax
+    ret
+1:  jmp *%rcx
+
+termrefill:
     call prompt
     call resetinput
 
@@ -1039,15 +1055,12 @@ refill:
     jmp 1b
 
 readkern:
-    xor %rcx, %rcx
-    mov %rcx, _infd(%rip)
-    lea _termbuf(%rip), %rcx
+    lea _kernbuf(%rip), %rcx
     mov %rcx, _inbuf(%rip)
-    mov _termtot(%rip), %rcx
-    mov %rcx, _intot(%rip)
-    lea binkey(%rip), %rcx
-    mov %rcx, _keyxt(%rip)
-    call resetinput
+    movq $_kerntot, _intot(%rip)
+    movq $_kerntot, _inused(%rip)
+    xor %rcx, %rcx
+    mov %rcx, _inpos(%rip)
 
 readloop:
     call qrefill
@@ -1135,6 +1148,8 @@ termloop:
     mov %rcx, _intot(%rip)
     lea termkey(%rip), %rcx
     mov %rcx, _keyxt(%rip)
+    lea termrefill(%rip), %rcx
+    mov %rcx, _refillxt(%rip)
     call resetinput
     call readloop
     jmp bye

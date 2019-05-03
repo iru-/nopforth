@@ -402,8 +402,15 @@ resetinput_header:
     .ascii "reset-input"
 
     .align 8
-qrefill_header:
+refillxt_header:
     .quad resetinput_header
+    .quad refillxt
+    .byte 7
+    .ascii "'refill"
+
+    .align 8
+qrefill_header:
+    .quad refillxt_header
     .quad qrefill
     .byte 7
     .ascii "?refill"
@@ -416,8 +423,15 @@ refill_header:
     .ascii "refill"
 
     .align 8
-readloop_header:
+termrefill_header:
     .quad refill_header
+    .quad termrefill
+    .byte 10
+    .ascii "termrefill"
+
+    .align 8
+readloop_header:
+    .quad termrefill_header
     .quad readloop
     .byte 8
     .ascii "readloop"
