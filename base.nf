@@ -205,30 +205,30 @@ forth decimal
 
 ( Files )
 forth decimal
-: (open-create) ( a u mode n# -> fd )   push push s>z pop pop syscall2 ;
+: (open-create) ( a u mode syscall# -> fd )   push push s>z pop pop syscall2 ;
 : create-file ( a u mode -> fd )   85 (open-create) ;
 : open-file ( a u mode -> fd )   2 (open-create) ;
 
-: read-file ( a u fd -> u )   sysread ;
+: read-file ( a u fd -> n )   sysread ;
 : read-byte ( fd -> b|-1 )
-   push here 1 pop read-file 1 = if drop here b@ exit then drop -1 ;
+   push here 1 pop read-file 1 = if  drop here b@ exit  then drop -1 ;
 
 : eol? ( b -> t )   dup -1 =  swap 10 =  or ;
 : read-line ( a u fd -> n )
-   push push a! pop pop over
-   for
-     dup read-byte dup eol? if  drop drop drop pop - exit  then drop
-     b!+
+   push push a! pop pop over  for
+     dup read-byte dup b!+
+     eol? if  drop drop pop - 1 + exit  then drop
    next
    drop ;
 
-: write-file ( a u fd -> u )   syswrite ;
+: write-file ( a u fd -> n )   syswrite ;
 : write-byte ( b fd -> n )   push  here b!  here 1 pop write-file ;
 : write-line ( a u fd -> n )
-   dup push write-file  10 pop write-byte -1 = if  nip exit  then  drop 1 + ;
+   dup push write-file  10 pop write-byte
+   1 /= if  drop drop -1 exit  then drop 1 + ;
 
-: close-file ( fd -> u )   3 syscall1 ;
-: position-file ( n rel? fd -> n' )   swap push swap pop 8 syscall3 ;
+: close-file ( fd -> n )   3 syscall1 ;
+: position-file ( n ref fd -> n' )   swap push swap pop 8 syscall3 ;
 : file-position ( fd -> n' )   push 0 1 pop position-file ;
 
 
