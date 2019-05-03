@@ -11,12 +11,18 @@ forth
 
 ( Control flow )
 macro hex
-: then ( a -> )   0 hole !  here  over 1 + -  swap b! ;
+: 4! ( n a -> )
+   004D8B48 4,           \ mov (%rbp), %rcx
+   0889 2,               \ mov %ecx, (%rax)
+   086D8D4800458B48 ,    \ mov (%rbp), %rax; lea 8(%rbp), %rbp (aka drop)
+   086D8D4800458B48 , ;  \ drop
+
+: then ( a -> )   0 hole !  here  over 4 + -  swap 4! ;
 
 : if0 ( -> a )
-   C08548 3,  \ test %rax, %rax
-   0075 2,    \ jnz
-   here 1 - ;
+   C08548 3,     \ test %rax, %rax
+   850F 2,       \ jnz...
+   here  0 4, ;  \ ...0
 
 : [compile] ( -> )
    20 word mlatest dfind if0 abort0 then  cfa call, ;
@@ -165,9 +171,10 @@ forth
 : -head ( b a u -> a u' )   search  1 advance ;
 
 macro hex
-: slit ( a u -> )   \ u is limited to 127 bytes because of the jump
-   EB b, 0 b,  here push dup push  mem,  pop pop dup 1 -
-   [compile] then [compile] lit [compile] lit ;
+: slit ( a u -> )
+   E9 b, here push  0 4,  \ jmp 0
+   dup push  mem,  pop pop dup
+   [compile] then  4 + [compile] lit [compile] lit ;
 
 : s" ( -> )   [char] " word  [compile] slit ;
 : ." ( -> )   [compile] s" [f'] type call, ;

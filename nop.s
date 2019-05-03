@@ -866,11 +866,12 @@ cif:
     mov $0xC08548, %rax    # test %rax, %rax
     call comma3
     dup_
-    mov $0x0074, %rax      # jz 0
+    mov $0x840F, %rax      # jz...
     call comma2
     call here
-    dec %rax
-    ret
+    dup_
+    xor %rax, %rax         # ...0
+    jmp comma4
 
 cjump:
     dup_
