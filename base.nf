@@ -25,7 +25,7 @@ macro hex
    here  0 4, ;  \ ...0
 
 : [compile] ( -> )
-   20 word mlatest dfind if0 abort0 then  cfa call, ;
+   20 word mlatest @ dfind if0 abort0 then  cfa call, ;
 
 : r@ ( -> )      [compile] dup  24048B48 4, ;  \ mov (%rsp), %rax
 : rdrop ( -> )   48 b, 0824648D 4, ;  \ lea 8(%rsp), %rsp
@@ -91,10 +91,10 @@ forth
 
 ( Dictionary )
 forth hex
-: find ( a u -> a'|0 )   latest dfind ;
+: find ( a u -> a'|0 )   latest @ dfind ;
 
 : ' ( -> a )   20 word find if0 abort0 then  cfa ;
-: f' ( -> a|0 )   20 word flatest dfind if0 abort0 then  cfa ;
+: f' ( -> a|0 )   20 word flatest @ dfind if0 abort0 then  cfa ;
 
 macro
 : ['] ( -> )    '  [compile] lit ;

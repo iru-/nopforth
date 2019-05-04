@@ -420,18 +420,17 @@ hole:
 
 flatest:
     dup_
-    mov _flatest(%rip), %rax
+    lea _flatest(%rip), %rax
     ret
 
 mlatest:
     dup_
-    mov _mlatest(%rip), %rax
+    lea _mlatest(%rip), %rax
     ret
 
 latest:
     dup_
-    mov _latest(%rip), %rax
-    mov (%rax), %rax
+    lea _latest(%rip), %rax
     ret
 
 macro:
@@ -493,7 +492,9 @@ centry:
 
     mov _h(%rip), %rcx
     push %rcx
-    call latest
+    dup_
+    mov _latest(%rip), %rax
+    mov (%rax), %rax
     call comma
 
     # make room for cfa
