@@ -216,9 +216,9 @@ forth decimal
 : create-file ( a u mode -> fd )   85 (open-create) ;
 : open-file ( a u mode -> fd )   2 (open-create) ;
 
-: read-file ( a u fd -> n )   sysread ;
+: read ( a u fd -> n )   sysread ;
 : read-byte ( fd -> b|-1 )
-   push here 1 pop read-file 1 = if  drop here b@ exit  then drop -1 ;
+   push here 1 pop read 1 = if  drop here b@ exit  then drop -1 ;
 
 : eol? ( b -> t )   dup -1 =  swap 10 =  or ;
 : read-line ( a u fd -> n )
@@ -228,13 +228,13 @@ forth decimal
    next
    drop ;
 
-: write-file ( a u fd -> n )   syswrite ;
-: write-byte ( b fd -> n )   push  here b!  here 1 pop write-file ;
+: write ( a u fd -> n )   syswrite ;
+: write-byte ( b fd -> n )   push  here b!  here 1 pop write ;
 : write-line ( a u fd -> n )
-   dup push write-file  10 pop write-byte
+   dup push write  10 pop write-byte
    1 /= if  drop drop -1 exit  then drop 1 + ;
 
-: close-file ( fd -> n )   3 syscall1 ;
+: close ( fd -> n )   3 syscall1 ;
 : position-file ( n ref fd -> n' )   swap push swap pop 8 syscall3 ;
 : file-position ( fd -> n' )   push 0 1 pop position-file ;
 
@@ -256,13 +256,12 @@ forth decimal
 
 256 value /buf
 create   buf  /buf allot
-variable fd
 
 : included ( a u -> )
    'prompt @ push  0 'prompt !  save-input
    0 open-file dup 0 <  s" can't include file" ?abort
    dup buf /buf 0 0 ['] file-key input!
-   push  readloop  pop close-file drop
+   push  readloop  pop close drop
    restore-input  pop 'prompt ! ;
 
 : include ( -> )   bl word included ;

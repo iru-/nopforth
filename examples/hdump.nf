@@ -9,7 +9,7 @@
 : min ( a b -> a|b )   2dup < if drop drop exit then drop nip ;
 
 : fsize ( a u -> u' )
-  r/o open-file  dup file-size  swap close-file s" can't retrieve file size" ?abort ;
+  r/o open-file  dup file-size  swap close s" can't retrieve file size" ?abort ;
 
 0 value /line
 variable off
@@ -35,8 +35,9 @@ variable remaining
 
 : open ( a u -> )     r/o open-file dup 0 < s" can't open file" ?abort to fd ;
 : position ( u -> )   0 fd position-file 0 < s" can't position file" ?abort ;
-: close               fd close-file drop ;
-: read ( a -> u )     'buf size fd read-file dup 0 < s" can't read from file" ?abort  dup update ;
+: fdclose               fd close drop ;
+: fdread ( a -> u )
+   'buf size fd read dup 0 < s" can't read from file" ?abort  dup update ;
 
 : setup ( a u start end width -> )
   here to 'buf  dup allot  to /line  over - remaining !
@@ -44,7 +45,7 @@ variable remaining
 
 : (hdump) ( a u start end width -> )
   dup push setup
-  begin read while  'buf swap line cr  repeat  drop close
+  begin fdread while  'buf swap line cr  repeat  drop fdclose
   pop negate allot ;
 
 : hdumped ( a u -> )   2dup fsize 0 swap 10 (hdump) ;
