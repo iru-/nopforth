@@ -1,12 +1,12 @@
 TODO
 ----
-- [x] prompt
-- [x] command-line arguments
-- [ ] environment variables
-- [ ] should file support return errors?
-- [ ] search path for include
-- [ ] remove syscalls from nop.s
-- [ ] fix the behavior on stack overflow
+- should file support return errors?
+- search path for include
+- remove syscalls from nop.s
+- add macros to base.nf?
+- does>?
+- empty/forget
+- records
 
 
 Register allocation
