@@ -11,5 +11,7 @@ fd close drop
 fname #fname 0 open-file to fd
 rbuf /rbuf fd read-line
 ." read: '"  rbuf over type  ." ' "  . cr
+rbuf /rbuf fd read-line
+." read: '"  rbuf over type  ." ' "  . cr
 fd close drop
 

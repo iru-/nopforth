@@ -220,11 +220,11 @@ forth decimal
 : read-byte ( fd -> b|-1 )
    push here 1 pop read 1 = if  drop here b@ exit  then drop -1 ;
 
-: eol? ( b -> t )   dup -1 =  swap 10 =  or ;
 : read-line ( a u fd -> n )
    push push a! pop pop over  for
      dup read-byte dup b!+
-     eol? if  drop drop pop - 1 + exit  then drop
+     dup -1 = if  drop drop drop pop - exit  then drop
+         10 = if  drop drop pop - 1 + exit  then drop
    next
    drop ;
 
