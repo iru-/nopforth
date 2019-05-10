@@ -265,7 +265,7 @@ create buf /buf allot
    push  readloop  pop close drop
    restore-input  pop 'prompt ! ;
 
-: include ( -> )   bl word included ;
+: include ( -> )   10 word included ;
 
 
 ( Shell utilities )
