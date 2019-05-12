@@ -1,4 +1,8 @@
 #! /usr/bin/env nop
+\
+\ An implementation of the hexdump specified in
+\ http://wiki.c2.com/?HexDumpInManyProgrammingLanguages
+\
 
 0 value r/o
 : file-size ( fd -> u )   push 0 2 pop position-file ;
