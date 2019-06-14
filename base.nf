@@ -25,7 +25,7 @@ macro hex
    here  0 4, ;  \ ...0
 
 : [compile] ( -> )
-   next-word mlatest dfind if0 abort0 then  cfa call, ;
+   next-word mlatest dfind dup 0 = if abort0 then  cfa call, ;
 
 : r@ ( -> )      [compile] dup  24048B48 4, ;  \ mov (%rsp), %rax
 : rdrop ( -> )   48 b, 0824648D 4, ;  \ lea 8(%rsp), %rsp
@@ -39,11 +39,11 @@ macro hex
 : repeat ( a a' -> )    [compile] again [compile] then ;
 
 : for ( -> a a' )
-   [compile] push [compile] begin [compile] r@ [compile] while [compile] drop ;
+   [compile] push [compile] begin [compile] r@ [compile] while ;
 
 : next ( a a' -> )
    240CFF48 4,  \ decq (%rsp)
-   [compile] repeat [compile] rdrop [compile] drop ;
+   [compile] repeat [compile] rdrop ;
 
 : 2push ( -> )   [compile] push [compile] push ;
 : 2pop ( -> )    [compile] pop [compile] pop ;
@@ -93,8 +93,8 @@ forth
 forth hex
 : find ( a u -> a'|0 )   latest @ dfind ;
 
-: ' ( -> a )   next-word find if0 abort0 then  cfa ;
-: f' ( -> a|0 )   next-word flatest @ dfind if0 abort0 then  cfa ;
+: ' ( -> a )   next-word find dup 0 = if abort0 then  cfa ;
+: f' ( -> a|0 )   next-word flatest @ dfind dup 0 = if abort0 then  cfa ;
 
 macro
 : ['] ( -> )    '  [compile] lit ;
@@ -126,7 +126,7 @@ forth
 
 : move ( src dst u -> )
    push push a! pop pop
-   begin while
+   begin dup while
      over b@+ swap b!
      1 advance
    repeat
@@ -137,7 +137,7 @@ forth
 
 : mem= ( a1 a2 u -> f )
    if0  drop drop drop -1 exit  then
-   push  over b@ over b@ /= if  drop drop drop rdrop 0 exit then drop
+   push  over b@ over b@ /= if  drop drop rdrop 0 exit then
    1 + swap  1 + swap  pop 1 -  mem= ;
 
 
@@ -154,17 +154,17 @@ forth
 : ," ( -> a u )       [char] " word  here swap 2dup 2push  move  2pop ;
 : z" ( -> a )         ,"  over +  0 swap b! ;
 : s>z ( a u -> a' )   here swap 2dup 2push  move  2pop over +  0 swap b! ;
-: zlen ( a -> u )     a! 0 begin b@+ while drop 1 + repeat drop ;
+: zlen ( a -> u )     a! 0 begin b@+ while 1 + repeat ;
 : z>s ( a -> a' u )   dup zlen ;
 
 : ." ( -> )   [char] " word type ;
 
 : s= ( a1 u1 a2 u2 -> f )
-   push swap pop over /= if  drop drop drop drop 0 exit  then drop mem= ;
+   push swap pop over /= if  drop drop drop 0 exit  then mem= ;
 
 : search ( b a u -> a' u' )
    if0  push nip pop exit  then
-   push  over over b@ = if  drop nip pop exit  then drop  pop
+   push  over over b@ = if  nip pop exit  then  pop
    1 advance search ;
 
 : -tail ( b a u -> a u' )   over push search drop pop swap over - ;
@@ -180,7 +180,7 @@ macro hex
 : ." ( -> )   [compile] s" [f'] type call, ;
 
 forth
-: ?abort ( flag a u -> )   2push if 2pop abort then  drop rdrop rdrop ;
+: ?abort ( flag a u -> )   2push if 2pop abort then  rdrop rdrop ;
 
 
 ( Pictured numeric conversion )
@@ -195,11 +195,11 @@ forth decimal
 : <# ( n -> 0 n )               0 swap ;
 : #  ( n -> ... count rem )     base @ /mod swap digit hold ;
 : #> ( ... count rem -> a u )   asave  drop  here a!  dup push for b!+ next  here pop  arest ;
-: #s ( n -> ... count rem )     begin # while repeat ;
+: #s ( n -> ... count rem )     begin # dup while repeat ;
 
 : negate   negate ;
-: abs ( n -> |n| )   dup 0 < if swap negate swap then drop ;
-: sign ( n -> )   0 < if  drop [char] - hold exit  then drop ;
+: abs ( n -> |n| )   dup 0 < if negate then ;
+: sign ( n -> )   0 < if  [char] - hold  then ;
 
 : space ( -> )   bl emit ;
 
@@ -218,13 +218,13 @@ forth decimal
 
 : read ( a u fd -> n )   sysread ;
 : read-byte ( fd -> b|-1 )
-   push here 1 pop read 1 = if  drop here b@ exit  then drop -1 ;
+   push here 1 pop read 1 = if  here b@ exit  then -1 ;
 
 : read-line ( a u fd -> n )
    push push a! pop pop over  for
      dup read-byte dup b!+
-     dup -1 = if  drop drop drop pop - exit  then drop
-         10 = if  drop drop pop - 1 + exit  then drop
+     dup -1 = if  drop drop pop - exit  then
+         10 = if  drop pop - 1 + exit  then
    next
    drop ;
 
@@ -232,7 +232,7 @@ forth decimal
 : write-byte ( b fd -> n )   push  here b!  here 1 pop write ;
 : write-line ( a u fd -> n )
    dup push write  10 pop write-byte
-   1 /= if  drop drop -1 exit  then drop 1 + ;
+   1 /= if  drop -1 exit  then 1 + ;
 
 : close ( fd -> n )   3 syscall1 ;
 : position-file ( n ref fd -> n' )   swap push swap pop 8 syscall3 ;
@@ -278,7 +278,7 @@ create buf /buf allot
 
 variable arg-offset
 : next-arg ( -> a u )
-   arg-offset @  dup #args >= if  drop drop 0 0 exit  then drop
+   arg-offset @  dup #args >= if  drop 0 0 exit  then
    arg  1 arg-offset +! ;
 
 : env-name ( a -> a u )      [char] = swap z>s -tail ;
@@ -286,12 +286,12 @@ variable arg-offset
 
 : (getenv) ( a u env# -> a' u'|0 )
    push  r@ 'env if0  drop drop rdrop 0 exit  then
-   push 2dup pop env-name s= if  drop drop drop pop 'env env-value exit  then drop
+   push 2dup pop env-name s= if  drop drop pop 'env env-value exit  then
    pop 1 + (getenv) ;
 
 : getenv ( a u -> a' u'|0 )   0 (getenv) ;
 
 anon:
-  #args 1 = if drop banner exit then drop
+  #args 1 = if banner exit then
   2 arg-offset !  1 arg included bye ;
 execute

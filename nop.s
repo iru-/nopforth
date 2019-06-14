@@ -864,6 +864,7 @@ cif:
     dup_
     mov $0xC08548, %rax    # test %rax, %rax
     call comma3
+    call cdrop
     dup_
     mov $0x840F, %rax      # jz...
     call comma2
