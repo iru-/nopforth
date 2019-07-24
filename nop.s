@@ -69,23 +69,23 @@ _dlopen:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call dlopen
+    call dlopen@plt
     ret
 
 _dlsym:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call dlsym
+    call dlsym@plt
     ret
 
 _dlclose:
     mov %rax, %rdi
-    call dlclose
+    call dlclose@plt
     ret
 
 _dlerror:
-    call dlerror
+    call dlerror@plt
     ret
 
 expect:
