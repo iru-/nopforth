@@ -103,18 +103,44 @@ forth
 
 : allot ( n -> )   here +  h ! ;
 
-: dovar ( -> n )       pop ;
-: created ( a u -> )   entry, ['] dovar call, ;
+hex
+: call! ( 'code dest -> )
+   E8 over b!
+   1 + dup push   \ save address where to store the offset
+   4 +   -        \ compute offset
+   pop 4! ;
+decimal
+
+: pfa ( 'def -> 'data )   \ return a pointer to a definition's data area
+   cfa 5 + ;
+
+
+: (does>)   \ runtime for does>
+   latest @ @ cfa
+   pop swap call!   \ compile a call to the code following does>
+   0 hole ! ;       \ do not transform the previous call into a jump
+
+macro
+: does>
+   [f'] (does>) call,  \ compile a call to the runtime for does>
+
+   \ at runtime R has the address of the data area for the definition,
+   \ compile a pop to retrieve that address
+   [compile] pop ;
+forth
+
+: created ( a u -> )   entry,  0 call,  does> ;
 : create ( -> )        next-word created ;
 
 : variable ( -> )   create 0 , ;
 
-: (value) ( -> n )   pop @ ;
-: value ( n -> )     entry ['] (value) call, , ;
-: to ( n -> )        ' 5 + ! ;
+: ?find ( -> a )   next-word find   dup 0 = if abort then ;
+: value ( -> )     create ,  does> @ ;
+
 macro
-: to ( n -> )        ' 5 +  [compile] lit  [compile] ! ;
+: to ( n -> )   ?find pfa  [compile] lit [compile] ! ;
 forth
+: to ( n -> )   ?find pfa  ! ;
 
 
 ( Memory utilities )
@@ -290,6 +316,7 @@ variable arg-offset
    pop 1 + (getenv) ;
 
 : getenv ( a u -> a' u'|0 )   0 (getenv) ;
+
 
 anon:
   #args 1 = if banner exit then
