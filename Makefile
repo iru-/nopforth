@@ -16,5 +16,12 @@ sysdefs.inc: sys${SYS}.s
 d: all
 	gdb -x cmd.gdb nop
 
+test:
+	nop test/fileio.ns
+	@rm -f test.out
+	nop test/clib.ns > /dev/null
+
+.PHONY: test
+
 clean:
 	rm -f sysdefs.inc *.o nop
