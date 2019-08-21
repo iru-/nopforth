@@ -13,7 +13,8 @@
    s>z dlsym dup 0 = ?clib-abort ;
 
 : cfunc>entry ( handle a u -> 'func )
-   2dup 2push  clib-symbol  2pop entry, ;
+   2dup 2push  clib-symbol
+   2pop entry,  here swap >cfa ! ;
 
 hex
 : callC5   C08949 3, [compile] drop ;
