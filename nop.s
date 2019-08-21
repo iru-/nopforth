@@ -1229,5 +1229,5 @@ Br:
 
     .data
 _kernbuf:
-.incbin "base.nf"
+.incbin "base.ns"
 _kerntot = . - _kernbuf

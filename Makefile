@@ -7,7 +7,7 @@ all: nop
 nop: nop.o
 	${CC} -nostartfiles -nostdlib -o $@ nop.o -e boot -ldl
 
-nop.o: dicts.s sysdefs.inc nop.s base.nf
+nop.o: dicts.s sysdefs.inc nop.s base.ns
 	${AS} ${ASFLAGS} -o $@ nop.s
 
 sysdefs.inc: sys${SYS}.s
