@@ -129,7 +129,12 @@ macro
    [compile] pop ;
 forth
 
-: created ( a u -> )   entry,  0 call,  does> ;
+: created ( a u -> )
+   entry,
+   >cfa  here swap !  \ store next data address as the cfa
+   0 call,            \ compile a dummy call
+   does> ;
+
 : create ( -> )        next-word created ;
 
 : variable ( -> )   create 0 , ;

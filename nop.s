@@ -481,56 +481,60 @@ aligned:
     and $~7, %rax
     ret
 
+entry:
+    call nextword
+
 centry:
+    mov _h(%rip), %rcx
+    push %rcx
+
     # copy name to the correct place
     mov (%rbp), %rsi
     mov _h(%rip), %rdi
-    add $17, %rdi        # link + cfa + name length
+    lea 17(%rdi), %rdi    # link + cfa + name length
     mov %rax, %rcx
     cld
     rep; movsb
 
-    mov _h(%rip), %rcx
-    push %rcx
+    # stack here is: nameptr length
+
+    # store link
     dup_
     mov _latest(%rip), %rax
     mov (%rax), %rax
     call comma
 
-    # make room for cfa
-    mov _h(%rip), %rcx
-    add $8, %rcx
-    mov %rcx, _h(%rip)
-
+    # store empty cfa
     dup_
-    call comma1            # store name length
+    xor %rax, %rax
+    call comma
+
+    # store name
+    dup_
+    call comma1
     mov _h(%rip), %rcx
     add %rax, %rcx
-    mov %rcx, _h(%rip)     # commit name
+    mov %rcx, _h(%rip)
     drop_
 
+    # align dictionary pointer
     mov _h(%rip), %rax
     call aligned
     mov %rax, _h(%rip)
 
+    # update latest definition
     pop %rax
     mov _latest(%rip), %rcx
     mov %rax, (%rcx)
-
-    # fix cfa
-    call tocfa
-    mov _h(%rip), %rcx
-    mov %rcx, (%rax)
-    drop_
     ret
-
-entry:
-    call nextword
-    jmp centry
 
 colon:
     call entry
     call anon
+    mov %rax, %rbx    # rbx <- code address
+    drop_             # rax <- entry address
+    call tocfa        # rax <- cfa
+    mov %rbx, (%rax)
     drop_
     ret
 
@@ -911,11 +915,11 @@ abort:
 
     .data
 _search:
-  .quad _flatest
-  .quad _mlatest
+  .quad 0          # 1st dictionary to be searched
+  .quad 0          # 2nd dictionary to be searched
 _action:
-  .quad execute    # action on 1st search found
-  .quad execute    # action on 2nd search found
+  .quad 0          # action on 1st search found
+  .quad 0          # action on 2nd search found
   .quad nil        # action on number found
   .quad nil        # abort action
 
@@ -933,6 +937,8 @@ eval:
     test %rax, %rax
     jz 1f
     mov 8(%rax), %rax    # get CFA
+
+    # discard saved string
     pop %rcx
     pop %rcx
     mov _action(%rip), %rcx
@@ -947,6 +953,7 @@ eval:
     test %rax, %rax
     jz 2f
     mov 8(%rax), %rax    # get CFA
+    # discard saved string
     pop %rcx
     pop %rcx
     mov _action+8(%rip), %rcx
@@ -959,6 +966,8 @@ eval:
     test %rax, %rax
     jnz 4f
     drop_
+
+    # discard saved string
     pop %rcx
     pop %rcx
     mov _action+16(%rip), %rcx
