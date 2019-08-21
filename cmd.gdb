@@ -41,6 +41,26 @@ define dh
   end
 end
 
+define ddict
+  set $word = $arg0
+  while $word != 0
+    dh $word
+    set $word = *$word
+  end
+end
+
+define findcfa
+  set $word = $arg1
+  while $word != 0
+    set $cfa = $word+8
+    if *$cfa == $arg0
+       dh $word
+       loop_break
+    end
+    set $word = *$word
+  end
+end
+
 document dh
 Dump a header starting at address given as first argument
 end
