@@ -89,6 +89,7 @@ forth
 : lshift   lshift ;
 : rshift   rshift ;
 
+
 ( Dictionary )
 forth hex
 : find ( a u -> a'|0 )   latest @ dfind ;
@@ -147,12 +148,23 @@ macro
 forth
 : to ( n -> )   ?find pfa  ! ;
 
+8 value cell
+: cells ( -> u )   cell * ;
+
+: marker ( -> )
+   here               \ save current HERE so the marker definition removes itself
+   forth create
+       ,              \ 0:       dictionary pointer
+       flatest @ @ ,  \ cell:    next to last forth definition
+       mlatest @ ,    \ 2 cells: last macro definition
+   does>
+        dup        @ h !
+        dup cell + @ flatest !
+         2 cells + @ mlatest ! ;
+
 
 ( Memory utilities )
-8 value cell
-
 forth
-: cells ( -> u )   cell * ;
 : advance ( a u n -> a+n u-n )   swap over  - push + pop ;
 
 : move ( src dst u -> )
@@ -322,6 +334,8 @@ variable arg-offset
 
 : getenv ( a u -> a' u'|0 )   0 (getenv) ;
 
+
+marker empty
 
 anon:
   #args 1 = if banner exit then

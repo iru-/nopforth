@@ -3,9 +3,7 @@ TODO
 - should file support return errors?
 - search path for include
 - remove syscalls from nop.s
-- add macros to base.nf?
-- does>?
-- empty/forget
+- add macros to base.ns?
 - records
 
 
