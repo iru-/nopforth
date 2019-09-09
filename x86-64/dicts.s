@@ -768,11 +768,4 @@ clit_header:
     .byte 3
     .ascii "lit"
 
-    .align 8
-cjump_header:
-    .quad clit_header
-    .quad cjump
-    .byte 4
-    .ascii "jump"
-
-_mlatest: .quad cjump_header
+_mlatest: .quad clit_header

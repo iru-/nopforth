@@ -864,12 +864,6 @@ ccmp:
     mov $0xD8F748, %rax            # neg %rax
     jmp comma3
 
-cjump:
-    dup_
-    mov $0xEB, %rax    # jmp
-    call comma1
-    jmp comma1
-
 clit:
     call cdup
     dup_
