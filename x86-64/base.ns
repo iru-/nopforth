@@ -22,6 +22,12 @@ macro hex
    086D8D4800458B48 ,  \ drop
    E0D348 3, ;         \ shl %cl, %rax
 
+: if ( -> a )
+   C08548 3,           \ test %rax, %rax
+   086D8D4800458B48 ,  \ drop
+   840F 2,             \ jz...
+   here
+   0 4, ;              \ ...0
 
 : then ( a -> )   0 hole !  here  over 4 + -  swap 4! ;
 

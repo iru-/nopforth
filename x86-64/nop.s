@@ -864,19 +864,6 @@ ccmp:
     mov $0xD8F748, %rax            # neg %rax
     jmp comma3
 
-cif:
-    dup_
-    mov $0xC08548, %rax    # test %rax, %rax
-    call comma3
-    call cdrop
-    dup_
-    mov $0x840F, %rax      # jz...
-    call comma2
-    call here
-    dup_
-    xor %rax, %rax         # ...0
-    jmp comma4
-
 cjump:
     dup_
     mov $0xEB, %rax    # jmp
