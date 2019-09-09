@@ -8,7 +8,7 @@
     lea 8(%rbp), %rbp
 .endm
 
-.include "sysdefs.inc"
+.include "x86-64/sysdefs.inc"
 
     .bss
     .global bss0
@@ -1225,9 +1225,11 @@ Br:
     int3
     ret
 
-.include "dicts.s"
+.include "x86-64/dicts.s"
 
     .data
 _kernbuf:
-.incbin "base.ns"
+.incbin "portable/comments.ns"
+.incbin "x86-64/base.ns"
+.incbin "portable/base.ns"
 _kerntot = . - _kernbuf

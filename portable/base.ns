@@ -1,63 +1,29 @@
-macro
-: \  10 word drop drop ;
-: (  41 word drop drop ;
-
 forth
-: decimal ( -> )   10 base ! ;
-: hex ( -> )       16 base ! ;
-
 : abort0 ( -> )   0 0 abort ;
 : cfa ( a -> a' )   >cfa @ ;
 
-( Control flow )
-macro hex
-: 4! ( n a -> )
-   004D8B48 4,           \ mov (%rbp), %rcx
-   0889 2,               \ mov %ecx, (%rax)
-   086D8D4800458B48 ,    \ mov (%rbp), %rax; lea 8(%rbp), %rbp (aka drop)
-   086D8D4800458B48 , ;  \ drop
-
-: then ( a -> )   0 hole !  here  over 4 + -  swap 4! ;
-
-: if0 ( -> a )
-   C08548 3,     \ test %rax, %rax
-   850F 2,       \ jnz...
-   here  0 4, ;  \ ...0
-
+macro
 : [compile] ( -> )
    next-word mlatest dfind dup 0 = if abort0 then  cfa call, ;
-
-: r@ ( -> )      [compile] dup  24048B48 4, ;  \ mov (%rsp), %rax
-: rdrop ( -> )   48 b, 0824648D 4, ;  \ lea 8(%rsp), %rsp
 
 : asave ( -> )   [compile] a    [compile] push ;
 : arest ( -> )   [compile] pop  [compile] a! ;
 
 : begin ( -> a )        here ;
 : while ( a -> a' a )   [compile] if swap ;
-: again ( a -> )        here 5 + -  E9 b, 4, ;
+: again ( a -> )        [compile] branch ;
 : repeat ( a a' -> )    [compile] again [compile] then ;
 
 : for ( -> a a' )
    [compile] push [compile] begin [compile] r@ [compile] while ;
 
 : next ( a a' -> )
-   240CFF48 4,  \ decq (%rsp)
-   [compile] repeat [compile] rdrop ;
+   [compile] rdec [compile] repeat [compile] rdrop ;
 
 : 2push ( -> )   [compile] push [compile] push ;
 : 2pop ( -> )    [compile] pop [compile] pop ;
 : 2dup ( -> )    [compile] over [compile] over ;
 
-: rshift ( n #places -> n' )
-   C18948 3,    \ mov %rax, %rcx
-   [compile] drop
-   E8D348 3, ;  \ shr %cl, %rax
-
-: lshift ( n #places -> n' )
-   C18948 3,    \ mov %rax, %rcx
-   [compile] drop
-   E0D348 3, ;  \ shl %cl, %rax
 
 ( macro -> forth )
 \ We define forth words using the macros, so they can be used interactively
@@ -103,14 +69,6 @@ macro
 forth
 
 : allot ( n -> )   here +  h ! ;
-
-hex
-: call! ( 'code dest -> )
-   E8 over b!
-   1 + dup push   \ save address where to store the offset
-   4 +   -        \ compute offset
-   pop 4! ;
-decimal
 
 : pfa ( 'def -> 'data )   \ return a pointer to a definition's data area
    cfa 5 + ;

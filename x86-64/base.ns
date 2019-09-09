@@ -1,0 +1,42 @@
+macro hex
+: 4! ( n a -> )
+   004D8B48 4,           \ mov (%rbp), %rcx
+   0889 2,               \ mov %ecx, (%rax)
+   086D8D4800458B48 ,    \ drop
+   086D8D4800458B48 , ;  \ drop
+
+: r@ ( -> )
+   00458948F86D8D48 ,  \ dup
+   24048B48 4, ;       \ mov (%rsp), %rax
+
+: rdrop ( -> )   48 b, 0824648D 4, ;  \ lea 8(%rsp), %rsp
+: rdec ( -> )   240CFF48 4, ;  \ decq (%rsp)
+
+: rshift ( n places -> n' )
+   C18948 3,           \ mov %rax, %rcx
+   086D8D4800458B48 ,  \ drop
+   E8D348 3, ;         \ shr %cl, %rax
+
+: lshift ( n places -> n' )
+   C18948 3,           \ mov %rax, %rcx
+   086D8D4800458B48 ,  \ drop
+   E0D348 3, ;         \ shl %cl, %rax
+
+
+: then ( a -> )   0 hole !  here  over 4 + -  swap 4! ;
+
+: if0 ( -> a )
+   C08548 3,     \ test %rax, %rax
+   850F 2,       \ jnz...
+   here  0 4, ;  \ ...0
+
+: branch ( dst -> )   here 5 +  -  E9 b, 4, ;
+
+forth
+: call! ( 'code dest -> )
+   E8 over b!
+   1 + dup push   \ save address where to store the offset
+   4 +   -        \ compute offset
+   pop 4! ;
+
+
