@@ -745,7 +745,7 @@ cne_header:
     .quad cgt_header
     .quad cne
     .byte 2
-    .ascii "/="
+    .ascii "~="
 
     .align 8
 cle_header:

@@ -278,8 +278,8 @@ Logic
 =  macro
   Compile code for the following stack effect  ( a b -> a=b? )
 
-/=  macro
-  Compile code for the following stack effect  ( a b -> a/=b? )
+~=  macro
+  Compile code for the following stack effect  ( a b -> a~=b? )
 
 <  macro
   Compile code for the following stack effect  ( a b -> a<b? )

@@ -23,7 +23,7 @@ create rbuf /wbuf 5 +  dup allot  value /rbuf
    to fd ;
    
 : test-write
-   wbuf /wbuf fd write  /wbuf /= if
+   wbuf /wbuf fd write  /wbuf ~= if
       ." write failed" cr
       1 sysexit
   then ;

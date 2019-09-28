@@ -138,7 +138,7 @@ forth
 
 : mem= ( a1 a2 u -> f )
    if0  drop drop drop -1 exit  then
-   push  over b@ over b@ /= if  drop drop rdrop 0 exit then
+   push  over b@ over b@ ~= if  drop drop rdrop 0 exit then
    1 + swap  1 + swap  pop 1 -  mem= ;
 
 
@@ -161,7 +161,7 @@ forth
 : ." ( -> )   [char] " word type ;
 
 : s= ( a1 u1 a2 u2 -> f )
-   push swap pop over /= if  drop drop drop 0 exit  then mem= ;
+   push swap pop over ~= if  drop drop drop 0 exit  then mem= ;
 
 : search ( b a u -> a' u' )
    if0  push nip pop exit  then
@@ -233,7 +233,7 @@ forth decimal
 : write-byte ( b fd -> n )   push  here b!  here 1 pop write ;
 : write-line ( a u fd -> n )
    dup push write  10 pop write-byte
-   1 /= if  drop -1 exit  then 1 + ;
+   1 ~= if  drop -1 exit  then 1 + ;
 
 : close ( fd -> n )   3 syscall1 ;
 : position-file ( n ref fd -> n' )   swap push swap pop 8 syscall3 ;
