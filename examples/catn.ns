@@ -1,0 +1,24 @@
+#! /usr/bin/env nop
+\
+\ Print files' contents with line numbers
+\
+
+create line# 1 ,
+: .line  line# @ .  1 line# +! ;
+
+8192 value /buf
+create buf /buf allot
+: >buf ( fd -> n )  push buf /buf pop read-line ;
+: .buf ( u -> )     .line  buf swap type ;
+
+: cat ( fd -> )  dup >buf  dup 1 < if drop drop exit then  .buf cat ;
+
+: next-fd ( -> fd | 0 )
+  next-arg dup 0 = if drop exit then
+  0 open-file  dup 0 < s" can't open file" ?abort ;
+
+: cat-args  begin next-fd dup while cat repeat drop ;
+
+anon:
+  #args 3 < if 0 cat exit then  cat-args ;
+execute
