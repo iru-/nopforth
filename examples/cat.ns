@@ -5,30 +5,17 @@
 
 8192 value /buf
 create buf /buf allot
+: >buf ( fd -> n )  push buf /buf pop read ;
+: .buf ( u -> )     buf swap type ;
 
-: cat ( fd -> )
-   push
-   buf /buf r@ read
-   dup 1 < if
-      rdrop exit
-   then
-   buf swap type
-   pop cat ;
+: cat ( fd -> )  dup >buf  dup 1 < if drop drop exit then  .buf cat ;
 
-: cat-stdin ( -> )   0 cat ;
+: next-fd ( -> fd | 0 )
+  next-arg dup 0 = if drop exit then
+  0 open-file  dup 0 < s" can't open file" ?abort ;
 
-: cat-args ( -> )
-   begin next-arg dup while
-      0 open-file
-      dup 0 < s" can't open file" ?abort
-      cat
-   repeat
-   drop drop ;
+: cat-args  begin next-fd dup while cat repeat drop ;
 
 anon:
-   #args 3 < if
-      cat-stdin
-      exit
-   then
-   cat-args ;
+  #args 3 < if 0 cat exit then  cat-args ;
 execute
