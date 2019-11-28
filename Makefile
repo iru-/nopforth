@@ -28,6 +28,7 @@ test: nop
 	nop test/fileio.ns
 	@rm -f test.out
 	nop test/clib.ns
+	nop test/endian.ns
 
 .PHONY: test
 
