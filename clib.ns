@@ -42,7 +42,7 @@ forth
 0 value handle
 
 : library: ( -> )
-   handle if handle dlclose then
+   handle if handle dlclose drop then
    next-word clib-load to handle ;
 
 : Cfunction: ( #args "name" -> )
