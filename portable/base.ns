@@ -142,6 +142,14 @@ forth
    1 + swap  1 + swap  pop 1 -  mem= ;
 
 
+: align ( a u -> a' )   1 -  swap over +  swap not and ;
+
+0 value record:
+: field: ( offset size alignment -> offset+size' )
+   create   swap push  align dup ,  pop +
+   does> ( a -> a' )   @ + ;
+
+
 ( Strings )
 forth decimal
 : cr ( -> )   10 emit ;

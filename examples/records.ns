@@ -1,0 +1,72 @@
+( Lists )
+record:
+    cell cell field: list-link
+    cell cell field: list-data
+       1    1 field: list-flag
+value /list
+
+: list ( data flag link 'list -> )
+    push
+    r@ list-link !
+    r@ list-flag b!
+    r@ list-data !
+    rdrop ;
+
+: list: ( data flag link -> )    create  here  /list allot  list ;
+
+: .elem ( elem -> )
+   dup list-flag b@ .
+   dup list-data @  .  ." -> "
+       list-link @  .  cr ;
+
+: .list ( list -> )
+   dup 0 = if drop exit then
+   dup .elem  list-link @ .list ;
+
+67890 234 0 list: Ll
+12345 255 Ll list: Lr
+
+." List" cr
+Lr .list cr
+
+
+( Trees )
+record:
+    cell cell field: tree-left
+    cell cell field: tree-right
+value /tree
+
+: tree ( left right 'tree -> )
+   push
+   r@ tree-right !
+   r@ tree-left !
+   rdrop ;
+
+: tree: ( left right -> )    create here  /tree allot  tree ;
+
+: .tree ( 'tree -> )
+    ." left  "  dup tree-left  @ dup . ." : " .elem
+    ." right "      tree-right @ dup . ." : " .elem ;
+
+." Tree " cr
+Ll Lr tree: T
+T .tree cr
+
+
+( Strings )
+record:
+    cell cell field: str-length
+    cell cell field: str-data
+value /str
+
+: str! ( data length str -> )
+    push
+    r@ str-length !
+    r@ str-data !
+    rdrop ;
+
+: .str ( str -> )     dup str-data @  swap str-length @  type ;
+: " ( -> 'string )    ,"  dup allot  here dup push  /str allot  str!  pop ;
+
+" ABCDEFGHIJ" dup .str cr
+.str cr
