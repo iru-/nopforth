@@ -37,6 +37,7 @@ macro hex
    here  0 4, ;  \ ...0
 
 : branch ( dst -> )   here 5 +  -  E9 b, 4, ;
+: branch-unresolved ( -> a )   E9 b,  here  0 4, ;
 
 forth
 : call! ( 'code dest -> )
