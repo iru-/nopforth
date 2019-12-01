@@ -180,10 +180,10 @@ forth
 : -head ( b a u -> a u' )   search  1 advance ;
 
 macro hex
-: slit ( a u -> )
-   E9 b, here push  0 4,  \ jmp 0
-   dup push  mem,  pop pop dup
-   [compile] then  4 + [compile] lit [compile] lit ;
+: slit ( a len -> )
+   dup push  [compile] branch-unresolved  here push push
+   \ r: len addr-of-string-start addr-of-branch-dst
+   mem,  pop [compile] then  pop [compile] lit  pop [compile] lit ;
 
 : s" ( -> )   [char] " word  [compile] slit ;
 : ." ( -> )   [compile] s" [f'] type call, ;
