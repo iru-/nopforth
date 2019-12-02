@@ -57,7 +57,7 @@ forth
 
 
 ( Dictionary )
-forth hex
+forth
 : find ( a u -> a'|0 )   latest @ dfind ;
 
 : ' ( -> a )   next-word find dup 0 = if abort0 then  cfa ;
@@ -151,7 +151,7 @@ forth
 
 
 ( Strings )
-forth decimal
+forth
 : cr ( -> )   10 emit ;
 32 value bl
 
@@ -179,7 +179,7 @@ forth
 : -tail ( b a u -> a u' )   over push search drop pop swap over - ;
 : -head ( b a u -> a u' )   search  1 advance ;
 
-macro hex
+macro
 : slit ( a len -> )
    dup push  [compile] branch-unresolved  here push push
    \ r: len addr-of-string-start addr-of-branch-dst
@@ -193,10 +193,10 @@ forth
 
 
 ( Pictured numeric conversion )
-macro hex
-: negate ( n -> n' )   D8F748 3, ;  \ neg %rax
+macro
+: negate ( n -> n' )   $D8F748 3, ;  \ neg %rax
 
-forth decimal
+forth
 : digit ( n -> n' )   dup 9 >  7 and +  48 + ;
 
 : hold ( count rem b -> b count+1 rem )   swap push  swap 1 + pop ;
@@ -220,7 +220,7 @@ forth decimal
 
 
 ( Files )
-forth decimal
+forth
 : (open-create) ( a u mode syscall# -> fd )   push push s>z pop pop syscall2 ;
 : create-file ( a u mode -> fd )   85 (open-create) ;
 : open-file ( a u mode -> fd )   2 (open-create) ;

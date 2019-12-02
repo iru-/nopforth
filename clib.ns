@@ -16,16 +16,15 @@
    2dup 2push  clib-symbol
    2pop entry,  here swap >cfa ! ;
 
-hex
-: callC5   C08949 3, [compile] drop ;
-: callC4   C18948 3, [compile] drop ;
-: callC3   C28948 3, [compile] drop ;
-: callC2   C68948 3, [compile] drop ;
-: callC1   C78948 3, ;
+: callC5   $C08949 3, [compile] drop ;
+: callC4   $C18948 3, [compile] drop ;
+: callC3   $C28948 3, [compile] drop ;
+: callC2   $C68948 3, [compile] drop ;
+: callC1   $C78948 3, ;
 
 : absjump, ( 'func -> )
-   BB48 2, ,  \ mov $'func, %rbx
-   E3FF 2, ;  \ jmp *%rbx
+   $BB48 2, ,  \ mov $'func, %rbx
+   $E3FF 2, ;  \ jmp *%rbx
 
 : callC, ( #args 'func -> )
    push

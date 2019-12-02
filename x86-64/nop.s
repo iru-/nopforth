@@ -215,67 +215,92 @@ scan:
     mov %rcx, %rax
     ret
 
+toupper:
+    cmp $'a', %rax
+    jl 2f             # not lower case
+    cmp $'z', %rax
+    jg 2f             # not lower case
+    xor $32, %rax
+2:  ret
+
 # translated from cmforth
 digit:
-    sub $48, %rax         # convert ascii digit to binary
-    cmp $9, %rax          # is it < 9?
+    mov %rax, %rdx        # rdx = base
+    drop_                 # rax = ascii digit
+    call toupper          # normalize to upper case
+    sub $48, %rax         # convert to binary
+    cmp $9, %rax          # is it <= 9?
     jle 2f                # yes, go out
-    sub $7, %rax          # no, number in a base > 10
-    dup_
+                          # no, number is in a base > 10
+    sub $7, %rax          # subtract the digits between '9' and 'A'
     cmp $10, %rax         # is it < 10?
-    mov $0, %rax          # no, T = 0
+    mov $0, %rcx          # no, rcx = 0
     jnl 1f                # yes,
-    sub $1, %rax          # T = -1
-1:
-    or (%rbp), %rax
-    lea 8(%rbp), %rbp     # discard S
-2:
-    cmp _base(%rip), %rax
-    jl 3f
-    mov $-1, %rax
-3:
-    ret
+    mov $-1, %rcx         # rcx = -1
+1:  or %rax, %rcx
+2:  cmp %rdx, %rax        # is the number less than base?
+    jl 3f                 # yes, we're done
+    mov $-1, %rax         # no, it is an error
+3:  ret
 
 number:
-    mov %rax, %rcx
-    drop_
+    mov %rax, %rcx        # rcx = length
+    drop_                 # rax = string
+
+    cmp $0, %rcx          # zero length string?
+    je 4f
 
     movzbq (%rax), %rsi
-    xor $'-', %rsi
-    push %rsi
-    cmp $0, %rsi
-    jne 1f
-    inc %rax
+    cmp $'-', %rsi        # is the number negative?
+    jne 0f                # no, jump
+    push $1               # yes, push 1
+    inc %rax              # advance to next byte
     dec %rcx
-1:
-    mov %rax, %rsi
+    jmp 1f
+
+0:  push $0               # positive number
+1:  movzbq (%rax), %rsi
+    cmp $'$', %rsi        # is the number in hex?
+    jne 2f
+    mov $16, %rdx         # rdx = base 16
+    inc %rax              # advance to next byte
+    dec %rcx
+    jmp 3f
+
+2:  mov $10, %rdx         # rdx = base 10
+3:  mov %rax, %rsi
 
     # accumulate in rbx
     xor %rbx, %rbx
-    movzbq _base(%rip), %rdx
-2:
-    imul %rdx, %rbx
+
+3:  imul %rdx, %rbx
     movzbq (%rsi), %rax
+    push %rcx
+    push %rdx
+    dup_
+    mov %rdx, %rax
     call digit
-    cmp $-1, %rax
-    jle 4f
+    pop %rdx
+    pop %rcx
+    cmp $0, %rax
+    jl 5f
     add %rax, %rbx
     inc %rsi
-    loop 2b
+    loop 3b
 
     mov %rbx, %rax
     pop %rsi
-    cmp $0, %rsi
-    jne 3f
+    cmp $1, %rsi
+    jne 4f
     neg %rax
-3:
-    dup_
-    mov $0, %rax
+
+4:  dup_
+    mov $0, %rax          # no bytes left to process
     ret
-4:
-    pop %rsi
-    mov %rcx, %rax
+
+5:  pop %rsi
     dup_
+    mov %rcx, %rax        # failed to convert, rcx bytes left
     ret
 
     .data
