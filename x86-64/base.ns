@@ -31,11 +31,6 @@ macro
 
 : then ( a -> )   0 hole !  here  over 4 + -  swap 4! ;
 
-: if0 ( -> a )
-   $C08548 3,     \ test %rax, %rax
-   $850F 2,       \ jnz...
-   here  0 4, ;   \ ...0
-
 : branch ( dst -> )   here 5 +  -  $E9 b, 4, ;
 : branch-unresolved ( -> a )   $E9 b,  here  0 4, ;
 
