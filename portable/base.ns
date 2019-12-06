@@ -141,6 +141,10 @@ forth
    push  over b@ over b@ ~= if  drop drop rdrop 0 exit then
    1 + swap  1 + swap  pop 1 -  mem= ;
 
+: search ( a u b -> a' u' )
+   over 0 = if  drop exit  then
+   swap push  over b@ over = if  drop pop exit  then
+   pop swap push  1 advance  pop search ;
 
 : align ( a u -> a' )   1 -  swap over +  swap not and ;
 
@@ -171,13 +175,8 @@ forth
 : s= ( a1 u1 a2 u2 -> f )
    push swap pop over ~= if  drop drop drop 0 exit  then mem= ;
 
-: search ( b a u -> a' u' )
-   if0  push nip pop exit  then
-   push  over over b@ = if  nip pop exit  then  pop
-   1 advance search ;
-
-: -tail ( b a u -> a u' )   over push search drop pop swap over - ;
-: -head ( b a u -> a u' )   search  1 advance ;
+: head ( a u b -> a u' )   push 2dup pop search  nip - ;
+: tail ( a u b -> a u' )   search  dup if 1 advance then ;
 
 macro
 : slit ( a len -> )
@@ -290,8 +289,8 @@ variable arg-offset
    arg-offset @  dup #args >= if  drop 0 0 exit  then
    arg  1 arg-offset +! ;
 
-: env-name ( a -> a u )      [char] = swap z>s -tail ;
-: env-value ( a -> a' u' )   [char] = swap z>s -head ;
+: env-name ( a -> a u )      z>s [char] = head ;
+: env-value ( a -> a' u' )   z>s [char] = tail ;
 
 : (getenv) ( a u env# -> a' u'|0 )
    push  r@ 'env if0  drop drop rdrop 0 exit  then
