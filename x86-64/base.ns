@@ -34,6 +34,8 @@ macro
 : branch ( dst -> )   here 5 +  -  $E9 b, 4, ;
 : branch-unresolved ( -> a )   $E9 b,  here  0 4, ;
 
+: negate ( n -> n' )   $D8F748 3, ;  \ neg %rax
+
 forth
 : call! ( 'code dest -> )
    $E8 over b!

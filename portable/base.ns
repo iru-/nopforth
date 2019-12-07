@@ -56,6 +56,8 @@ forth
 : lshift   lshift ;
 : rshift   rshift ;
 
+: negate   negate ;
+
 : tuck ( x y -> y x y )   swap over ;
 
 
@@ -195,9 +197,6 @@ forth
 
 
 ( Pictured numeric conversion )
-macro
-: negate ( n -> n' )   $D8F748 3, ;  \ neg %rax
-
 forth
 : digit ( n -> n' )   dup 9 >  7 and +  48 + ;
 
