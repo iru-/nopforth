@@ -33,6 +33,7 @@ forth
 : swap   swap ;
 : over   over ;
 : nip    nip ;
+: 2dup   2dup ;
 
 : a     a ;
 : a!    a! ;
@@ -54,6 +55,8 @@ forth
 
 : lshift   lshift ;
 : rshift   rshift ;
+
+: tuck ( x y -> y x y )   swap over ;
 
 
 ( Dictionary )
