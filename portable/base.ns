@@ -56,6 +56,10 @@ forth
 : lshift   lshift ;
 : rshift   rshift ;
 
+: and      and ;
+: or       or ;
+: xor      xor ;
+: not      not ;
 : negate   negate ;
 
 : tuck ( x y -> y x y )   swap over ;
