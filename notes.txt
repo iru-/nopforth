@@ -3,8 +3,6 @@ TODO
 - should file support return errors?
 - search path for include
 - remove syscalls from nop.s
-- add macros to base.ns?
-- records
 
 
 Register allocation
