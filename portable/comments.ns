@@ -3,5 +3,5 @@ macro
 : (  41 word drop drop ;
 
 forth
-: decimal ( -> )   10 base ! ;
-: hex ( -> )       16 base ! ;
+: decimal   10 base ! ;
+: hex       16 base ! ;

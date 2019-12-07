@@ -1,13 +1,12 @@
 forth
-: abort0 ( -> )   0 0 abort ;
+: abort0   0 0 abort ;
 : cfa ( a -> a' )   >cfa @ ;
 
 macro
-: [compile] ( -> )
-   next-word mlatest dfind dup 0 = if abort0 then  cfa call, ;
+: [compile]   next-word mlatest dfind dup 0 = if abort0 then  cfa call, ;
 
-: asave ( -> )   [compile] a    [compile] push ;
-: arest ( -> )   [compile] pop  [compile] a! ;
+: asave   [compile] a    [compile] push ;
+: arest   [compile] pop  [compile] a! ;
 
 : begin ( -> a )        here ;
 : while ( a -> a' a )   [compile] if swap ;
@@ -20,9 +19,9 @@ macro
 : next ( a a' -> )
    [compile] rdec [compile] repeat [compile] rdrop ;
 
-: 2push ( -> )   [compile] push [compile] push ;
-: 2pop ( -> )    [compile] pop [compile] pop ;
-: 2dup ( -> )    [compile] over [compile] over ;
+: 2push   [compile] push [compile] push ;
+: 2pop    [compile] pop [compile] pop ;
+: 2dup    [compile] over [compile] over ;
 
 
 ( macro -> forth )
@@ -73,15 +72,14 @@ forth
 : f' ( -> a|0 )   next-word flatest @ dfind dup 0 = if abort0 then  cfa ;
 
 macro
-: ['] ( -> )    '  [compile] lit ;
-: [f'] ( -> )   f' [compile] lit ;
+: [']    '  [compile] lit ;
+: [f']   f' [compile] lit ;
 forth
 
 : allot ( n -> )   here +  h ! ;
 
 : pfa ( 'def -> 'data )   \ return a pointer to a definition's data area
    cfa 5 + ;
-
 
 : (does>)   \ runtime for does>
    latest @ @ cfa
@@ -103,12 +101,12 @@ forth
    0 call,            \ compile a dummy call
    does> ;
 
-: create ( -> )        next-word created ;
+: create   next-word created ;
 
-: variable ( -> )   create 0 , ;
+: variable   create 0 , ;
+: value      create ,  does> @ ;
 
 : ?find ( -> a )   next-word find   dup 0 = if abort then ;
-: value ( -> )     create ,  does> @ ;
 
 macro
 : to ( n -> )   ?find pfa  [compile] lit [compile] ! ;
@@ -118,7 +116,7 @@ forth
 8 value cell
 : cells ( -> u )   cell * ;
 
-: marker ( -> )
+: marker
    here               \ save current HERE so the marker definition removes itself
    forth create
        ,              \ 0:       dictionary pointer
@@ -165,8 +163,9 @@ forth
 
 ( Strings )
 forth
-: cr ( -> )   10 emit ;
 32 value bl
+: cr      10 emit ;
+: space   bl emit ;
 
 : char ( -> b )     bl word drop b@ ;
 macro
@@ -179,7 +178,7 @@ forth
 : zlen ( a -> u )     a! 0 begin b@+ while 1 + repeat ;
 : z>s ( a -> a' u )   dup zlen ;
 
-: ." ( -> )   [char] " word type ;
+: ."   [char] " word type ;
 
 : s= ( a1 u1 a2 u2 -> f )
    push swap pop over ~= if  drop drop drop 0 exit  then mem= ;
@@ -193,8 +192,8 @@ macro
    \ r: len addr-of-string-start addr-of-branch-dst
    mem,  pop [compile] then  pop [compile] lit  pop [compile] lit ;
 
-: s" ( -> )   [char] " word  [compile] slit ;
-: ." ( -> )   [compile] s" [f'] type call, ;
+: s"   [char] " word  [compile] slit ;
+: ."   [compile] s" [f'] type call, ;
 
 forth
 : ?abort ( flag a u -> )   2push if 2pop abort then  rdrop rdrop ;
@@ -211,17 +210,15 @@ forth
 : #> ( ... count rem -> a u )   asave  drop  here a!  dup push for b!+ next  here pop  arest ;
 : #s ( n -> ... count rem )     begin # dup while repeat ;
 
-: negate   negate ;
 : abs ( n -> |n| )   dup 0 < if negate then ;
 : sign ( n -> )   0 < if  [char] - hold  then ;
 
-: space ( -> )   bl emit ;
 
 : (.) ( n -> )   dup push abs <#  #s pop sign #> ;
 : . ( n -> )     (.) type space ;
 
 : depth ( -> u )   S0 sp@ - 8 /  2 - ;
-: .S ( -> )   depth S0 16 - swap for  dup @ . 8 -  next drop  s" <- top " type ;
+: .S   depth S0 16 - swap for  dup @ . 8 -  next drop  s" <- top " type ;
 
 
 ( Files )
@@ -260,10 +257,10 @@ forth
 : input! ( fd buf tot used pos 'refill -> )
    'refill ! inpos ! inused ! intot ! inbuf ! infd ! ;
 
-: save-input ( -> )
+: save-input
    pop pop  input@ push push push push push push  push push ;
 
-: restore-input ( -> )
+: restore-input
    pop pop  pop pop pop pop pop pop input!  push push ;
 
 : file-refill ( -> n )
@@ -279,7 +276,7 @@ create buf /buf allot
    push  readloop  pop close drop
    restore-input  pop 'prompt !  0 ;
 
-: include ( -> )   10 word included s" can't include file" ?abort ;
+: include   10 word included s" can't include file" ?abort ;
 
 
 ( Shell utilities )

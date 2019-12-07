@@ -5,12 +5,12 @@ macro
    $086D8D4800458B48 ,    \ drop
    $086D8D4800458B48 , ;  \ drop
 
-: r@ ( -> )
+: r@
    $00458948F86D8D48 ,  \ dup
    $24048B48 4, ;       \ mov (%rsp), %rax
 
-: rdrop ( -> )   $48 b, $0824648D 4, ;  \ lea 8(%rsp), %rsp
-: rdec ( -> )   $240CFF48 4, ;   \ decq (%rsp)
+: rdrop   $48 b, $0824648D 4, ;  \ lea 8(%rsp), %rsp
+: rdec    $240CFF48 4, ;   \ decq (%rsp)
 
 : rshift ( n places -> n' )
    $C18948 3,           \ mov %rax, %rcx
