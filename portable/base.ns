@@ -266,14 +266,14 @@ forth
 256 value /buf
 create buf /buf allot
 
-: included ( a u -> )
+: included ( a u -> err )
+   0 open-file dup 0 < if  drop -1 exit  then
    'prompt @ push  0 'prompt !  save-input
-   0 open-file  dup 0 <  s" can't include file" ?abort
    dup buf /buf 0 0 ['] file-refill input!
    push  readloop  pop close drop
-   restore-input  pop 'prompt ! ;
+   restore-input  pop 'prompt !  0 ;
 
-: include ( -> )   10 word included ;
+: include ( -> )   10 word included s" can't include file" ?abort ;
 
 
 ( Shell utilities )
