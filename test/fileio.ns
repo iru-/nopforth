@@ -1,5 +1,5 @@
-create fname ," test.out" nip dup allot  value #fname
-create wbuf ," text file" nip dup allot  value /wbuf
+create fname " test.out" nip  value #fname
+create wbuf " text file" nip  value /wbuf
 create rbuf /wbuf 5 +  dup allot  value /rbuf
 
 -1 value fd

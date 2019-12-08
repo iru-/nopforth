@@ -35,7 +35,7 @@
 
 : callC, ( #ret #args 'func -> )
    push
-   dup 5 > s" too many arguments to C function" ?abort
+   dup 5 > " too many arguments to C function" ?abort
    dup 4 > if callC5 then
    dup 3 > if callC4 then
    dup 2 > if callC3 then

@@ -66,7 +66,7 @@ value /str
     rdrop ;
 
 : .str ( str -> )     dup str-data @  swap str-length @  type ;
-: " ( -> 'string )    ,"  dup allot  here dup push  /str allot  str!  pop ;
+: s" ( -> 'string )   [ f' " call, ]  here dup push  /str allot  str!  pop ;
 
-" ABCDEFGHIJ" dup .str cr
+s" ABCDEFGHIJ" dup .str cr
 .str cr

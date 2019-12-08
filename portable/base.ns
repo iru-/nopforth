@@ -115,15 +115,15 @@ forth
 : cells ( -> u )   cell * ;
 
 : marker
-   here               \ save current HERE so the marker definition removes itself
+   here              \ save current HERE so the marker definition removes itself
    forth create
-       ,              \ 0:       dictionary pointer
-       flatest @ @ ,  \ cell:    next to last forth definition
-       mlatest @ ,    \ 2 cells: last macro definition
+      ,              \ 0:       dictionary pointer
+      flatest @ @ ,  \ cell:    next to last forth definition
+      mlatest @ ,    \ 2 cells: last macro definition
    does>
-        dup        @ h !
-        dup cell + @ flatest !
-         2 cells + @ mlatest ! ;
+      dup        @ h !
+      dup cell + @ flatest !
+       2 cells + @ mlatest ! ;
 
 
 ( Memory utilities )
@@ -173,8 +173,11 @@ macro
 : [char] ( -> b )   char ` lit ;
 forth
 
-: ," ( -> a u )       [char] " word  here swap 2dup 2push  move  2pop ;
-: z" ( -> a )         ,"  over +  0 swap b! ;
+: " ( -> a u )
+   [char] " word  here push  dup allot
+   tuck  r@ swap move  pop swap ;
+
+: z" ( -> a )         "  over +  0 swap b! ;
 : s>z ( a u -> a' )   here swap 2dup 2push  move  2pop over +  0 swap b! ;
 : zlen ( a -> u )     a! 0 begin b@+ while 1 + repeat ;
 : z>s ( a -> a' u )   dup zlen ;
@@ -193,8 +196,8 @@ macro
    \ r: len addr-of-string-start addr-of-branch-dst
    mem,  pop ` then  pop ` lit  pop ` lit ;
 
-: s"   [char] " word  ` slit ;
-: ."   ` s" [f'] type call, ;
+: "    [char] " word  ` slit ;
+: ."   ` " [f'] type call, ;
 
 forth
 : ?abort ( flag a u -> )   2push if 2pop abort then  rdrop rdrop ;
@@ -219,7 +222,7 @@ forth
 : . ( n -> )     (.) type space ;
 
 : depth ( -> u )   S0 sp@ - 8 /  2 - ;
-: .S   depth S0 16 - swap for  dup @ . 8 -  next drop  s" <- top " type ;
+: .S   depth S0 16 - swap for  dup @ . 8 -  next drop  ." <- top " ;
 
 : spfill ( u -> )    16 swap - 3 * spaces  space ;
 : .addr ( a -> )     base @ push hex  <# cell for # # next #> type  pop base ! ;
@@ -291,7 +294,7 @@ create buf /buf allot
    push  readloop  pop close drop
    restore-input  pop 'prompt !  0 ;
 
-: include   10 word included s" can't include file" ?abort ;
+: include   10 word included " can't include file" ?abort ;
 
 
 ( Shell utilities )
