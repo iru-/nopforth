@@ -62,6 +62,8 @@ forth
 : negate   negate ;
 
 : tuck ( x y -> y x y )   swap over ;
+: within ( u lo hi -> flag )  push over <=  swap pop <  and ;
+: min ( a b -> a|b )          2dup < if drop exit then nip ;
 
 
 ( Dictionary )
@@ -166,6 +168,9 @@ forth
 32 value bl
 : cr      10 emit ;
 : space   bl emit ;
+: spaces ( u -> )   for space next ;
+
+: printable? ( c -> flag )    bl 127 within ;
 
 : char ( -> b )     bl word drop b@ ;
 macro
@@ -219,6 +224,20 @@ forth
 
 : depth ( -> u )   S0 sp@ - 8 /  2 - ;
 : .S   depth S0 16 - swap for  dup @ . 8 -  next drop  s" <- top " type ;
+
+: spfill ( u -> )    16 swap - 3 * spaces  space ;
+: .addr ( a -> )     base @ push hex  <# cell for # # next #> type  pop base ! ;
+: hb. ( u -> )       base @ push hex  <# bl hold # # #> type  pop base ! ;
+: bytes ( a u -> )   swap a! for b@+ hb. next ;
+: c. ( c -> )        dup printable? not if  drop [char] .  then  emit ;
+: text ( a u -> )    swap a! for b@+ c. next ;
+: line ( a u -> )    over .addr 2 spaces  2dup bytes dup spfill  text cr ;
+
+: dump ( a u -> )
+   begin dup while
+      2dup 16 min line
+       dup 16 min advance
+   repeat ;
 
 
 ( Files )
