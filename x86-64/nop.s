@@ -10,13 +10,6 @@
 
 .include "x86-64/sysdefs.inc"
 
-    .bss
-    .global bss0
-bss0: .space 0xA000
-
-    .global _end
-    .global _edata
-
     .text
 sysread:
     mov $SYSREAD, %rcx
@@ -431,8 +424,7 @@ word:
     ret
 
     .data
-_h: .quad bss0      # next dictionary address
-_hend: .quad _end   # last dictionary address
+_h:    .quad 0   # next dictionary address
 _latest: .quad _flatest
 
 _hole: .quad _hole    # address of last optimizable instruction
@@ -1221,19 +1213,34 @@ spfetch:
     dup_
     mov %rbp, %rax
     ret
-    
+
 resetdict:
-    lea bss0(%rip), %rcx
-    mov %rcx, _h(%rip)
+    dup_
+    push %rdx
+    mov $0, %rdi         # addr
+    mov $0xA000, %rsi    # length
+    mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rdx       # prot
+    mov $(MAP_ANONYMOUS | MAP_SHARED | MAP_32BIT), %r10   # flags
+    mov $-1, %r8         # fd
+    mov $0, %r9          # offset (ignored)
+    mov $SYSMMAP, %rax
+    syscall
+    pop %rdx
+    jz 1f
+    mov %rax, _h(%rip)
+    drop_
     ret
+1:
+    mov $1, %rax
+    call sysexit
 
 Br:
     int3
     ret
 
+    .data
 .include "x86-64/dicts.s"
 
-    .data
 _kernbuf:
 .incbin "portable/comments.ns"
 .incbin "x86-64/base.ns"
