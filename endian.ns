@@ -2,7 +2,7 @@
 : 1@+ ( a -> a+1 byte )   dup b@  swap 1 + swap ;
 
 ( Little endian )
-macro : le1@   [compile] b@ ;
+macro : le1@   ` b@ ;
 forth : le1@   le1@ ;
 
 : le2@ ( a -> n )   1@+ swap  b@ 8 lshift or ;
@@ -25,7 +25,7 @@ forth : le1@   le1@ ;
    b@  56 lshift
    or or or or or or or ;
 
-macro : le1!   [compile] b! ;
+macro : le1!   ` b! ;
 forth : le1!   le1! ;
 
 : le2! ( n a -> )   over swap  1!+   swap 8 rshift   swap b! ;
@@ -48,7 +48,7 @@ forth : le1!   le1! ;
 
 
 ( Big endian )
-macro : be1@   [compile] b@ ;
+macro : be1@   ` b@ ;
 forth : be1@   be1@ ;
 
 : be2@ ( a -> n )   1@+ 8 lshift  swap b@ or ;
@@ -69,7 +69,7 @@ forth : be1@   be1@ ;
    1@+  8 lshift  swap
     b@  or or or or or or or ;
 
-macro : be1!   [compile] b! ;
+macro : be1!   ` b! ;
 forth : be1!   be1! ;
 
 : be2! ( n a -> )   over 8 rshift  swap 1!+  b! ;

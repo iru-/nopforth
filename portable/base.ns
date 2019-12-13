@@ -3,26 +3,22 @@ forth
 : cfa ( a -> a' )   >cfa @ ;
 
 macro
-: [compile]   next-word mlatest dfind dup 0 = if abort0 then  cfa call, ;
+: `   next-word mlatest dfind dup 0 = if abort0 then  cfa call, ;
 
-: asave   [compile] a    [compile] push ;
-: arest   [compile] pop  [compile] a! ;
+: asave   ` a    ` push ;
+: arest   ` pop  ` a! ;
 
 : begin ( -> a )        here ;
-: while ( a -> a' a )   [compile] if swap ;
-: again ( a -> )        [compile] branch ;
-: repeat ( a a' -> )    [compile] again [compile] then ;
+: while ( a -> a' a )   ` if swap ;
+: again ( a -> )        ` branch ;
+: repeat ( a a' -> )    ` again ` then ;
 
-: for ( -> a a' )
-   [compile] push [compile] begin [compile] r@ [compile] while ;
+: for ( -> a a' )    ` push ` begin ` r@ ` while ;
+: next ( a a' -> )   ` rdec ` repeat ` rdrop ;
 
-: next ( a a' -> )
-   [compile] rdec [compile] repeat [compile] rdrop ;
-
-: 2push   [compile] push [compile] push ;
-: 2pop    [compile] pop [compile] pop ;
-: 2dup    [compile] over [compile] over ;
-
+: 2push   ` push ` push ;
+: 2pop    ` pop ` pop ;
+: 2dup    ` over ` over ;
 
 ( macro -> forth )
 \ We define forth words using the macros, so they can be used interactively
@@ -70,12 +66,12 @@ forth
 forth
 : find ( a u -> a'|0 )   latest @ dfind ;
 
-: ' ( -> a )   next-word find dup 0 = if abort0 then  cfa ;
+: ' ( -> a )      next-word            find dup 0 = if abort0 then  cfa ;
 : f' ( -> a|0 )   next-word flatest @ dfind dup 0 = if abort0 then  cfa ;
 
 macro
-: [']    '  [compile] lit ;
-: [f']   f' [compile] lit ;
+: [']    '  ` lit ;
+: [f']   f' ` lit ;
 forth
 
 : allot ( n -> )   here +  h ! ;
@@ -94,7 +90,7 @@ macro
 
    \ at runtime R has the address of the data area for the definition,
    \ compile a pop to retrieve that address
-   [compile] pop ;
+   ` pop ;
 forth
 
 : created ( a u -> )
@@ -111,7 +107,7 @@ forth
 : ?find ( -> a )   next-word find   dup 0 = if abort then ;
 
 macro
-: to ( n -> )   ?find pfa  [compile] lit [compile] ! ;
+: to ( n -> )   ?find pfa  ` lit ` ! ;
 forth
 : to ( n -> )   ?find pfa  ! ;
 
@@ -174,7 +170,7 @@ forth
 
 : char ( -> b )     bl word drop b@ ;
 macro
-: [char] ( -> b )   char [compile] lit ;
+: [char] ( -> b )   char ` lit ;
 forth
 
 : ," ( -> a u )       [char] " word  here swap 2dup 2push  move  2pop ;
@@ -193,12 +189,12 @@ forth
 
 macro
 : slit ( a len -> )
-   dup push  [compile] branch-unresolved  here push push
+   dup push  ` branch-unresolved  here push push
    \ r: len addr-of-string-start addr-of-branch-dst
-   mem,  pop [compile] then  pop [compile] lit  pop [compile] lit ;
+   mem,  pop ` then  pop ` lit  pop ` lit ;
 
-: s"   [char] " word  [compile] slit ;
-: ."   [compile] s" [f'] type call, ;
+: s"   [char] " word  ` slit ;
+: ."   ` s" [f'] type call, ;
 
 forth
 : ?abort ( flag a u -> )   2push if 2pop abort then  rdrop rdrop ;
@@ -299,7 +295,7 @@ create buf /buf allot
 
 
 ( Shell utilities )
-: #!  [compile] \ ;
+: #!  ` \ ;
 
 : #args ( -> u )      S0 @ @ ;
 : 'arg ( u -> a )     1 + cells  S0 @ + ;

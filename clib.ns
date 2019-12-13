@@ -19,10 +19,10 @@
 : cfunc>entry ( handle Cname Clen nopname noplen -> 'func )
    2push clib-symbol  2pop entry,  here swap >cfa ! ;
 
-: callC5   $C08949 3, [compile] drop ;
-: callC4   $C18948 3, [compile] drop ;
-: callC3   $C28948 3, [compile] drop ;
-: callC2   $C68948 3, [compile] drop ;
+: callC5   $C08949 3, ` drop ;
+: callC4   $C18948 3, ` drop ;
+: callC3   $C28948 3, ` drop ;
+: callC2   $C68948 3, ` drop ;
 : callC1   $C78948 3, ;
 
 : abscall, ( 'func -> )
@@ -42,7 +42,7 @@
    dup 1 > if callC2 then
        0 > if callC1 then
    pop swap 0 = if
-      abscall,  [compile] drop  [compile] exit
+      abscall,  ` drop ` exit
       exit
    then
    absjump, ;
