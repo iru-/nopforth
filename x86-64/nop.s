@@ -1218,7 +1218,7 @@ resetdict:
     dup_
     push %rdx
     mov $0, %rdi         # addr
-    mov $0xA000, %rsi    # length
+    mov $0x100000, %rsi  # length
     mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rdx       # prot
     mov $(MAP_ANONYMOUS | MAP_SHARED | MAP_32BIT), %r10   # flags
     mov $-1, %r8         # fd
