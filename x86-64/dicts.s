@@ -713,15 +713,15 @@ cxor_header:
     .ascii "xor"
 
     .align 8
-cnot_header:
+clnot_header:
     .quad cxor_header
-    .quad cnot
-    .byte 3
-    .ascii "not"
+    .quad clnot
+    .byte 1
+    .ascii "~"
 
     .align 8
 ceq_header:
-    .quad cnot_header
+    .quad clnot_header
     .quad ceq
     .byte 1
     .ascii "="

@@ -834,7 +834,7 @@ cxor:
     call comma4
     jmp cnip
 
-cnot:
+clnot:
     dup_
     mov $0xD0F748, %rax    # not %rax
     jmp comma3

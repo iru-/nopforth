@@ -20,6 +20,9 @@ macro
 : 2pop    ` pop ` pop ;
 : 2dup    ` over ` over ;
 
+: not   0 ` lit ` = ;
+
+
 ( macro -> forth )
 \ We define forth words using the macros, so they can be used interactively
 forth
@@ -54,7 +57,15 @@ forth
 : and      and ;
 : or       or ;
 : xor      xor ;
+: ~        ~ ;
+
 : not      not ;
+: =        = ;
+: ~=       ~= ;
+: <        < ;
+: <=       <= ;
+: >=       >= ;
+
 : negate   negate ;
 
 : tuck ( x y -> y x y )   swap over ;

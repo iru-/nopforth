@@ -25,8 +25,8 @@ d: all
 	gdb -x cmd.gdb nop
 
 test: nop
-	nop test/fileio.ns
-	@rm -f test.out
+	nop test/logic.ns
+	nop test/fileio.ns && rm -f test.out
 	nop test/clib.ns
 	nop test/endian.ns
 

@@ -1,0 +1,22 @@
+: test-not-pos   1 not if abort0 then ;      test-not-pos
+: test-not-neg   0 not if exit then abort0 ; test-not-neg
+
+: test-=-pos   1 1 = if exit then abort0 ; test-=-pos
+: test-=-neg   1 2 = if abort0 then ;      test-=-neg
+
+: test-~=-pos   1 2 ~= if exit then abort0 ; test-~=-pos
+: test-~=-neg   1 1 ~= if abort0 then ;      test-~=-neg
+
+: test-<-pos   1 2 < if exit then abort0 ; test-<-pos
+: test-<-neg   1 1 < if abort0 then ;      test-<-neg
+
+: test-<=-pos    1 2 <= if exit then abort0 ; test-<=-pos
+: test-<=-pos2   1 1 <= if exit then abort0 ; test-<=-pos2
+: test-<=-neg    2 1 <= if abort0 then ;      test-<=-neg
+
+: test->-pos   2 1 > if exit then abort0 ; test->-pos
+: test->-neg   1 1 > if abort0 then ;      test->-neg
+
+: test->=-pos    2 1 > if exit then abort0 ;  test->=-pos
+: test->=-pos2   1 1 >= if exit then abort0 ; test->=-pos2
+: test->=-neg    1 2 >= if abort0 then ;      test->=-neg
