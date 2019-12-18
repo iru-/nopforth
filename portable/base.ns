@@ -247,7 +247,8 @@ forth
    begin dup while
       2dup 16 min line
        dup 16 min advance
-   repeat ;
+   repeat
+   drop drop ;
 
 
 ( Files )
