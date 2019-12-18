@@ -326,7 +326,7 @@ variable arg-offset
 : env-value ( a -> a' u' )   z>s [char] = tail ;
 
 : (getenv) ( a u env# -> a' u'|0 )
-   push r@ 'env  dup 0 = if  drop drop drop 0  rdrop exit  then
+   push r@ 'env  dup 0 = if  nip nip 0  rdrop exit  then
    push 2dup pop env-name s= if  drop drop pop 'env env-value exit  then
    pop 1 + (getenv) ;
 
