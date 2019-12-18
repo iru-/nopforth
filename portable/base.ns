@@ -162,7 +162,7 @@ forth
    swap push  over b@ over = if  drop pop exit  then
    pop swap push  1 advance  pop search ;
 
-: align ( a u -> a' )   1 -  swap over +  swap not and ;
+: align ( a u -> a' )   1 -  swap over +  swap ~ and ;
 
 0 value record:
 : field: ( offset size alignment -> offset+size' )
