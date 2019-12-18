@@ -15,7 +15,7 @@ create buf /buf allot
 
 : next-fd ( -> fd | 0 )
   next-arg dup 0 = if drop exit then
-  0 open-file  dup 0 < s" can't open file" ?abort ;
+  0 open-file  dup 0 < " can't open file" ?abort ;
 
 : cat-args  begin next-fd dup while cat repeat drop ;
 

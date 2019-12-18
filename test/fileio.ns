@@ -1,11 +1,11 @@
-create fname " test.out" nip  value #fname
-create wbuf " text file" nip  value /wbuf
-create rbuf /wbuf 5 +  dup allot  value /rbuf
+create fname " test.out"
+create wbuf " text file"
+create rbuf wbuf str-len @ 5 +  dup allot  value /rbuf
 
 -1 value fd
 
 : test-create
-   fname #fname 420 create-file
+   fname str>mem 420 create-file
    dup 0 < if -1 sysexit then
    to fd ;
 
@@ -16,14 +16,14 @@ create rbuf /wbuf 5 +  dup allot  value /rbuf
    then ;
 
 : test-open
-   fname #fname 2 open-file  dup 0 < if
+   fname str>mem 2 open-file  dup 0 < if
       ."  open failed" cr
        1 sysexit
    then
    to fd ;
    
 : test-write
-   wbuf /wbuf fd write  /wbuf ~= if
+   wbuf str>mem fd write  wbuf str-len @ ~= if
       ." write failed" cr
       1 sysexit
   then ;
@@ -34,7 +34,7 @@ create rbuf /wbuf 5 +  dup allot  value /rbuf
       1 sysexit
    then
 
-   push  wbuf rbuf  pop mem=  0 = if
+   push  wbuf str-data @  rbuf  pop mem=  not if
       ." read contents do not match" cr
       1 sysexit
    then ;

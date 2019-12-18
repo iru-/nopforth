@@ -2,6 +2,6 @@ include clib.ns
 
 library: libc.so.6
 1 1 Cfunction: puts puts
-z" clib test" puts
+z" clib test" puts drop
 
 \ TODO test for errors

@@ -54,19 +54,4 @@ T .tree cr
 
 
 ( Strings )
-record:
-    cell cell field: str-length
-    cell cell field: str-data
-value /str
-
-: str! ( data length str -> )
-    push
-    r@ str-length !
-    r@ str-data !
-    rdrop ;
-
-: .str ( str -> )     dup str-data @  swap str-length @  type ;
-: s" ( -> 'string )   [ f' " call, ]  here dup push  /str allot  str!  pop ;
-
-s" ABCDEFGHIJ" dup .str cr
-.str cr
+" ABCDEFGHIJ" dup print cr  print cr

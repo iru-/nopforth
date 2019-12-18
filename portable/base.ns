@@ -162,6 +162,9 @@ forth
    swap push  over b@ over = if  drop pop exit  then
    pop swap push  1 advance  pop search ;
 
+: head ( a u b -> a u' )   push 2dup pop search  nip - ;
+: tail ( a u b -> a u' )   search  dup if 1 advance then ;
+
 : align ( a u -> a' )   1 -  swap over +  swap ~ and ;
 
 0 value record:
@@ -184,34 +187,66 @@ macro
 : [char] ( -> b )   char ` lit ;
 forth
 
-: " ( -> a u )
-   [char] " word  here push  dup allot
-   tuck  r@ swap move  pop swap ;
+record:
+   cell 1    field: str-len
+   cell cell field: str-data
+value /str
 
-: z" ( -> a )         "  over +  0 swap b! ;
-: s>z ( a u -> a' )   here swap 2dup 2push  move  2pop over +  0 swap b! ;
-: zlen ( a -> u )     a! 0 begin b@+ while 1 + repeat ;
-: z>s ( a -> a' u )   dup zlen ;
-
-: ."   [char] " word type ;
-
-: s= ( a1 u1 a2 u2 -> f )
-   push swap pop over ~= if  drop drop drop 0 exit  then mem= ;
-
-: head ( a u b -> a u' )   push 2dup pop search  nip - ;
-: tail ( a u b -> a u' )   search  dup if 1 advance then ;
+: str! ( a len dst -> )      tuck  str-len !  str-data ! ;
+: str>mem ( str -> a len )   dup str-data @  swap str-len @ ;
+: str, ( a len -> )
+   here push  /str allot  here push
+   tuck mem,  pop swap pop str! ;
 
 macro
-: slit ( a len -> )
+: strlit ( a len -> )
+   ` branch-unresolved  here push push  \ r: 'str 'resolve
+   str,  pop ` then  pop ` lit ;
+
+macro : "            [char] " word  ` strlit ;
+forth : " ( -> a )   here  [char] " word str, ;
+
+: print ( str -> )   str>mem type ;
+: println            print cr ;
+
+macro : ."   ` "  [f'] print call, ;
+forth : ."   [char] " word type ;
+
+forth
+: str-len= ( str1 str2 -> ? )   str-len @  swap str-len @ = ;
+
+: str= ( str1 str2 -> ? )
+   2dup str-len= not if  drop drop 0 exit  then
+   str-data @ swap  str>mem  mem= ;
+
+: str-size ( str -> size )   str-len @ /str + ;
+
+: str-copy ( str dst -> )
+   push  str>mem
+   r@ /str +  over r@ str!
+   pop str-data @  swap move ;
+
+: str-concat ( src dst -> )
+   push  str>mem  r@ str>mem +  swap dup push  move
+   pop  pop str-len  +! ;
+
+
+: s>z ( a u -> a' )     here push  dup allot  r@ swap move  0 b,  pop ;
+: zlen ( a -> u )       a! 0 begin b@+ while 1 + repeat ;
+: z" ( -> a )           [char] " word s>z ;
+: z>mem ( a -> a' u )   dup zlen ;
+
+macro
+: memlit ( a len -> )
    dup push  ` branch-unresolved  here push push
    \ r: len addr-of-string-start addr-of-branch-dst
    mem,  pop ` then  pop ` lit  pop ` lit ;
 
-: "    [char] " word  ` slit ;
-: ."   ` " [f'] type call, ;
+macro : ,"   [char] " word  ` memlit ;
+forth : ,"   [char] " word   here over allot  swap move ;
 
 forth
-: ?abort ( flag a u -> )   2push if 2pop abort then  rdrop rdrop ;
+: ?abort ( flag str -> )  push  if pop str>mem abort then  rdrop ;
 
 
 ( Pictured numeric conversion )
@@ -314,7 +349,7 @@ create buf /buf allot
 
 : #args ( -> u )      S0 @ @ ;
 : 'arg ( u -> a )     1 + cells  S0 @ + ;
-: arg ( u -> a u' )   'arg @ z>s ;
+: arg ( u -> a u' )   'arg @ z>mem ;
 : 'env ( u -> a )     #args 1 + + 'arg @ ;
 
 variable arg-offset
@@ -322,8 +357,8 @@ variable arg-offset
    arg-offset @  dup #args >= if  drop 0 0 exit  then
    arg  1 arg-offset +! ;
 
-: env-name ( a -> a u )      z>s [char] = head ;
-: env-value ( a -> a' u' )   z>s [char] = tail ;
+: env-name ( a -> a u )      z>mem [char] = head ;
+: env-value ( a -> a' u' )   z>mem [char] = tail ;
 
 : (getenv) ( a u env# -> a' u'|0 )
    push r@ 'env  dup 0 = if  nip nip 0  rdrop exit  then

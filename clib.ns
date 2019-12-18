@@ -1,9 +1,6 @@
 1 value RTLD_LAZY
 
-: zlen ( a -> u )   a! 0 begin b@+ while 1 + repeat ;
-: z>s ( a -> a u )   dup zlen ;
-
-: errorstr ( -> a u )   dlerror dup if z>s exit then drop 0 0 ;
+: errorstr ( -> a u )   dlerror dup 0 = if z>mem exit then drop 0 0 ;
 : ?clib-abort ( flag -> )   if errorstr abort then ;
 
 : clib-load ( a u -> handle )
