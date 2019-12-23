@@ -357,15 +357,21 @@ variable arg-offset
    arg-offset @  dup #args >= if  drop 0 0 exit  then
    arg  1 arg-offset +! ;
 
-: env-name ( a -> a u )      z>mem [char] = head ;
-: env-value ( a -> a' u' )   z>mem [char] = tail ;
+create senv /str allot
+: env>mem ( i -> a u )          'env z>mem ;
+: >env-name ( a u -> a u' )     [char] = head  senv str! ;
+: >env-value ( a u -> a' u' )   [char] = tail  senv str! ;
+: env-name ( i -> str )         env>mem >env-name  senv ;
+: env-value ( i -> str )        env>mem >env-value senv ;
+: env= ( str i -> ? )           env-name str= ;
+: env-end? ( i -> ? )           'env 0 = ;
 
-: (getenv) ( a u env# -> a' u'|0 )
-   push r@ 'env  dup 0 = if  nip nip 0  rdrop exit  then
-   push 2dup pop env-name s= if  drop drop pop 'env env-value exit  then
-   pop 1 + (getenv) ;
+: (getenv) ( name i -> value )
+   dup env-end? if  drop drop 0 exit  then
+   2dup env= if  nip env-value exit  then
+   1 + (getenv) ;
 
-: getenv ( a u -> a' u'|0 )   0 (getenv) ;
+: getenv ( name -> value )   0 (getenv) ;
 
 
 marker empty
