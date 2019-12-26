@@ -176,6 +176,9 @@ forth
 ( Strings )
 forth
 32 value bl
+
+: emit ( b -> )   here b!  here 1 type ;
+
 : cr      10 emit ;
 : space   bl emit ;
 : spaces ( u -> )   for space next ;

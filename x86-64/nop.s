@@ -94,33 +94,6 @@ type:
     ret
 
     .data
-_buf1: .byte 0
-    .text
-
-emit:
-    movb %al, _buf1(%rip)
-    lea _buf1(%rip), %rax
-    dup_
-    mov $1, %rax
-    jmp type
-
-    .data
-_binpos:  .word 0
-    .text
-binkey:
-    movzwq _binpos(%rip), %rcx
-    mov $_kerntot, %rdx
-    cmp %rcx, %rdx
-    dup_
-    jne 1f
-    mov $-1, %rax
-    ret
-1:  lea _kernbuf(%rip), %rax
-    movzbq (%rcx, %rax), %rax
-    incw _binpos(%rip)
-    ret
-
-    .data
 _keyxt: .quad 0
     .text
 keyxt:
@@ -865,6 +838,8 @@ clit:
     .data
 _qmsg:     .ascii "?"
 _qlen =    . - _qmsg
+_nl: .ascii "\n"
+
     .text
 abort:
     test %rax, %rax
@@ -879,8 +854,10 @@ abort:
     mov $_qlen, %rax
 1:  call type
     dup_
-    mov $'\n', %rax
-    call emit
+    lea _nl(%rip), %rax
+    dup_
+    mov $1, %rax
+    call type
     call resetinput
     call resetstacks
     jmp warm

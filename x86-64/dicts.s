@@ -102,15 +102,8 @@ type_header:
     .ascii "type"
 
     .align 8
-emit_header:
-    .quad type_header
-    .quad emit
-    .byte 4
-    .ascii "emit"
-
-    .align 8
 keyxt_header:
-    .quad emit_header
+    .quad type_header
     .quad keyxt
     .byte 4
     .ascii "'key"
