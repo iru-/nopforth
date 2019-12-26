@@ -104,19 +104,6 @@ emit:
     mov $1, %rax
     jmp type
 
-termkey:
-    dup_
-    lea _buf1(%rip), %rax
-    dup_
-    mov $1, %rax
-    call expect
-    test %rax, %rax  # EOF
-    jz 1f
-    movzbq _buf1(%rip), %rax
-    ret
-1:  mov $-1, %rax
-    ret
-
     .data
 _binpos:  .word 0
     .text
@@ -303,9 +290,6 @@ _intot:  .quad 0    # input buffer total size
 _inused: .quad 0    # input buffer used size
 _inpos:  .quad 0    # input buffer position
 
-_termbuf: .space 256, 0    # terminal input buffer
-_termtot: .quad 256        # terminal input buffer total size
-
 _base: .quad 10      # numeric base
 
     .text
@@ -337,16 +321,6 @@ inused:
 inpos:
     dup_
     lea _inpos(%rip), %rax
-    ret
-
-termbuf:
-    dup_
-    lea _termbuf(%rip), %rax
-    ret
-
-termtot:
-    dup_
-    lea _termtot(%rip), %rax
     ret
 
 source:
@@ -909,7 +883,7 @@ abort:
     call emit
     call resetinput
     call resetstacks
-    jmp termloop
+    jmp warm
 
     .data
 _search:
@@ -1028,49 +1002,14 @@ refill:
     ret
 1:  jmp *%rcx
 
-termrefill:
-    call prompt
-    call resetinput
-
-1:  # if we filled the whole input, exit
-    mov _inused(%rip), %rcx
-    mov _intot(%rip), %rdx
-    cmp %rcx, %rdx
-    jne 2f
-    dup_
-    mov $1, %rax
-    ret
-
-2:  call key
-    cmpb $-1, %al   # EOF
-    jne 3f
-    mov $0, %rax
-    mov _inused(%rip), %rcx
-    or %rcx, %rax
-    ret
-
-3:  cmpb $10, %al
-    jne 4f
-    mov $1, %rax
-    ret
-
-4:  mov %rax, %rdx
-    mov _inbuf(%rip), %rax
-    mov _inused(%rip), %rcx
-    lea (%rcx, %rax), %rax          # rax = pointer to next byte to be used
-    mov %dl, (%rax)
-    drop_
-    inc %rcx
-    mov %rcx, _inused(%rip)
-    jmp 1b
-
-readkern:
+setreadkern:
     lea _kernbuf(%rip), %rcx
     mov %rcx, _inbuf(%rip)
     movq $_kerntot, _intot(%rip)
     movq $_kerntot, _inused(%rip)
     xor %rcx, %rcx
     mov %rcx, _inpos(%rip)
+    ret
 
 readloop:
     call qrefill
@@ -1143,24 +1082,8 @@ boot:
     call resetstacks
     call resetdict
     call stopcomp
-
-    call readkern
-
-termloop:
-    lea okprompt(%rip), %rcx
-    mov %rcx, _promptxt(%rip)
-    # setup reading from stdin
-    xor %rcx, %rcx
-    mov %rcx, _infd(%rip)
-    lea _termbuf(%rip), %rcx
-    mov %rcx, _inbuf(%rip)
-    mov _termtot(%rip), %rcx
-    mov %rcx, _intot(%rip)
-    lea termkey(%rip), %rcx
-    mov %rcx, _keyxt(%rip)
-    lea termrefill(%rip), %rcx
-    mov %rcx, _refillxt(%rip)
-    call resetinput
+    call setreadkern
+warm:
     call readloop
     jmp bye
 

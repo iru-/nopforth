@@ -109,15 +109,8 @@ emit_header:
     .ascii "emit"
 
     .align 8
-termkey_header:
-    .quad emit_header
-    .quad termkey
-    .byte 7
-    .ascii "termkey"
-
-    .align 8
 keyxt_header:
-    .quad termkey_header
+    .quad emit_header
     .quad keyxt
     .byte 4
     .ascii "'key"
@@ -200,22 +193,8 @@ inpos_header:
     .ascii "inpos"
 
     .align 8
-termbuf_header:
-    .quad inpos_header
-    .quad termbuf
-    .byte 7
-    .ascii "termbuf"
-
-    .align 8
-termtot_header:
-    .quad termbuf_header
-    .quad termtot
-    .byte 7
-    .ascii "termtot"
-
-    .align 8
 source_header:
-    .quad termtot_header
+    .quad inpos_header
     .quad source
     .byte 6
     .ascii "source"
@@ -423,15 +402,8 @@ refill_header:
     .ascii "refill"
 
     .align 8
-termrefill_header:
-    .quad refill_header
-    .quad termrefill
-    .byte 10
-    .ascii "termrefill"
-
-    .align 8
 readloop_header:
-    .quad termrefill_header
+    .quad refill_header
     .quad readloop
     .byte 8
     .ascii "readloop"

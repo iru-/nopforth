@@ -376,7 +376,15 @@ create senv /str allot
 
 marker empty
 
+: term-refill ( -> n )
+   ." ok "  file-refill dup 0 > if  -1 inused +!  1 - then ;
+
+: term-loop
+   'prompt @ push  ['] okprompt 'prompt !  save-input
+   0 buf /buf 0 0 ['] term-refill input!  readloop  restore-input
+   pop 'prompt ! ;
+
 anon:
-  #args 1 = if banner exit then
-  2 arg-offset !  1 arg included bye ;
+  #args 1 = if banner term-loop exit then
+  2 arg-offset !  1 arg included ;
 execute
