@@ -836,31 +836,34 @@ clit:
     jmp comma
 
     .data
-_qmsg:     .ascii "?"
+_abortxt:  .quad abort1
+_qmsg:     .ascii "?\n"
 _qlen =    . - _qmsg
-_nl: .ascii "\n"
 
     .text
-abort:
-    test %rax, %rax
-    jnz 1f
-    mov _inbuf(%rip), %rcx
-    mov %rcx, (%rbp)
+abortxt:
+    dup_
+    lea _abortxt(%rip), %rax
+    ret
+
+abort1:
+    # Discard the argument passed in. It is there only to make this abort
+    # consistent with the portable one
+    mov _inbuf(%rip), %rax
+    dup_
     mov _inpos(%rip), %rax
     call type
     dup_
     lea _qmsg(%rip), %rax
     dup_
     mov $_qlen, %rax
-1:  call type
-    dup_
-    lea _nl(%rip), %rax
-    dup_
-    mov $1, %rax
     call type
     call resetinput
     call resetstacks
     jmp warm
+
+abort:
+    jmp *_abortxt(%rip)
 
     .data
 _search:
@@ -926,9 +929,8 @@ eval:
     pop %rcx
     mov _action+24(%rip), %rcx
     call *%rcx
-    dup_
+    drop_
     xor %rax, %rax
-    dup_
     jmp abort
 
 dictrewind:
@@ -952,33 +954,6 @@ resetinput:
     mov %rcx, _inpos(%rip)
     ret
 
-    .data
-_refillxt:  .quad 0
-    .text
-
-refillxt:
-    dup_
-    lea _refillxt(%rip), %rax
-    ret
-
-qrefill:
-    mov _inpos(%rip), %rcx
-    mov _inused(%rip), %rdx
-    cmp %rcx, %rdx
-    je refill
-    dup_
-    mov $1, %rax
-    ret
-
-refill:
-    mov _refillxt(%rip), %rcx
-    test %rcx, %rcx
-    jnz 1f
-    dup_
-    xor %rax, %rax
-    ret
-1:  jmp *%rcx
-
 setreadkern:
     lea _kernbuf(%rip), %rcx
     mov %rcx, _inbuf(%rip)
@@ -989,10 +964,10 @@ setreadkern:
     ret
 
 readloop:
-    call qrefill
-    cmp $0, %rax
-    drop_
-    jnz 1f
+    mov _inpos(%rip), %rcx
+    mov _inused(%rip), %rdx
+    cmp %rcx, %rdx
+    jne 1f
     ret
 1:  call nextword
     test %rax, %rax
@@ -1008,35 +983,12 @@ readloop:
 _banner:    .ascii "nop forth\n"
 _blen =     . - _banner
 
-_promptxt:      .quad 0
-_promptmsg:     .ascii "ok "
-_promptlen =    . - _promptmsg
-
     .text
 banner:
     dup_
     lea _banner(%rip), %rax
     dup_
     mov $_blen, %rax
-    jmp type
-
-promptxt:
-    dup_
-    lea _promptxt(%rip), %rax
-    ret
-
-prompt:
-    mov _promptxt(%rip), %rcx
-    test %rcx, %rcx
-    jnz 1f
-    ret
-1:  jmp *%rcx
-
-okprompt:
-    dup_
-    lea _promptmsg(%rip), %rax
-    dup_
-    mov $_promptlen, %rax
     jmp type
 
 bye:
@@ -1103,7 +1055,8 @@ checkstacks:
     lea _overerr(%rip), %rax
     dup_
     mov $_overerrlen, %rax
-3:
+3:  call type
+    dup_
     jmp abort
 
 S0:

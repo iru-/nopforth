@@ -4,11 +4,11 @@ create s3 " abc"  drop
 create s1+s3 " abcdabc" drop
 create s5 /str 8 + allot
 
-: test-eq-len-diff-data   s1 s2 str= if abort0 then ; test-eq-len-diff-data
-: test-diff-lendata       s2 s3 str= if abort0 then ; test-diff-lendata
+: test-eq-len-diff-data   s1 s2 str= if 0 abort then ; test-eq-len-diff-data
+: test-diff-lendata       s2 s3 str= if 0 abort then ; test-diff-lendata
 : test-eq-lendata         s3 s3 str= if exit then ;   test-eq-lendata
 
-: test-copy   s1 s5 str-copy  s5 s1 str= if exit then abort0 ; test-copy
+: test-copy   s1 s5 str-copy  s5 s1 str= if exit then 0 abort ; test-copy
 
-: test-concat   s3 s5 str-concat  s5 s1+s3 str= if exit then abort0 ;
+: test-concat   s3 s5 str-concat  s5 s1+s3 str= if exit then 0 abort ;
 test-concat

@@ -4,15 +4,15 @@ $3399AABBCCDDEEFF value V
 variable var
 : zero   0 var ! ;
 
-: test-le1   zero  V var le1!  var le1@  V               $FF and ~= if abort0 then ;
-: test-le2   zero  V var le2!  var le2@  V             $FFFF and ~= if abort0 then ;
-: test-le4   zero  V var le4!  var le4@  V         $FFFFFFFF and ~= if abort0 then ;
-: test-le8   zero  V var le8!  var le8@  V $FFFFFFFFFFFFFFFF and ~= if abort0 then ;
+: test-le1   zero  V var le1!  var le1@  V               $FF and ~= if 0 abort then ;
+: test-le2   zero  V var le2!  var le2@  V             $FFFF and ~= if 0 abort then ;
+: test-le4   zero  V var le4!  var le4@  V         $FFFFFFFF and ~= if 0 abort then ;
+: test-le8   zero  V var le8!  var le8@  V $FFFFFFFFFFFFFFFF and ~= if 0 abort then ;
 
-: test-be1   zero  V var be1!  var be1@  V               $FF and ~= if abort0 then ;
-: test-be2   zero  V var be2!  var be2@  V             $FFFF and ~= if abort0 then ;
-: test-be4   zero  V var be4!  var be4@  V         $FFFFFFFF and ~= if abort0 then ;
-: test-be8   zero  V var be8!  var be8@  V $FFFFFFFFFFFFFFFF and ~= if abort0 then ;
+: test-be1   zero  V var be1!  var be1@  V               $FF and ~= if 0 abort then ;
+: test-be2   zero  V var be2!  var be2@  V             $FFFF and ~= if 0 abort then ;
+: test-be4   zero  V var be4!  var be4@  V         $FFFFFFFF and ~= if 0 abort then ;
+: test-be8   zero  V var be8!  var be8@  V $FFFFFFFFFFFFFFFF and ~= if 0 abort then ;
 
 test-le1
 test-le2

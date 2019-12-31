@@ -346,8 +346,15 @@ ccall_header:
     .ascii "call,"
 
     .align 8
-abort_header:
+abortxt_header:
     .quad ccall_header
+    .quad abortxt
+    .byte 6
+    .ascii "'abort"
+
+    .align 8
+abort_header:
+    .quad abortxt_header
     .quad abort
     .byte 5
     .ascii "abort"
@@ -374,29 +381,8 @@ resetinput_header:
     .ascii "reset-input"
 
     .align 8
-refillxt_header:
-    .quad resetinput_header
-    .quad refillxt
-    .byte 7
-    .ascii "'refill"
-
-    .align 8
-qrefill_header:
-    .quad refillxt_header
-    .quad qrefill
-    .byte 7
-    .ascii "?refill"
-
-    .align 8
-refill_header:
-    .quad qrefill_header
-    .quad refill
-    .byte 6
-    .ascii "refill"
-
-    .align 8
 readloop_header:
-    .quad refill_header
+    .quad resetinput_header
     .quad readloop
     .byte 8
     .ascii "readloop"
@@ -409,22 +395,8 @@ banner_header:
     .ascii "banner"
 
     .align 8
-okprompt_header:
-    .quad banner_header
-    .quad okprompt
-    .byte 8
-    .ascii "okprompt"
-
-    .align 8
-promptxt_header:
-    .quad okprompt_header
-    .quad promptxt
-    .byte 7
-    .ascii "'prompt"
-
-    .align 8
 bye_header:
-    .quad promptxt_header
+    .quad banner_header
     .quad bye
     .byte 3
     .ascii "bye"

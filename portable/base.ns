@@ -1,9 +1,8 @@
 forth
-: abort0   0 0 abort ;
 : cfa ( a -> a' )   >cfa @ ;
 
 macro
-: `   next-word mlatest dfind dup 0 = if abort0 then  cfa call, ;
+: `   next-word mlatest dfind dup 0 = if abort then  cfa call, ;
 
 : asave   ` a    ` push ;
 : arest   ` pop  ` a! ;
@@ -77,8 +76,8 @@ forth
 forth
 : find ( a u -> a'|0 )   latest @ dfind ;
 
-: ' ( -> a )      next-word            find dup 0 = if abort0 then  cfa ;
-: f' ( -> a|0 )   next-word flatest @ dfind dup 0 = if abort0 then  cfa ;
+: ' ( -> a )      next-word            find dup 0 = if abort then  cfa ;
+: f' ( -> a|0 )   next-word flatest @ dfind dup 0 = if abort then  cfa ;
 
 macro
 : [']    '  ` lit ;
@@ -248,8 +247,8 @@ macro
 macro : ,"   [char] " word  ` memlit ;
 forth : ,"   [char] " word   here over allot  swap move ;
 
-forth
-: ?abort ( flag str -> )  push  if pop str>mem abort then  rdrop ;
+
+: depth ( -> u )   S0 sp@ - 8 /  2 - ;
 
 
 ( Pictured numeric conversion )
@@ -266,11 +265,9 @@ forth
 : abs ( n -> |n| )   dup 0 < if negate then ;
 : sign ( n -> )   0 < if  [char] - hold  then ;
 
-
 : (.) ( n -> )   dup push abs <#  #s pop sign #> ;
 : . ( n -> )     (.) type space ;
 
-: depth ( -> u )   S0 sp@ - 8 /  2 - ;
 : .S   depth S0 16 - swap for  dup @ . 8 -  next drop  ." <- top " ;
 
 : spfill ( u -> )    16 swap - 3 * spaces  space ;
@@ -287,6 +284,36 @@ forth
        dup 16 min advance
    repeat
    drop drop ;
+
+
+( Read-eval loop )
+forth
+0 value 'rel
+: rel   'rel execute ;
+
+0 value 'warm
+: warm   'warm dup if execute then  bye ;
+
+: .abort ( str -> )
+   dup 0 ~= if println exit then  drop
+   inbuf @ inpos @ here str!  here print  [char] ? emit cr ;
+
+: abort ( str -> )         .abort reset-input resetstacks warm ;
+: ?abort ( flag str -> )   push  if pop abort then  rdrop ;
+
+: ?underflow
+   depth 0 >= if exit then
+   " stack underflow!" println  0 abort ;
+
+: evaluate
+   next-word dup 0 = if  drop drop exit  then
+   eval ?underflow evaluate ;
+
+variable 'refill  \ must be set before use
+: refill               'refill @ execute ;
+: refilled? ( -> n )   inpos @ inused @ ~= if -1 exit then  refill ;
+
+anon: begin refilled? while evaluate repeat ;  to 'rel
 
 
 ( Files )
@@ -338,11 +365,9 @@ forth
 create buf /buf allot
 
 : included ( a u -> err )
-   0 open-file dup 0 < if  drop -1 exit  then
-   'prompt @ push  0 'prompt !  save-input
-   dup buf /buf 0 0 ['] file-refill input!
-   push  readloop  pop close drop
-   restore-input  pop 'prompt !  0 ;
+   0 open-file dup 0 < if exit then
+   save-input  dup buf /buf 0 0 ['] file-refill input!
+   push  rel  pop close drop  restore-input  0 ;
 
 : include   10 word included " can't include file" ?abort ;
 
@@ -379,15 +404,12 @@ create senv /str allot
 
 marker empty
 
-: term-refill ( -> n )
-   ." ok "  file-refill dup 0 > if  -1 inused +!  1 - then ;
+: term-refill ( -> n )   ." ok "  file-refill dup 0 = if cr then ;
+: term-loop              0 buf /buf 0 0 ['] term-refill input!  rel ;
 
-: term-loop
-   'prompt @ push  ['] okprompt 'prompt !  save-input
-   0 buf /buf 0 0 ['] term-refill input!  readloop  restore-input
-   pop 'prompt ! ;
+' abort 'abort !
 
 anon:
-  #args 1 = if banner term-loop exit then
-  2 arg-offset !  1 arg included ;
-execute
+   #args 1 = if  banner  ['] term-loop to 'warm  term-loop exit  then
+   2 arg-offset !  1 arg included bye
+; execute
