@@ -981,12 +981,14 @@ eval:
     jmp abort
 
 dictrewind:
-    call latest                # rax = pointer to latest entry
-    mov (%rax), %rax           # rax = pointer to next to latest entry
-    mov _latest(%rip), %rcx
-    mov %rax, (%rcx)
+    call latest
+    mov (%rax), %rax    # rax = [mf]latest
+    mov (%rax), %rcx    # rcx = latest defined header in current dict
+    mov (%rcx), %rdx    # rdx = next to latest defined header
+
+    mov %rdx, (%rax)    # make next to latest the new latest
     drop_
-    ret
+    jmp stopcomp
 
 execute:
     mov %rax, %rbx
