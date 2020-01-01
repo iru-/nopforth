@@ -181,7 +181,7 @@ digit:
     mov %rax, %rdx        # rdx = base
     drop_                 # rax = ascii digit
     call toupper          # normalize to upper case
-    sub $48, %rax         # convert to binary
+    sub $'0', %rax        # convert to binary
     cmp $9, %rax          # is it <= 9?
     jle 2f                # yes, go out
                           # no, number is in a base > 10
@@ -190,11 +190,13 @@ digit:
     mov $0, %rcx          # no, rcx = 0
     jnl 1f                # yes,
     mov $-1, %rcx         # rcx = -1
-1:  or %rax, %rcx
-2:  cmp %rdx, %rax        # is the number less than base?
-    jl 3f                 # yes, we're done
-    mov $-1, %rax         # no, it is an error
-3:  ret
+1:  or %rcx, %rax
+2:  cmp $0, %rax
+    jl 3f
+    cmp %rdx, %rax        # is the number less than base?
+    jl 4f                 # yes, we're done
+3:  mov $-1, %rax         # no, it is an error
+4:  ret
 
 number:
     mov %rax, %rcx        # rcx = length

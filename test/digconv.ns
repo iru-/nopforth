@@ -1,0 +1,14 @@
+\ Show digit conversion to binary in many bases
+
+: qemit  [char] ' emit  emit  [char] ' emit  space space ;
+: .dig   adig . ;
+
+: table
+   32 begin dup 127 < while
+     dup qemit
+     dup 2 .dig  dup 8 .dig  dup 10 .dig  dup 16 .dig  dup 18 .dig cr
+     1 +
+   repeat
+   drop ;
+
+table
