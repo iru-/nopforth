@@ -893,8 +893,7 @@ eval:
     # discard saved string
     pop %rcx
     pop %rcx
-    mov _action(%rip), %rcx
-    jmp *%rcx
+    jmp *_action(%rip)
 
 1:  mov (%rsp), %rax
     dup_
@@ -908,8 +907,7 @@ eval:
     # discard saved string
     pop %rcx
     pop %rcx
-    mov _action+8(%rip), %rcx
-    jmp *%rcx
+    jmp *_action+8(%rip)
 
 2:  mov (%rsp), %rax
     dup_
@@ -922,13 +920,11 @@ eval:
     # discard saved string
     pop %rcx
     pop %rcx
-    mov _action+16(%rip), %rcx
-    jmp *%rcx
+    jmp *_action+16(%rip)
 
 4:  pop %rcx
     pop %rcx
-    mov _action+24(%rip), %rcx
-    call *%rcx
+    call *_action+24(%rip)
     drop_
     xor %rax, %rax
     jmp abort
