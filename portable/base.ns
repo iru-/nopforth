@@ -358,16 +358,22 @@ forth
 : restore-input
    pop pop  pop pop pop pop pop pop input!  push push ;
 
-: file-refill ( -> n )
-   0 inpos !  inbuf @ intot @ infd @ read-line  dup inused ! ;
+: fsize ( fd -> u )   push 0 2 pop position-file ;
 
-128 value linemax
-: linebuf ( -> a u )   here linemax  dup allot ;
+: sysmmap ( addr length prot flags fd offset -> addr' )   9 syscall6 ;
+: sysmunmap ( addr length -> err )   11 syscall2 ;
+
+: fmap ( fd -> a u ) \ PROT_READ MAP_PRIVATE
+   dup push fsize  0 over 1 2 pop 0 sysmmap  swap ;
+
+: norefill ( -> n )   0 ;
 
 : included ( a u -> err )
    0 open-file dup 0 < if exit then
-   save-input  dup linebuf 0 0 ['] file-refill input!
-   push  rel  pop close drop  restore-input  0 ;
+   save-input  dup dup fmap dup 0 ['] norefill input!
+   push rel pop
+   close drop  inbuf @ intot @ sysmunmap drop
+   restore-input  0 ;
 
 : include   10 word included " can't include file" ?abort ;
 
@@ -404,8 +410,12 @@ create senv /str allot
 
 marker empty
 
-: term-refill ( -> n )   ." ok "  file-refill dup 0 = if cr then ;
-: term-loop              0 linebuf 0 0 ['] term-refill input!  rel ;
+: term-refill ( -> n )
+   ." ok "
+   0 inpos !  inbuf @ intot @ infd @ read-line  dup inused !
+   dup 0 = if cr then ;
+
+: term-loop   0  here 128 dup allot  0 0 ['] term-refill input!  rel ;
 
 ' abort 'abort !
 

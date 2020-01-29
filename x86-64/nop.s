@@ -34,6 +34,9 @@ sysexit:
     movq $SYSEXIT, %rax
     syscall
 
+sys6:
+    mov %rax, %r9
+    drop_
 sys5:
     mov %rax, %r8
     drop_
@@ -52,6 +55,7 @@ sys1:
     syscall
     ret
 
+syscall6:  push %rax; drop_; jmp sys6
 syscall5:  push %rax; drop_; jmp sys5
 syscall4:  push %rax; drop_; jmp sys4
 syscall3:  push %rax; drop_; jmp sys3

@@ -53,8 +53,15 @@ _dlopen_header:
     .ascii "dlopen"
 
    .align 8
-syscall5_header:
+syscall6_header:
     .quad _dlopen_header
+    .quad syscall6
+    .byte 8
+    .ascii "syscall6"
+
+   .align 8
+syscall5_header:
+    .quad syscall6_header
     .quad syscall5
     .byte 8
     .ascii "syscall5"
