@@ -411,5 +411,5 @@ marker empty
 
 anon:
    #args 1 = if  banner  ['] term-loop to 'warm  term-loop exit  then
-   2 arg-offset !  1 arg included bye
+   2 arg-offset !  1 arg included " can't run file" ?abort
 ; execute
