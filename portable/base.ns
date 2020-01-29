@@ -361,12 +361,12 @@ forth
 : file-refill ( -> n )
    0 inpos !  inbuf @ intot @ infd @ read-line  dup inused ! ;
 
-256 value /buf
-create buf /buf allot
+128 value linemax
+: linebuf ( -> a u )   here linemax  dup allot ;
 
 : included ( a u -> err )
    0 open-file dup 0 < if exit then
-   save-input  dup buf /buf 0 0 ['] file-refill input!
+   save-input  dup linebuf 0 0 ['] file-refill input!
    push  rel  pop close drop  restore-input  0 ;
 
 : include   10 word included " can't include file" ?abort ;
@@ -405,7 +405,7 @@ create senv /str allot
 marker empty
 
 : term-refill ( -> n )   ." ok "  file-refill dup 0 = if cr then ;
-: term-loop              0 buf /buf 0 0 ['] term-refill input!  rel ;
+: term-loop              0 linebuf 0 0 ['] term-refill input!  rel ;
 
 ' abort 'abort !
 
