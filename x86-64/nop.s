@@ -38,7 +38,7 @@ sys5:
     mov %rax, %r8
     drop_
 sys4:
-    mov %rax, %rcx
+    mov %rax, %r10
     drop_
 sys3:
     mov %rax, %rdx
