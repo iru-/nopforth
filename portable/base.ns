@@ -366,11 +366,16 @@ forth
 : fmap ( fd -> a u ) \ PROT_READ MAP_PRIVATE
    dup push fsize  0 over 1 2 pop 0 sysmmap  swap ;
 
-: norefill ( -> n )   0 ;
+: inbuf+                inbuf +! ;
+: intot-                negate intot +! ;
+: setup                 0 inpos !  inused @ dup inbuf+ intot- ;
+: ?skip ( a u -> a' )   0 = if exit then   dup b@ 10 = if 1 + then ;
+: eolscan               inbuf @ intot @ 10 scan  ?skip ;
+: frefill ( -> n )      setup  eolscan inbuf @ -  dup inused ! ;
 
 : included ( a u -> err )
    0 open-file dup 0 < if exit then
-   save-input  dup dup fmap dup 0 ['] norefill input!
+   save-input  dup dup fmap 0 0 ['] frefill input!
    push rel pop
    close drop  inbuf @ intot @ sysmunmap drop
    restore-input  0 ;
