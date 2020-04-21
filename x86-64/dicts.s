@@ -122,7 +122,7 @@ key_header:
     .byte 3
     .ascii "key"
 
-    .align 8 HERE
+    .align 8
 skip_header:
     .quad key_header
     .quad skip
