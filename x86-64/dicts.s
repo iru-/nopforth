@@ -409,8 +409,36 @@ bye_header:
     .ascii "bye"
 
     .align 8
-resetstacks_header:
+args_header:
     .quad bye_header
+    .quad args
+    .byte 4
+    .ascii "args"
+
+    .align 8
+nargs_header:
+    .quad args_header
+    .quad nargs
+    .byte 5
+    .ascii "#args"
+
+    .align 8
+interpname_header:
+    .quad nargs_header
+    .quad interpname
+    .byte 10
+    .ascii "interpname"
+
+    .align 8
+getenv_header:
+    .quad interpname_header
+    .quad _getenv
+    .byte 8
+    .ascii "(getenv)"
+
+    .align 8
+resetstacks_header:
+    .quad getenv_header
     .quad resetstacks
     .byte 11
     .ascii "resetstacks"

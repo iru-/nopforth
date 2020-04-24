@@ -384,33 +384,14 @@ forth
 
 
 ( Shell utilities )
-: #!  ` \ ;
-
-: #args ( -> u )      S0 @ @ ;
-: 'arg ( u -> a )     1 + cells  S0 @ + ;
-: arg ( u -> a u' )   'arg @ z>mem ;
-: 'env ( u -> a )     #args 1 + + 'arg @ ;
+: #!   ` \ ;
+: arg ( u -> a u' )   cells args + @ z>mem ;
+: getenv ( name -> value )   str>mem s>z (getenv)  z>mem here str!  here ;
 
 variable arg-offset
 : next-arg ( -> a u )
    arg-offset @  dup #args >= if  drop 0 0 exit  then
    arg  1 arg-offset +! ;
-
-create senv /str allot
-: env>mem ( i -> a u )          'env z>mem ;
-: >env-name ( a u -> a u' )     [char] = head  senv str! ;
-: >env-value ( a u -> a' u' )   [char] = tail  senv str! ;
-: env-name ( i -> str )         env>mem >env-name  senv ;
-: env-value ( i -> str )        env>mem >env-value senv ;
-: env= ( str i -> ? )           env-name str= ;
-: env-end? ( i -> ? )           'env 0 = ;
-
-: (getenv) ( name i -> value )
-   dup env-end? if  drop drop 0 exit  then
-   2dup env= if  nip env-value exit  then
-   1 + (getenv) ;
-
-: getenv ( name -> value )   0 (getenv) ;
 
 
 marker empty
@@ -425,6 +406,9 @@ marker empty
 ' abort 'abort !
 
 anon:
-   #args 1 = if  banner  ['] term-loop to 'warm  term-loop exit  then
-   2 arg-offset !  1 arg included " can't run file" ?abort
+   #args if
+      1 arg-offset +!  0 arg included
+      " can't run file" ?abort  exit
+   then
+   banner ['] term-loop to 'warm  term-loop
 ; execute

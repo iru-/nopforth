@@ -13,8 +13,8 @@ SRC=\
 all: nop
 
 nop: nop.o
-	${CC} -nostartfiles -nostdlib -o $@ nop.o -e boot -ldl
-	@nop /dev/null
+	${CC} -o $@ $^ -ldl
+	@nop /dev/null   # test the bootstrap
 
 nop.o: ${SRC}
 	${AS} ${ASFLAGS} -o $@ x86-64/nop.s

@@ -70,7 +70,7 @@ define go
   state
 end
 
-break boot
+break main
 run
 set $R0 = $rsp
 

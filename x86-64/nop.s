@@ -1028,10 +1028,42 @@ _R0: .quad 0             # return stack base
 _S0: .quad 0             # parameter stack base
 _Send: .quad 0           # parameter stack end
 
-    .text
+_nargs: .int 0           # number of command-line arguments, excluding argv[0]
+    .align 8
+_args: .quad 0           # address of argv[1]
+_interpname: .quad 0     # address of argv[0]
 
-    .global boot
-boot:
+    .text
+    .global main
+args:
+    dup_
+	mov _args(%rip), %rax
+    ret
+
+nargs:
+    dup_
+    movzwq _nargs(%rip), %rax
+    ret
+
+interpname:
+    dup_
+    mov _interpname(%rip), %rax
+    ret
+
+_getenv:
+    mov %rax, %rdi
+    call getenv
+    ret
+
+main:
+    # setup argc, argv and environment
+    dec %rdi                            # discard the interpreter name
+    mov %rdi, _nargs(%rip)
+    mov (%rsi), %rcx
+    mov %rcx, _interpname(%rip)
+    lea 8(%rsi), %rcx                   # begin args after interpreter name
+    mov %rcx, _args(%rip)
+
     mov %rsp, _R0(%rip)
     call resetstacks
     call resetdict
