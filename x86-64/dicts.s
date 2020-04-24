@@ -17,16 +17,58 @@ syswrite_header:
     .byte 8
     .ascii "syswrite"
 
-   .align 8
+    .align 8
 sysexit_header:
     .quad syswrite_header
     .quad sysexit
     .byte 7
     .ascii "sysexit"
 
-   .align 8
-_dlclose_header:
+    .align 8
+sysopen_header:
     .quad sysexit_header
+    .quad sysopen
+    .byte 7
+    .ascii "sysopen"
+
+    .align 8
+syscreate_header:
+    .quad sysopen_header
+    .quad syscreate
+    .byte 9
+    .ascii "syscreate"
+
+    .align 8
+sysclose_header:
+    .quad syscreate_header
+    .quad sysclose
+    .byte 8
+    .ascii "sysclose"
+
+    .align 8
+sysseek_header:
+    .quad sysclose_header
+    .quad sysseek
+    .byte 7
+    .ascii "sysseek"
+
+    .align 8
+sysmmap_header:
+    .quad sysseek_header
+    .quad sysmmap
+    .byte 7
+    .ascii "sysmmap"
+
+    .align 8
+sysmunmap_header:
+    .quad sysmmap_header
+    .quad sysmunmap
+    .byte 9
+    .ascii "sysmunmap"
+
+    .align 8
+_dlclose_header:
+    .quad sysmunmap_header
     .quad _dlclose
     .byte 7
     .ascii "dlclose"

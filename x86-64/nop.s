@@ -12,27 +12,78 @@
 
     .text
 sysread:
-    mov $SYSREAD, %rcx
-    jmp _sysrw
-
-syswrite:
-    mov $SYSWRITE, %rcx
-_sysrw:
-    push %rdx
     mov %rax, %rdi
     drop_
     mov %rax, %rdx
     drop_
     mov %rax, %rsi
-    mov %rcx, %rax
-    syscall
-    pop %rdx
+    call read
+    ret
+
+syswrite:
+    mov %rax, %rdi
+    drop_
+    mov %rax, %rdx
+    drop_
+    mov %rax, %rsi
+    call write
     ret
 
 sysexit:
     mov %rax, %rdi
-    movq $SYSEXIT, %rax
-    syscall
+    call exit
+
+sysopen:
+    mov %rax, %rdx
+    drop_
+    mov %rax, %rsi
+    drop_
+    mov %rax, %rdi
+    call open
+    ret
+
+syscreate:
+    mov %rax, %rsi
+    drop_
+    mov %rax, %rdi
+    call creat
+    ret
+
+sysclose:
+    mov %rax, %rdi
+    call close
+    ret
+
+sysseek:
+    mov %rax, %rdi
+    drop_
+    mov %rax, %rdx
+    drop_
+    mov %rax, %rsi
+    call lseek
+    ret
+
+sysmmap:
+    mov %rax, %r9
+    drop_
+    mov %rax, %r8
+    drop_
+    mov %rax, %rcx
+    drop_
+    mov %rax, %rdx
+    drop_
+    mov %rax, %rsi
+    drop_
+    mov %rax, %rdi
+    call mmap
+    ret
+
+sysmunmap:
+    mov %rax, %rsi
+    drop_
+    mov %rax, %rdi
+    call munmap
+    ret
 
 sys6:
     mov %rax, %r9
@@ -1128,16 +1179,13 @@ spfetch:
 
 resetdict:
     dup_
-    push %rdx
     mov $0, %rdi         # addr
     mov $0x100000, %rsi  # length
     mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rdx  # prot
-    mov $(MAP_ANONYMOUS | MAP_SHARED), %r10          # flags
+    mov $(MAP_ANONYMOUS | MAP_SHARED), %rcx          # flags
     mov $-1, %r8         # fd
     mov $0, %r9          # offset (ignored)
-    mov $SYSMMAP, %rax
-    syscall
-    pop %rdx
+    call mmap
     jz 1f
     mov %rax, _h(%rip)
     drop_

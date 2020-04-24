@@ -318,9 +318,8 @@ anon: begin refilled? while evaluate repeat ;  to 'rel
 
 ( Files )
 forth
-: (open-create) ( a u mode syscall# -> fd )   push push s>z pop pop syscall2 ;
-: create-file ( a u mode -> fd )   85 (open-create) ;
-: open-file ( a u mode -> fd )   2 (open-create) ;
+: create-file ( a u mode -> fd )       push s>z pop syscreate ;
+: open-file ( a u flags mode -> fd )   2push s>z 2pop sysopen ;
 
 : read ( a u fd -> n )   sysread ;
 : read-byte ( fd -> b|-1 )
@@ -340,8 +339,8 @@ forth
    dup push write  10 pop write-byte
    1 ~= if  drop -1 exit  then 1 + ;
 
-: close ( fd -> n )   3 syscall1 ;
-: position-file ( n ref fd -> n' )   swap push swap pop 8 syscall3 ;
+: close ( fd -> n )   sysclose ;
+: position-file ( n ref fd -> n' )   sysseek ;
 : file-position ( fd -> n' )   push 0 1 pop position-file ;
 
 
@@ -360,9 +359,6 @@ forth
 
 : fsize ( fd -> u )   push 0 2 pop position-file ;
 
-: sysmmap ( addr length prot flags fd offset -> addr' )   9 syscall6 ;
-: sysmunmap ( addr length -> err )   11 syscall2 ;
-
 : fmap ( fd -> a u ) \ PROT_READ MAP_PRIVATE
    dup push fsize  0 over 1 2 pop 0 sysmmap  swap ;
 
@@ -374,7 +370,7 @@ forth
 : frefill ( -> n )      setup  eolscan inbuf @ -  dup inused ! ;
 
 : included ( a u -> err )
-   0 open-file dup 0 < if exit then
+   0 0 open-file dup 0 < if exit then
    save-input  dup dup fmap 0 0 ['] frefill input!
    push rel pop
    close drop  inbuf @ intot @ sysmunmap drop

@@ -87,9 +87,9 @@
 
   Exit process with status `n`
 
-```open-file``` ```a u mode -> fh```
+```open-file``` ```a u flags mode -> fh```
 
-  Open file named by the string `a u` in given `mode`.
+  Open file named by the string `a u` in `mode` with `flags`.
   Return file handle.
 
 ```create-file``` ```a u mode -> fh```

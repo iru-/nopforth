@@ -13,7 +13,7 @@
 : min ( a b -> a|b )   2dup < if drop exit then nip ;
 
 : fsize ( a u -> u' )
-  r/o open-file  dup file-size  swap close " can't retrieve file size" ?abort ;
+  r/o 0 open-file  dup file-size  swap close " can't retrieve file size" ?abort ;
 
 0 value /line
 variable off
@@ -33,7 +33,7 @@ variable remaining
 : size ( -> u )         remaining @ /line min ;
 : update ( u -> )       negate remaining +! ;
 
-: open ( a u -> )     r/o open-file dup 0 < " can't open file" ?abort to fd ;
+: open ( a u -> )     r/o 0 open-file dup 0 < " can't open file" ?abort to fd ;
 : position ( u -> )   0 fd position-file 0 < " can't position file" ?abort ;
 : fdclose               fd close drop ;
 : fdread ( a -> u )

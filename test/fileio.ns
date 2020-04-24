@@ -1,5 +1,5 @@
-create fname " test.out"
-create wbuf " text file"
+create fname " test.out" drop
+create wbuf " text file" drop
 create rbuf wbuf str-len @ 5 +  dup allot  value /rbuf
 
 -1 value fd
@@ -16,7 +16,7 @@ create rbuf wbuf str-len @ 5 +  dup allot  value /rbuf
    then ;
 
 : test-open
-   fname str>mem 2 open-file  dup 0 < if
+   fname str>mem 2 0 open-file  dup 0 < if
       ."  open failed" cr
        1 sysexit
    then
