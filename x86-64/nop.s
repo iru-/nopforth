@@ -969,9 +969,9 @@ dictrewind:
     jmp stopcomp
 
 execute:
-    mov %rax, %rbx
+    mov %rax, %rcx
     drop_
-    jmp *%rbx
+    jmp *%rcx
 
 resetinput:
     xor %rcx, %rcx
