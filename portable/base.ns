@@ -68,7 +68,6 @@ forth
 : negate   negate ;
 
 : tuck ( x y -> y x y )   swap over ;
-: within ( u lo hi -> flag )  push over <=  swap pop <  and ;
 : min ( a b -> a|b )          2dup < if drop exit then nip ;
 
 
@@ -91,8 +90,8 @@ forth
 
 : (does>)   \ runtime for does>
    latest @ @ cfa
-   pop swap call!   \ compile a call to the code following does>
-   0 hole ! ;       \ do not transform the previous call into a jump
+   pop swap call! drop   \ compile a call to the code following does>
+   0 hole ! ;            \ do not transform the previous call into a jump
 
 macro
 : does>
@@ -106,7 +105,7 @@ forth
 : created ( a u -> )
    entry,
    >cfa  here swap !  \ store next data address as the cfa
-   0 call,            \ compile a dummy call
+   here call,         \ compile a dummy call
    does> ;
 
 : create   next-word created ;

@@ -604,14 +604,37 @@ here:
 ccall:
     mov _h(%rip), %rdx
     mov %rdx, _hole(%rip)
+
+    # calculate call offset
     dup_
+    call here
+    add $5, %rax
+    sub %rax, (%rbp)
+    # data stack: call-destination offset where-to-compile-offset
+
+    # check if offset fits in 32 bits
+    # for us to compile a direct call
+    mov (%rbp), %rsi
+    cmpq $2147483647, %rsi
+    jg 1f
+    cmpq $-2147483648, %rsi
+    jl 1f
+
+    # offset fits
     mov $0xE8, %rax
     call comma1
-    call here
-    add $4, %rax
-    sub %rax, (%rbp)
+    call comma4
     drop_
-    jmp comma4
+    ret
+
+    # offset too big
+1:  drop_
+    mov $0xB948, %rax   # movabs $dest, %rcx
+    call comma2
+    call comma
+    dup_
+    mov $0xD1FF, %rax   # call *%rcx
+    jmp comma2
 
 cdup:
     dup_
