@@ -1099,8 +1099,8 @@ resetdict:
     push %rdx
     mov $0, %rdi         # addr
     mov $0x100000, %rsi  # length
-    mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rdx       # prot
-    mov $(MAP_ANONYMOUS | MAP_SHARED | MAP_32BIT), %r10   # flags
+    mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rdx  # prot
+    mov $(MAP_ANONYMOUS | MAP_SHARED), %r10          # flags
     mov $-1, %r8         # fd
     mov $0, %r9          # offset (ignored)
     mov $SYSMMAP, %rax
