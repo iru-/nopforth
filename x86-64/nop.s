@@ -17,7 +17,7 @@ sysread:
     mov %rax, %rdx
     drop_
     mov %rax, %rsi
-    call read
+    call read@plt
     ret
 
 syswrite:
@@ -26,12 +26,12 @@ syswrite:
     mov %rax, %rdx
     drop_
     mov %rax, %rsi
-    call write
+    call write@plt
     ret
 
 sysexit:
     mov %rax, %rdi
-    call exit
+    call exit@plt
 
 sysopen:
     mov %rax, %rdx
@@ -39,19 +39,19 @@ sysopen:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call open
+    call open@plt
     ret
 
 syscreate:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call creat
+    call creat@plt
     ret
 
 sysclose:
     mov %rax, %rdi
-    call close
+    call close@plt
     ret
 
 sysseek:
@@ -60,7 +60,7 @@ sysseek:
     mov %rax, %rdx
     drop_
     mov %rax, %rsi
-    call lseek
+    call lseek@plt
     ret
 
 sysmmap:
@@ -75,14 +75,14 @@ sysmmap:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call mmap
+    call mmap@plt
     ret
 
 sysmunmap:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call munmap
+    call munmap@plt
     ret
 
 sys6:
@@ -1103,7 +1103,7 @@ interpname:
 
 _getenv:
     mov %rax, %rdi
-    call getenv
+    call getenv@plt
     ret
 
 main:
@@ -1185,7 +1185,7 @@ resetdict:
     mov $(MAP_ANONYMOUS | MAP_SHARED), %rcx          # flags
     mov $-1, %r8         # fd
     mov $0, %r9          # offset (ignored)
-    call mmap
+    call mmap@plt
     jz 1f
     mov %rax, _h(%rip)
     drop_
