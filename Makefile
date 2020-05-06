@@ -9,7 +9,6 @@ SRC=\
 	src/comments.ns\
 	src/arch.ns\
 	src/kern.ns\
-	src/sysdefs.inc\
 
 all: bindir nop
 
