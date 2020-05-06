@@ -8,9 +8,6 @@
     lea 8(%rbp), %rbp
 .endm
 
-.include "linux/os.s"
-.include "linux/boot.s"
-
     .text
 expect:
     dup_
@@ -1044,12 +1041,3 @@ spfetch:
 Br:
     int3
     ret
-
-    .data
-.include "dicts.s"
-
-_kernbuf:
-.incbin "comments.ns"
-.incbin "arch.ns"
-.incbin "kern.ns"
-_kerntot = . - _kernbuf

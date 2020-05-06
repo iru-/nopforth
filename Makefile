@@ -1,7 +1,6 @@
-NOPROOT != pwd
-NOPSYS != uname -s
+NOPSYS != ./getsys.sh
 
-ASFLAGS=-Isrc
+ASFLAGS += -Isrc
 
 SRC=\
 	src/boot.s\
@@ -9,6 +8,9 @@ SRC=\
 	src/comments.ns\
 	src/arch.ns\
 	src/kern.ns\
+	src/${NOPSYS}/boot.s\
+	src/${NOPSYS}/os.s\
+	src/${NOPSYS}/nop.s\
 
 all: bindir nop
 
@@ -20,7 +22,7 @@ nop: nop.o
 	@bin/nop /dev/null   # test the bootstrap
 
 nop.o: ${SRC}
-	${AS} ${ASFLAGS} -o bin/$@ src/boot.s
+	${AS} ${ASFLAGS} -o bin/$@ src/${NOPSYS}/nop.s
 
 d: all
 	gdb -x cmd.gdb bin/nop
