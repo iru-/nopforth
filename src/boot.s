@@ -11,6 +11,7 @@
 .include "linux/os.s"
 .include "linux/boot.s"
 
+    .text
 expect:
     dup_
     mov _infd(%rip), %rax

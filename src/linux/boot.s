@@ -5,6 +5,7 @@
 .equ MAP_PRIVATE,   0x2
 .equ MAP_ANONYMOUS, 0x20
 
+    .text
 setupenv:
 	# setup argc, argv and environment
     dec %rdi                       # discard the interpreter name
