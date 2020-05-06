@@ -23,9 +23,6 @@ nop: nop.o
 nop.o: ${SRC}
 	${AS} ${ASFLAGS} -o bin/$@ src/boot.s
 
-src/sysdefs.inc: src/x86-64/sys${NOPSYS}.s
-	cp $? $@
-
 d: all
 	gdb -x cmd.gdb bin/nop
 
@@ -39,4 +36,4 @@ test: nop
 .PHONY: test
 
 clean:
-	rm -f bin/*.o src/sysdefs.inc bin/nop
+	rm -f bin/*.o bin/nop
