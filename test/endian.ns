@@ -1,4 +1,4 @@
-include endian.ns
+include lib/endian.ns
 
 $3399AABBCCDDEEFF value V
 variable var

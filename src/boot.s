@@ -8,7 +8,7 @@
     lea 8(%rbp), %rbp
 .endm
 
-.include "x86-64/sysdefs.inc"
+.include "sysdefs.inc"
 
     .text
 sysread:
@@ -1199,10 +1199,10 @@ Br:
     ret
 
     .data
-.include "x86-64/dicts.s"
+.include "dicts.s"
 
 _kernbuf:
-.incbin "portable/comments.ns"
-.incbin "x86-64/base.ns"
-.incbin "portable/base.ns"
+.incbin "comments.ns"
+.incbin "arch.ns"
+.incbin "kern.ns"
 _kerntot = . - _kernbuf

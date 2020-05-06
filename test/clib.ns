@@ -1,4 +1,4 @@
-include clib.ns
+include lib/clib.ns
 
 library: libc.so.6
 1 1 Cfunction: puts puts

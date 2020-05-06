@@ -1,38 +1,42 @@
-ASFLAGS=-ggdb
-LDFLAGS=-Bdynamic
-SYS != uname -s
+NOPROOT != pwd
+NOPSYS != uname -s
+
+ASFLAGS=-Isrc
 
 SRC=\
-	x86-64/nop.s\
-	x86-64/dicts.s\
-	x86-64/sysdefs.inc\
-	portable/comments.ns\
-	portable/base.ns\
-	x86-64/base.ns\
+	src/boot.s\
+	src/dicts.s\
+	src/comments.ns\
+	src/arch.ns\
+	src/kern.ns\
+	src/sysdefs.inc\
 
-all: nop
+all: bindir nop
+
+bindir:
+	mkdir -p bin
 
 nop: nop.o
-	${CC} -o $@ $^ -ldl
-	@nop /dev/null   # test the bootstrap
+	${CC} -o bin/$@ bin/$^ -ldl
+	@bin/nop /dev/null   # test the bootstrap
 
 nop.o: ${SRC}
-	${AS} ${ASFLAGS} -o $@ x86-64/nop.s
+	${AS} ${ASFLAGS} -o bin/$@ src/boot.s
 
-x86-64/sysdefs.inc: x86-64/sys${SYS}.s
+src/sysdefs.inc: src/x86-64/sys${NOPSYS}.s
 	cp $? $@
 
 d: all
-	gdb -x cmd.gdb nop
+	gdb -x cmd.gdb bin/nop
 
 test: nop
-	nop test/logic.ns
-	nop test/str.ns
-	nop test/fileio.ns && rm -f test.out
-	nop test/clib.ns
-	nop test/endian.ns
+	bin/nop test/logic.ns
+	bin/nop test/str.ns
+	bin/nop test/fileio.ns && rm -f test.out
+	bin/nop test/clib.ns
+	bin/nop test/endian.ns
 
 .PHONY: test
 
 clean:
-	rm -f sysdefs.inc *.o nop
+	rm -f bin/*.o src/sysdefs.inc bin/nop
