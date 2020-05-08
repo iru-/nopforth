@@ -329,7 +329,7 @@ comma1_header:
     .quad comma2_header
     .quad comma1
     .byte 2
-    .ascii "b,"
+    .ascii "1,"
 
     .align 8
 aligned_header:

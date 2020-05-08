@@ -647,7 +647,7 @@ The current dictionary is where definitions are compiled
 
   Store four-byte number in the dictionary
 
-```b,``` ```b ->```
+```1,``` ```b ->```
 
   Store byte in dictionary
 

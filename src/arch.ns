@@ -9,7 +9,7 @@ macro
    $00458948F86D8D48 ,  \ dup
    $24048B48 4, ;       \ mov (%rsp), %rax
 
-: rdrop   $48 b, $0824648D 4, ;  \ lea 8(%rsp), %rsp
+: rdrop   $48 1, $0824648D 4, ;  \ lea 8(%rsp), %rsp
 : rdec    $240CFF48 4, ;   \ decq (%rsp)
 
 : rshift ( n places -> n' )
@@ -31,8 +31,8 @@ macro
 
 : then ( a -> )   0 hole !  here  over 4 + -  swap 4! ;
 
-: branch ( dst -> )   here 5 +  -  $E9 b, 4, ;
-: branch-unresolved ( -> a )   $E9 b,  here  0 4, ;
+: branch ( dst -> )   here 5 +  -  $E9 1, 4, ;
+: branch-unresolved ( -> a )   $E9 1,  here  0 4, ;
 
 : negate ( n -> n' )   $D8F748 3, ;  \ neg %rax
 

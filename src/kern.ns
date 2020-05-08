@@ -235,7 +235,7 @@ forth
    pop  pop str-len  +! ;
 
 
-: s>z ( a u -> a' )     here push  dup allot  r@ swap move  0 b,  pop ;
+: s>z ( a u -> a' )     here push  dup allot  r@ swap move  0 1,  pop ;
 : zlen ( a -> u )       a! 0 begin 1@+ while 1 + repeat ;
 : z" ( -> a )           [char] " word s>z ;
 : z>mem ( a -> a' u )   dup zlen ;
