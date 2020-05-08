@@ -67,9 +67,9 @@ forth
 : >=       >= ;
 
 : negate   negate ;
-
 : tuck ( x y -> y x y )   swap over ;
-: min ( a b -> a|b )          2dup < if drop exit then nip ;
+: min ( a b -> a|b )      2dup < if drop exit then nip ;
+: max ( a b -> a|b )      2dup > if drop exit then nip ;
 
 
 ( Dictionary )
