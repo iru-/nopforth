@@ -369,7 +369,7 @@
 
   Fetch cell from address `a`
 
-```b@``` ```a -> b``` _macro+forth_
+```1@``` ```a -> b``` _macro+forth_
 
   Fetch byte from address `a`
 
@@ -377,7 +377,7 @@
 
   Store n at address `a`
 
-```b!``` ```b a ->``` _macro+forth_
+```1!``` ```b a ->``` _macro+forth_
 
   Store byte `b` at address `a`
 
@@ -397,7 +397,7 @@
 
   Fetch cell from address in register `a`. Increment a by cell.
 
-```b@+``` ```-> b``` _macro+forth_
+```1@+``` ```-> b``` _macro+forth_
 
   Fetch byte from address in register `a`. Increment a by 1.
 
@@ -405,7 +405,7 @@
 
   Store n into address in register `a`. Increment a by cell.
 
-```b!+``` ```b ->``` _macro+forth_
+```1!+``` ```b ->``` _macro+forth_
 
   Store byte into address in register `a`. Increment a by 1.
 

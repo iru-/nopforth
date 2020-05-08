@@ -38,15 +38,15 @@ macro
 
 forth
 : call-rel! ( 'code dst -> #used )
-   $E8 over b!
+   $E8 over 1!
    1 + dup push   \ save address where to store the offset
    4 +   -        \ compute offset
    pop 4!  5 ;
 
 : dst>rcx!  ( 'code dst -> dst' )
-   $48 over b!  1 +  $B9 over b!  1 + swap over !  8 + ;  \ movabs dst, %rcx
+   $48 over 1!  1 +  $B9 over 1!  1 + swap over !  8 + ;  \ movabs dst, %rcx
 
-: callrcx! ( dst -> )   $FF over b!  1 + $D1 swap b! ;   \ call *%rcx
+: callrcx! ( dst -> )   $FF over 1!  1 + $D1 swap 1! ;   \ call *%rcx
 
 : call-abs! ( 'code dst -> #used )   dst>rcx! callrcx!  12 ;
 

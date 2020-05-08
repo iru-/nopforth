@@ -627,12 +627,12 @@ cfetchplus:
     mov $0x086D8D4D, %rax    # lea 8(%r13), %r13
     jmp comma4
 
-cbfetch:
+c1fetch:
     dup_
     mov $0x00B60F48, %rax    # movzbq (%rax), %rax
     jmp comma4
 
-cbfetchplus:
+c1fetchplus:
     call cdup
     # movzbq (%r13), %rax
     dup_
@@ -664,7 +664,7 @@ cstoreplus:
     call comma4
     jmp cdrop
 
-cbstore:
+c1store:
     dup_
     mov $0x004D8B48, %rax    # mov (%rbp), %rcx
     call comma4
@@ -674,7 +674,7 @@ cbstore:
     call cdrop
     jmp cdrop
 
-cbstoreplus:
+c1storeplus:
     dup_
     mov $0x00458841, %rax    # mov %al, (%r13)
     call comma4

@@ -637,21 +637,21 @@ cfetchplus_header:
     .ascii "@+"
 
     .align 8
-cbfetch_header:
+c1fetch_header:
     .quad cfetchplus_header
-    .quad cbfetch
+    .quad c1fetch
     .byte 2
-    .ascii "b@"
+    .ascii "1@"
 
-cbfetchplus_header:
-    .quad cbfetch_header
-    .quad cbfetchplus
+c1fetchplus_header:
+    .quad c1fetch_header
+    .quad c1fetchplus
     .byte 3
-    .ascii "b@+"
+    .ascii "1@+"
 
     .align 8
 cstore_header:
-    .quad cbfetchplus_header
+    .quad c1fetchplus_header
     .quad cstore
     .byte 1
     .ascii "!"
@@ -664,22 +664,22 @@ cstoreplus_header:
     .ascii "!+"
 
     .align 8
-cbstore_header:
+c1store_header:
     .quad cstoreplus_header
-    .quad cbstore
+    .quad c1store
     .byte 2
-    .ascii "b!"
+    .ascii "1!"
 
     .align 8
-cbstoreplus_header:
-    .quad cbstore_header
-    .quad cbstoreplus
+c1storeplus_header:
+    .quad c1store_header
+    .quad c1storeplus
     .byte 3
-    .ascii "b!+"
+    .ascii "1!+"
 
     .align 8
 cadd_header:
-    .quad cbstoreplus_header
+    .quad c1storeplus_header
     .quad cadd
     .byte 1
     .ascii "+"

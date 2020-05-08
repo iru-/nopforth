@@ -22,9 +22,9 @@ variable off
 : .off ( u -> )      off @ <# cell for # # next #> type  off +! ;
 : align ( u -> )     /line swap - 3 * spaces ;
 : h. ( u -> )        <# # # #> type space ;
-: bytes ( a u -> )   swap a! for b@+ h. next ;
+: bytes ( a u -> )   swap a! for 1@+ h. next ;
 : c. ( c -> )        dup ~printable? if  drop [char] .  then  emit ;
-: text ( a u -> )    swap a! for b@+ c. next ;
+: text ( a u -> )    swap a! for 1@+ c. next ;
 : line ( a u -> )    dup .off  2 spaces  2dup bytes  dup align 2 spaces  text ;
 
 variable remaining

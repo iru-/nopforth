@@ -8,14 +8,14 @@ value /list
 : list ( data flag link 'list -> )
     push
     r@ list-link !
-    r@ list-flag b!
+    r@ list-flag 1!
     r@ list-data !
     rdrop ;
 
 : list: ( data flag link -> )    create  here  /list allot  list ;
 
 : .elem ( elem -> )
-   dup list-flag b@ .
+   dup list-flag 1@ .
    dup list-data @  .  ." -> "
        list-link @  .  cr ;
 
