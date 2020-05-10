@@ -43,12 +43,12 @@ forth
    4 +   -        \ compute offset
    pop 4!  5 ;
 
-: dst>rcx!  ( 'code dst -> dst' )
-   $48 over 1!  1 +  $B9 over 1!  1 + swap over !  8 + ;  \ movabs dst, %rcx
-
-: callrcx! ( dst -> )   $FF over 1!  1 + $D1 swap 1! ;   \ call *%rcx
-
-: call-abs! ( 'code dst -> #used )   dst>rcx! callrcx!  12 ;
+\ compile an absolute call:
+\ movabs dst, %r11
+\ call *%r11
+: dst>r11! ( dst a -> a+10 )     a!  $BB $49  1!+ 1!+ !+  a ;
+: callr11! ( a -> )              a!  $D3 $FF $41  1!+ 1!+ 1!+ ;
+: call-abs! ( dst a -> #used )   dst>r11! callr11!  13 ;
 
 : within ( u lo hi -> flag )  push over <=  swap pop <  and ;
 
