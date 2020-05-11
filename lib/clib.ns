@@ -9,12 +9,16 @@
 : clib-symbol ( handle a u -> 'func )
    s>z dlsym dup 0 = ?clib-abort ;
 
-: cfunc>entry ( handle a u -> 'func )
-   2dup 2push  clib-symbol
-   2pop entry,  here swap >cfa ! ;
-
-: cfunc>entry ( handle Cname Clen nopname noplen -> 'func )
+: cfunc>entry ( handle Cname #Cname nopname #nopname -> 'func )
    2push clib-symbol  2pop entry,  here swap >cfa ! ;
+
+\ System V x86-64 ABI requires a stack aligned on a 16 bytes boundary.
+\ The prolog saves the return stack pointer on rbx since the latter must be
+\ saved by the callee, and so is guaranteed to be preserved across the call.
+\ Lastly, the prolog forces the stack alignment. The epilog thus restores
+\ the return stack pointer, which may or may not be aligned.
+: prolog   $E38948 3, $F0E48348 4, ;   \ mov %rbp, %rbx; and $-16, %rsp
+: epilog   $DC8948 3, ;                \ mov %rbx, %rsp
 
 : callC5   $C08949 3, ` drop ;
 : callC4   $C18948 3, ` drop ;
@@ -22,27 +26,17 @@
 : callC2   $C68948 3, ` drop ;
 : callC1   $C78948 3, ;
 
-: abscall, ( 'func -> )
-   $BB48 2, ,  \ mov $'func, %rbx
-   $D3FF 2, ;  \ call *%rbx
-
-: absjump, ( 'func -> )
-   $BB48 2, ,  \ mov $'func, %rbx
-   $E3FF 2, ;  \ jmp *%rbx
+: xcall,   here call! allot ;
 
 : callC, ( #ret #args 'func -> )
-   push
+   push  prolog
    dup 5 > " too many arguments to C function" ?abort
    dup 4 > if callC5 then
    dup 3 > if callC4 then
    dup 2 > if callC3 then
    dup 1 > if callC2 then
        0 > if callC1 then
-   pop swap 0 = if
-      abscall,  ` drop ` exit
-      exit
-   then
-   absjump, ;
+   pop xcall,  0 = if ` drop then  epilog ` exit ;
 
 forth
 
