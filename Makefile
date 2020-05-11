@@ -12,22 +12,20 @@ SRC=\
 	src/${NOPSYS}/os.s\
 	src/${NOPSYS}/nop.s\
 
-all: bindir nop
+all: bin/nop
 
-bindir:
-	mkdir -p bin
-
-nop: nop.o
-	${CC} -o bin/$@ bin/$^ -ldl
+bin/nop: bin/nop.o
+	${CC} -ggdb -o $@ $^ -ldl
 	@bin/nop /dev/null   # test the bootstrap
 
-nop.o: ${SRC}
-	${AS} ${ASFLAGS} -o bin/$@ src/${NOPSYS}/nop.s
+bin/nop.o: ${SRC}
+	mkdir -p bin
+	${AS} -ggdb ${ASFLAGS} -o $@ src/${NOPSYS}/nop.s
 
 d: all
 	gdb -x cmd.gdb bin/nop
 
-test: nop
+test: bin/nop
 	bin/nop test/logic.ns
 	bin/nop test/str.ns
 	bin/nop test/fileio.ns && rm -f test.out
