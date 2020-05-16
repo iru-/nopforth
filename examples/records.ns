@@ -1,8 +1,8 @@
 ( Lists )
 record:
-    cell cell field: list-link
-    cell cell field: list-data
-       1    1 field: list-flag
+    cell field: list-link
+    cell field: list-data
+       1 field: list-flag
 value /list
 
 : list ( data flag link 'list -> )

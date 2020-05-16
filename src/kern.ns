@@ -169,9 +169,9 @@ forth
 : align ( a u -> a' )   1 -  swap over +  swap ~ and ;
 
 0 value record:
-: field: ( offset size alignment -> offset+size' )
-   create   swap push  align dup ,  pop +
-   does> ( a -> a' )   @ + ;
+: field: ( off size -> off' )
+   create  over , +
+   does>   @ + ;
 
 
 ( Strings )
@@ -192,8 +192,8 @@ macro
 forth
 
 record:
-   cell 1    field: str-len
-   cell cell field: str-data
+   cell            field: str-len
+   cell align cell field: str-data
 value /str
 
 : str! ( a len dst -> )      tuck  str-len !  str-data ! ;
