@@ -429,10 +429,6 @@
 
   Substitute two buffer by true if their contents are equal, by false otherwise
 
-```search``` ```a u b -> a' u'```
-
-  Same as scan
-
 ```skip``` ```a u b -> a' u'```
 
   Skip sequence of byte `b` in buffer `a u`.
@@ -450,7 +446,7 @@
   as a positive hex number. Otherwise, it is a decimal number.
   Return converted number and error, which is zero on success.
 
-```head``` ```a u b -> a' u'```
+```head``` ```a u b -> a u'```
 
   Scan buffer `a u` and return the buffer up to the last byte before delimiter `b`
 

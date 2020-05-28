@@ -158,13 +158,8 @@ forth
    push  over 1@ over 1@ ~= if  drop drop rdrop  0 exit then
    push  1 +  pop pop 1 advance  mem= ;
 
-: search ( a u b -> a' u' )
-   over 0 = if  drop exit  then
-   swap push  over 1@ over = if  drop pop exit  then
-   pop swap push  1 advance  pop search ;
-
-: head ( a u b -> a u' )   push 2dup pop search  nip - ;
-: tail ( a u b -> a u' )   search  dup if 1 advance then ;
+: head ( a u b -> a u' )    push 2dup pop scan  nip - ;
+: tail ( a u b -> a' u' )   scan  dup if 1 advance then ;
 
 : align ( a u -> a' )   1 -  swap over +  swap ~ and ;
 
