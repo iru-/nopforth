@@ -73,7 +73,7 @@
 
 
 ## Operating System interface
-```sysread read``` ```a u fh -> u'```
+```sysread``` ```a u fh -> u'```
 
   Read at most `u` bytes from file handler `fh` into address `a`.
   Return number of bytes read.

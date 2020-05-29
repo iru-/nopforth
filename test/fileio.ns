@@ -29,7 +29,7 @@ create rbuf wbuf str-len @ 5 +  dup allot  value /rbuf
   then ;
 
 : test-read
-   rbuf /rbuf fd read dup 1 < if
+   rbuf /rbuf fd sysread dup 1 < if
       ." read failed" cr
       1 sysexit
    then

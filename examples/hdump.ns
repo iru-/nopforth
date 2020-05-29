@@ -37,7 +37,7 @@ variable remaining
 : position ( u -> )   0 fd position-file 0 < " can't position file" ?abort ;
 : fdclose               fd close drop ;
 : fdread ( a -> u )
-   size fd read  dup 0 < " can't read from file" ?abort
+   size fd sysread  dup 0 < " can't read from file" ?abort
    dup update ;
 
 : reserve    /line allot ;

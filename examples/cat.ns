@@ -5,7 +5,7 @@
 
 8192 value /buf
 create buf /buf allot
-: >buf ( fd -> n )  push buf /buf pop read ;
+: >buf ( fd -> n )  push buf /buf pop sysread ;
 : .buf ( u -> )     buf swap type ;
 
 : cat ( fd -> )  dup >buf  dup 1 < if drop drop exit then  .buf cat ;
