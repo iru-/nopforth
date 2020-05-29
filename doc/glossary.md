@@ -102,7 +102,7 @@
   Close file handle `fh`.
   Return error code, 0 on success.
 
-```position-file``` ```n ref fh -> n'```
+```sysseek``` ```n ref fh -> n'```
 
   Position file to position `n`.
   Check OS manuals for the meaning of `ref` and the return value.

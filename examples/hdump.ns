@@ -5,12 +5,6 @@
 \
 
 0 value r/o
-: file-size ( fd -> u )   push 0 2 pop position-file ;
-: spaces ( u -> )   for space next ;
-: within ( u lo hi -> flag )  push over <=  swap pop <  and ;
-: 2dup  over over ;
-8 value cell
-: min ( a b -> a|b )   2dup < if drop exit then nip ;
 
 : ?fsize ( a u -> u' )
   r/o 0 open-file  dup fsize  swap sysclose " can't retrieve file size" ?abort ;
@@ -34,7 +28,7 @@ variable remaining
 : update ( u -> )       negate remaining +! ;
 
 : open ( a u -> )     r/o 0 open-file dup 0 < " can't open file" ?abort to fd ;
-: position ( u -> )   0 fd position-file 0 < " can't position file" ?abort ;
+: position ( u -> )   0 fd sysseek 0 < " can't position file" ?abort ;
 : fdclose               fd sysclose drop ;
 : fdread ( a -> u )
    size fd sysread  dup 0 < " can't read from file" ?abort
