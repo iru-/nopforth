@@ -78,7 +78,7 @@
   Read at most `u` bytes from file handler `fh` into address `a`.
   Return number of bytes read.
 
-```syswrite write``` ```a u fh -> u'```
+```syswrite``` ```a u fh -> u'```
 
   Write `u` bytes starting at address `a` to file handler `fh`.
   Return number of bytes written.

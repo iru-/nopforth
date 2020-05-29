@@ -23,7 +23,7 @@ create rbuf wbuf str-len @ 5 +  dup allot  value /rbuf
    to fd ;
    
 : test-write
-   wbuf str>mem fd write  wbuf str-len @ ~= if
+   wbuf str>mem fd syswrite  wbuf str-len @ ~= if
       ." write failed" cr
       1 sysexit
   then ;
