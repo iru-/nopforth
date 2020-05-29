@@ -15,6 +15,8 @@ macro
 : for ( -> a a' )    ` push ` begin ` r@ ` while ;
 : next ( a a' -> )   ` rdec ` repeat ` rdrop ;
 
+: else ( a -> a' )   ` branch-unresolved  swap ` then ;
+
 : 2push   ` push ` push ;
 : 2pop    ` pop ` pop ;
 : 2dup    ` over ` over ;
