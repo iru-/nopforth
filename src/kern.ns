@@ -336,7 +336,6 @@ forth
    dup push syswrite  10 pop write-byte
    1 ~= if  drop -1 exit  then 1 + ;
 
-: close ( fd -> n )   sysclose ;
 : position-file ( n ref fd -> n' )   sysseek ;
 : file-position ( fd -> n' )   push 0 1 pop position-file ;
 
@@ -370,7 +369,7 @@ forth
    0 0 open-file dup 0 < if exit then
    save-input  dup dup fmap 0 0 ['] frefill input!
    push rel pop
-   close drop  inbuf @ intot @ sysmunmap drop
+   sysclose drop  inbuf @ intot @ sysmunmap drop
    restore-input  0 ;
 
 : include   10 word included " can't include file" ?abort ;

@@ -12,8 +12,8 @@
 8 value cell
 : min ( a b -> a|b )   2dup < if drop exit then nip ;
 
-: fsize ( a u -> u' )
-  r/o 0 open-file  dup file-size  swap close " can't retrieve file size" ?abort ;
+: ?fsize ( a u -> u' )
+  r/o 0 open-file  dup fsize  swap sysclose " can't retrieve file size" ?abort ;
 
 0 value /line
 variable off
@@ -35,7 +35,7 @@ variable remaining
 
 : open ( a u -> )     r/o 0 open-file dup 0 < " can't open file" ?abort to fd ;
 : position ( u -> )   0 fd position-file 0 < " can't position file" ?abort ;
-: fdclose               fd close drop ;
+: fdclose               fd sysclose drop ;
 : fdread ( a -> u )
    size fd sysread  dup 0 < " can't read from file" ?abort
    dup update ;
@@ -58,7 +58,7 @@ variable remaining
    repeat
    fdclose rdrop ;
 
-: hdump ( a u -> )   2dup fsize  0 swap 16 setup  (hdump)  release ;
+: hdump ( a u -> )   2dup ?fsize  0 swap 16 setup  (hdump)  release ;
 
 anon:
    begin next-arg dup while

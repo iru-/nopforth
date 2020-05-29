@@ -97,7 +97,7 @@
   Create file named by the string `a u` and open it in the given `mode`.
   Return file handle.
 
-```close``` ```fh -> err```
+```sysclose``` ```fh -> err```
 
   Close file handle `fh`.
   Return error code, 0 on success.
