@@ -95,8 +95,29 @@ _dlopen_header:
     .ascii "dlopen"
 
    .align 8
-syscall6_header:
+sysalloc_header:
     .quad _dlopen_header
+    .quad sysalloc
+    .byte 8
+    .ascii "sysalloc"
+
+   .align 8
+sysresize_header:
+    .quad sysalloc_header
+    .quad sysresize
+    .byte 9
+    .ascii "sysresize"
+
+   .align 8
+sysfree_header:
+    .quad sysresize_header
+    .quad sysfree
+    .byte 7
+    .ascii "sysfree"
+
+   .align 8
+syscall6_header:
+    .quad sysfree_header
     .quad syscall6
     .byte 8
     .ascii "syscall6"

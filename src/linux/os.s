@@ -106,6 +106,29 @@ sysmunmap:
     epilog
     ret
 
+sysalloc:
+    prolog
+    mov %rax, %rdi
+    call malloc@plt
+    epilog
+    ret
+
+sysresize:
+    prolog
+    mov %rax, %rsi
+    drop_
+    mov %rax, %rdi
+    call realloc@plt
+    epilog
+    ret
+
+sysfree:
+    prolog
+    mov %rax, %rdi
+    call free@plt
+    epilog
+    ret
+
 sys6:
     mov %rax, %r9
     drop_
