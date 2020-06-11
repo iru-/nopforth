@@ -50,6 +50,7 @@ sysopen:
     drop_
     mov %rax, %rdi
     call open@plt
+    movsxd %eax, %rax
     epilog
     ret
 
@@ -59,6 +60,7 @@ syscreate:
     drop_
     mov %rax, %rdi
     call creat@plt
+    movsxd %eax, %rax
     epilog
     ret
 
@@ -66,6 +68,7 @@ sysclose:
     prolog
     mov %rax, %rdi
     call close@plt
+    movsxd %eax, %rax
     epilog
     ret
 
@@ -104,6 +107,7 @@ sysmunmap:
     mov %rax, %rdi
     call munmap@plt
     epilog
+    movsxd %eax, %rax
     ret
 
 sysalloc:
