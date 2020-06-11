@@ -400,10 +400,13 @@ marker empty
 
 ' abort 'abort !
 
+: file-abort   1 sysexit ;
+
 anon:
    #args if
-      1 arg-offset +!  0 arg included
-      " can't run file" ?abort  exit
+      1 arg-offset +!  ['] file-abort to 'warm
+      0 arg included  " can't run file" ?abort
+      exit
    then
-   banner ['] term-loop to 'warm  term-loop
+   banner  ['] term-loop to 'warm  term-loop
 ; execute
