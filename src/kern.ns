@@ -379,7 +379,9 @@ forth
 ( Shell utilities )
 : #!   ` \ ;
 : arg ( u -> a u' )   cells args + @ z>mem ;
-: getenv ( name -> value )   str>mem s>z (getenv)  z>mem here str!  here ;
+
+: getenv ( name -> value )
+   str>mem s>z (getenv)  dup if  z>mem here str! here  then ;
 
 variable arg-offset
 : next-arg ( -> a u )
