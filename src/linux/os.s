@@ -126,6 +126,7 @@ sysfree:
     prolog
     mov %rax, %rdi
     call free@plt
+    drop_
     epilog
     ret
 
