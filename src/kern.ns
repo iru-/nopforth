@@ -4,6 +4,13 @@ forth
 macro
 : `   next-word mlatest dfind dup 0 = if abort then  cfa call, ;
 
+macro : true    -1 ` lit ;
+forth : true    true ;
+macro : false   0  ` lit ;
+forth : false   false ;
+
+macro
+
 : asave   ` a    ` push ;
 : arest   ` pop  ` a! ;
 
@@ -22,7 +29,7 @@ macro
 : 2dup    ` over ` over ;
 : 2drop   ` drop ` drop ;
 
-: not   0 ` lit ` = ;
+: not   false ` lit ` = ;
 
 
 ( macro -> forth )
@@ -156,8 +163,8 @@ forth
 : mem, ( a u -> )   here over allot  swap move ;
 
 : mem= ( a1 a2 u -> f )
-   dup 0 = if  drop drop drop  -1 exit  then
-   push  over 1@ over 1@ ~= if  drop drop rdrop  0 exit then
+   dup 0 = if  drop drop drop  true exit  then
+   push  over 1@ over 1@ ~= if  drop drop rdrop  false exit then
    push  1 +  pop pop 1 advance  mem= ;
 
 : head ( a u b -> a u' )    push 2dup pop scan  nip - ;
@@ -217,7 +224,7 @@ forth
 : str-len= ( str1 str2 -> ? )   str-len @  swap str-len @ = ;
 
 : str= ( str1 str2 -> ? )
-   2dup str-len= not if  drop drop 0 exit  then
+   2dup str-len= not if  drop drop false exit  then
    str-data @ swap  str>mem  mem= ;
 
 : str-size ( str -> size )   str-len @ /str + ;
@@ -310,7 +317,7 @@ forth
 
 variable 'refill  \ must be set before use
 : refill               'refill @ execute ;
-: refilled? ( -> n )   inpos @ inused @ ~= if -1 exit then  refill ;
+: refilled? ( -> n )   inpos @ inused @ ~= if true exit then  refill ;
 
 anon: begin refilled? while evaluate repeat ;  to 'rel
 
@@ -371,7 +378,7 @@ forth
    save-input  dup dup fmap 0 0 ['] frefill input!
    push rel pop
    sysclose drop  inbuf @ intot @ sysmunmap drop
-   restore-input  0 ;
+   restore-input  false ;
 
 : include   10 word included " can't include file" ?abort ;
 
