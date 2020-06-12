@@ -27,9 +27,21 @@ create rbuf wbuf str-len @ 5 +  dup allot  value /rbuf
    push  wbuf str-data @  rbuf  pop mem= not
    " test-read: contents do not match" ?abort ;
 
+: test-read-byte-err   -1 read-byte   nip true ~= ?fail ;
+
+: test-read-byte-ok
+   fd read-byte   " test-read-byte-ok: read failed" ?abort
+   wbuf str-data @ 1@ ~= " test-read-byte-ok: contents do not match" ?abort ;
+
 test-create
 test-write
 test-close
+
 test-open
 test-read
+test-close
+
+test-read-byte-err
+test-open
+test-read-byte-ok
 test-close

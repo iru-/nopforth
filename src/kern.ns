@@ -327,16 +327,17 @@ forth
 : create-file ( a u mode -> fd )       push s>z pop syscreate ;
 : open-file ( a u flags mode -> fd )   2push s>z 2pop sysopen ;
 
-: read-byte ( fd -> b|-1 )
-   push here 1 pop sysread 1 = if  here 1@ exit  then -1 ;
+: read-byte ( fd -> b err )
+   push here 1 pop sysread  1 ~= if  0 true exit  then
+   here 1@ false ;
 
-: read-line ( a u fd -> n )
-   push push a! pop pop over  for
-     dup read-byte
-     dup -1 = if  drop drop pop - exit  then
-     dup 1!+  10 = if  drop pop - 1 + exit  then
+: read-line ( a u fd -> u' )
+   asave  push push a! pop pop
+   over for   \ u fd
+     dup read-byte if  drop drop  pop -  arest exit  then
+     dup 1!+  10 = if  drop  pop -  1 +  arest exit  then
    next
-   drop ;
+   drop arest ;
 
 : write-byte ( b fd -> n )
    push  here 1!  here 1 pop syswrite ;

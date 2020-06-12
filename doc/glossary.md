@@ -194,10 +194,10 @@
   Read byte from the current input.
   Return byte on success, -1 on failure.
 
-```read-byte``` ```fh -> b```
+```read-byte``` ```fh -> b err```
 
   Read byte from file.
-  Return byte on success, -1 on failure.
+  Return byte and false on success, 0 and true on failure.
 
 ```read-line``` ```a u fh -> n```
 
