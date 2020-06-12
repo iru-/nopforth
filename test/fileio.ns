@@ -2,28 +2,30 @@ create fname " test.out" drop
 create wbuf " text file" drop
 create rbuf wbuf str-len @ 5 +  dup allot  value /rbuf
 
+: ?fail   if 0 abort then ;
+
 -1 value fd
 
 : test-create
    fname str>mem 420 create-file
-   dup 0 < if 0 abort then  to fd ;
+   dup 0 < ?fail  to fd ;
 
-: test-close   fd sysclose  if 0 abort then ;
+: test-close   fd sysclose ?fail ;
 
 : test-open
    fname str>mem 2 0 open-file
-   dup 0 < if 0 abort then  to fd ;
-   
+   dup 0 < ?fail  to fd ;
+
 : test-write
    wbuf str>mem fd syswrite
-   wbuf str-len @ ~= if 0 abort then ;
+   wbuf str-len @ ~= ?fail ;
 
 : test-read
    rbuf /rbuf fd sysread
    dup 1 < " test-read: read failed" ?abort
 
    push  wbuf str-data @  rbuf  pop mem= not
-   " test-read: read contents do not match" ?abort ;
+   " test-read: contents do not match" ?abort ;
 
 test-create
 test-write
