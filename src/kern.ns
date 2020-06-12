@@ -332,9 +332,9 @@ forth
 
 : read-line ( a u fd -> n )
    push push a! pop pop over  for
-     dup read-byte dup 1!+
+     dup read-byte
      dup -1 = if  drop drop pop - exit  then
-         10 = if  drop pop - 1 + exit  then
+     dup 1!+  10 = if  drop pop - 1 + exit  then
    next
    drop ;
 
