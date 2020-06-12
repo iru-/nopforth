@@ -4,8 +4,15 @@
 # Forth
 #
     .align 8
-sysread_header:
+syserrno_header:
     .quad 0
+    .quad syserrno
+    .byte 8
+    .ascii "syserrno"
+
+    .align 8
+sysread_header:
+    .quad syserrno_header
     .quad sysread
     .byte 7
     .ascii "sysread"

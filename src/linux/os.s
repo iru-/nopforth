@@ -14,6 +14,14 @@
     mov %rbx, %rsp
 .endm
 
+syserrno:
+    prolog
+    dup_
+    call __errno_location@plt
+    mov (%rax), %eax
+    movsxd %eax, %rax
+    epilog
+    ret
 
 sysread:
     prolog
