@@ -3,11 +3,20 @@ NOPSYS != ./getsys.sh
 ASFLAGS += -Isrc
 
 SRC=\
+	src/arch.ns\
+	src/comments.ns\
+	src/dictionary.ns\
+	src/file.ns\
+	src/flowcontrol.ns\
+	src/go.ns\
+	src/interactive.ns\
+	src/interpreter.ns\
+	src/memory.ns\
+	src/pictured.ns\
+	src/shell.ns\
+	src/string.ns\
 	src/boot.s\
 	src/dicts.s\
-	src/comments.ns\
-	src/arch.ns\
-	src/kern.ns\
 	src/${NOPSYS}/boot.s\
 	src/${NOPSYS}/os.s\
 	src/${NOPSYS}/nop.s\
