@@ -1,0 +1,24 @@
+: #!   ` \ ;
+: arg ( u -> a u' )   cells args + @ z>mem ;
+
+: getenv ( name -> value )
+   str>mem s>z (getenv)  dup if  z>mem here str! here  then ;
+
+variable arg-offset
+: next-arg ( -> a u )
+   arg-offset @  dup #args >= if  drop 0 0 exit  then
+   arg  1 arg-offset +! ;
+
+
+marker empty
+
+: term-refill ( -> n )
+   ." ok "
+   0 inpos !  inbuf @ intot @ infd @ read-line  dup inused !
+   dup 0 = if cr then ;
+
+: term-loop   0  here 128 dup allot  0 0 ['] term-refill input!  rel ;
+
+' abort 'abort !
+
+: file-abort   1 sysexit ;

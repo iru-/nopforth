@@ -1,0 +1,58 @@
+forth
+: create-file ( a u mode -> fd )       push s>z pop syscreate ;
+: open-file ( a u flags mode -> fd )   2push s>z 2pop sysopen ;
+
+: read-byte ( fd -> b err )
+   push here 1 pop sysread  1 ~= if  0 true exit  then
+   here 1@ false ;
+
+: read-line ( a u fd -> u' )
+   asave  push push a! pop pop
+   over for   \ u fd
+     dup read-byte if  drop drop  pop -  arest exit  then
+     dup 1!+  10 = if  drop  pop -  1 +  arest exit  then
+   next
+   drop arest ;
+
+: write-byte ( b fd -> n )
+   push  here 1!  here 1 pop syswrite ;
+
+: write-line ( a u fd -> n )
+   dup push syswrite  10 pop write-byte
+   1 ~= if  drop -1 exit  then 1 + ;
+
+: file-position ( fd -> n' )   push 0 1 pop sysseek ;
+
+( File loading )
+: input@ ( -> fd buf tot used pos 'refill )
+   infd @ inbuf @ intot @ inused @ inpos @ 'refill @ ;
+
+: input! ( fd buf tot used pos 'refill -> )
+   'refill ! inpos ! inused ! intot ! inbuf ! infd ! ;
+
+: save-input
+   pop pop  input@ push push push push push push  push push ;
+
+: restore-input
+   pop pop  pop pop pop pop pop pop input!  push push ;
+
+: fsize ( fd -> u )   push 0 2 pop sysseek ;
+
+: fmap ( fd -> a u ) \ PROT_READ MAP_PRIVATE
+   dup push fsize  0 over 1 2 pop 0 sysmmap  swap ;
+
+: inbuf+                inbuf +! ;
+: intot-                negate intot +! ;
+: setup                 0 inpos !  inused @ dup inbuf+ intot- ;
+: ?skip ( a u -> a' )   0 = if exit then   dup 1@ 10 = if 1 + then ;
+: eolscan               inbuf @ intot @ 10 scan  ?skip ;
+: frefill ( -> n )      setup  eolscan inbuf @ -  dup inused ! ;
+
+: included ( a u -> err )
+   0 0 open-file dup 0 < if exit then
+   save-input  dup dup fmap 0 0 ['] frefill input!
+   push rel pop
+   sysclose drop  inbuf @ intot @ sysmunmap drop
+   restore-input  false ;
+
+: include   10 word included " can't include file" ?abort ;

@@ -9,5 +9,14 @@
 _kernbuf:
 .incbin "comments.ns"
 .incbin "arch.ns"
-.incbin "kern.ns"
+.incbin "flowcontrol.ns"
+.incbin "interactive.ns"
+.incbin "dictionary.ns"
+.incbin "memory.ns"
+.incbin "string.ns"
+.incbin "pictured.ns"
+.incbin "interpreter.ns"
+.incbin "file.ns"
+.incbin "shell.ns"
+.incbin "go.ns"
 _kerntot = . - _kernbuf

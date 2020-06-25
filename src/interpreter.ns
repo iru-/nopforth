@@ -1,0 +1,27 @@
+forth
+0 value 'rel
+: rel   'rel execute ;
+
+0 value 'warm
+: warm   'warm dup if execute then  bye ;
+
+: .abort ( str -> )
+   dup 0 ~= if println exit then  drop
+   inbuf @ inpos @ here str!  here print  [char] ? emit cr ;
+
+: abort ( str -> )         .abort reset-input resetstacks warm ;
+: ?abort ( flag str -> )   push  if pop abort then  rdrop ;
+
+: ?underflow
+   depth 0 >= if exit then
+   " stack underflow!" println  0 abort ;
+
+: evaluate
+   next-word dup 0 = if  drop drop exit  then
+   eval ?underflow evaluate ;
+
+variable 'refill  \ must be set before use
+: refill               'refill @ execute ;
+: refilled? ( -> n )   inpos @ inused @ ~= if true exit then  refill ;
+
+anon: begin refilled? while evaluate repeat ;  to 'rel

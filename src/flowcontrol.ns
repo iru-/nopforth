@@ -1,0 +1,32 @@
+forth
+: cfa ( a -> a' )   >cfa @ ;
+
+macro
+: `   next-word mlatest dfind dup 0 = if abort then  cfa call, ;
+
+macro : true    -1 ` lit ;
+forth : true    true ;
+macro : false   0  ` lit ;
+forth : false   false ;
+
+macro
+
+: asave   ` a    ` push ;
+: arest   ` pop  ` a! ;
+
+: begin ( -> a )        here ;
+: while ( a -> a' a )   ` if swap ;
+: again ( a -> )        ` branch ;
+: repeat ( a a' -> )    ` again ` then ;
+
+: for ( -> a a' )    ` push ` begin ` r@ ` while ;
+: next ( a a' -> )   ` rdec ` repeat ` rdrop ;
+
+: else ( a -> a' )   ` branch-unresolved  swap ` then ;
+
+: 2push   ` push ` push ;
+: 2pop    ` pop ` pop ;
+: 2dup    ` over ` over ;
+: 2drop   ` drop ` drop ;
+
+: not   false ` lit ` = ;

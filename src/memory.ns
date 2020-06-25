@@ -1,0 +1,28 @@
+forth
+: advance ( a u n -> a+n u-n )   swap over  - push + pop ;
+
+: move ( src dst u -> )
+   push push a! pop pop
+   begin dup while
+     over 1@+ swap 1!
+     1 advance
+   repeat
+   drop drop ;
+
+: +! ( n a -> )   swap over  @ +  swap ! ;
+: mem, ( a u -> )   here over allot  swap move ;
+
+: mem= ( a1 a2 u -> f )
+   dup 0 = if  drop drop drop  true exit  then
+   push  over 1@ over 1@ ~= if  drop drop rdrop  false exit then
+   push  1 +  pop pop 1 advance  mem= ;
+
+: head ( a u b -> a u' )    push 2dup pop scan  nip - ;
+: tail ( a u b -> a' u' )   scan  dup if 1 advance then ;
+
+: align ( a u -> a' )   1 -  swap over +  swap ~ and ;
+
+0 value record:
+: field: ( off size -> off' )
+   create  over , +
+   does>   @ + ;

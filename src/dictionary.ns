@@ -1,0 +1,61 @@
+forth
+: find ( a u -> a'|0 )   latest @ dfind ;
+
+: ' ( -> a )      next-word            find dup 0 = if abort then  cfa ;
+: f' ( -> a|0 )   next-word flatest @ dfind dup 0 = if abort then  cfa ;
+
+macro
+: [']    '  ` lit ;
+: [f']   f' ` lit ;
+forth
+
+: allot ( n -> )   here +  h ! ;
+
+: pfa ( 'def -> 'data )   \ return a pointer to a definition's data area
+   cfa 5 + ;
+
+: (does>)   \ runtime for does>
+   latest @ @ cfa
+   pop swap call! drop   \ compile a call to the code following does>
+   0 hole ! ;            \ do not transform the previous call into a jump
+
+macro
+: does>
+   [f'] (does>) call,  \ compile a call to the runtime for does>
+
+   \ at runtime R has the address of the data area for the definition,
+   \ compile a pop to retrieve that address
+   ` pop ;
+forth
+
+: created ( a u -> )
+   entry,
+   >cfa  here swap !  \ store next data address as the cfa
+   here call,         \ compile a dummy call
+   does> ;
+
+: create   next-word created ;
+
+: variable   create 0 , ;
+: value      create ,  does> @ ;
+
+: ?find ( -> a )   next-word find   dup 0 = if abort then ;
+
+macro
+: to ( n -> )   ?find pfa  ` lit ` ! ;
+forth
+: to ( n -> )   ?find pfa  ! ;
+
+8 value cell
+: cells ( -> u )   cell * ;
+
+: marker
+   here              \ save current HERE so the marker definition removes itself
+   forth create
+      ,              \ 0:       dictionary pointer
+      flatest @ @ ,  \ cell:    next to last forth definition
+      mlatest @ ,    \ 2 cells: last macro definition
+   does>
+      dup        @ h !
+      dup cell + @ flatest !
+       2 cells + @ mlatest ! ;

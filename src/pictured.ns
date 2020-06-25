@@ -1,0 +1,32 @@
+forth
+: digit ( n -> n' )   dup 9 >  7 and +  48 + ;
+
+: hold ( count rem b -> b count+1 rem )   swap push  swap 1 + pop ;
+
+: <# ( n -> 0 n )               0 swap ;
+: #  ( n -> ... count rem )     base @ /mod swap digit hold ;
+: #> ( ... count rem -> a u )   asave  drop  here a!  dup push for 1!+ next  here pop  arest ;
+: #s ( n -> ... count rem )     begin # dup while repeat ;
+
+: abs ( n -> |n| )   dup 0 < if negate then ;
+: sign ( n -> )   0 < if  [char] - hold  then ;
+
+: (.) ( n -> )   dup push abs <#  #s pop sign #> ;
+: . ( n -> )     (.) type space ;
+
+: .S   depth S0 16 - swap for  dup @ . 8 -  next drop  ." <- top " ;
+
+: spfill ( u -> )    16 swap - 3 * spaces  space ;
+: .addr ( a -> )     base @ push hex  <# cell for # # next #> type  pop base ! ;
+: hb. ( u -> )       base @ push hex  <# bl hold # # #> type  pop base ! ;
+: bytes ( a u -> )   swap a! for 1@+ hb. next ;
+: c. ( c -> )        dup printable? not if  drop [char] .  then  emit ;
+: text ( a u -> )    swap a! for 1@+ c. next ;
+: line ( a u -> )    over .addr 2 spaces  2dup bytes dup spfill  text cr ;
+
+: dump ( a u -> )
+   begin dup while
+      2dup 16 min line
+       dup 16 min advance
+   repeat
+   drop drop ;
