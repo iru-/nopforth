@@ -456,10 +456,6 @@
 
 
 ## Strings
-```base```  _variable_
-
-  Number base for number output
-
 ```infd```  _variable_
 
   Input file descriptor
@@ -948,14 +944,6 @@ The current dictionary is where definitions are compiled
 ```banner```
 
   Output nop banner
-
-```hex```
-
-  Set base to 16
-
-```decimal```
-
-  Set base to 10
 
 ```bye```
 

@@ -13,9 +13,9 @@
 variable off
 : ~printable? ( c -> flag )   bl 127 within not ;
 
-: .off ( u -> )      off @ <# cell for # # next #> type  off +! ;
+: .off ( u -> )      off @ <# cell for h# h# next #> type  off +! ;
 : align ( u -> )     /line swap - 3 * spaces ;
-: h. ( u -> )        <# # # #> type space ;
+: h. ( u -> )        <# h# h# #> type space ;
 : bytes ( a u -> )   swap a! for 1@+ h. next ;
 : c. ( c -> )        dup ~printable? if  drop [char] .  then  emit ;
 : text ( a u -> )    swap a! for 1@+ c. next ;
@@ -41,7 +41,7 @@ variable remaining
    to /line
    over -  remaining !
    push  open  pop dup position  dup off !
-   hex here reserve ;
+   here reserve ;
 
 : (hdump) ( a -> )
    push

@@ -193,14 +193,7 @@ _intot:  .quad 0    # input buffer total size
 _inused: .quad 0    # input buffer used size
 _inpos:  .quad 0    # input buffer position
 
-_base: .quad 10      # numeric base
-
     .text
-base:
-    dup_
-    lea _base(%rip), %rax
-    ret
-
 infd:
     dup_
     lea _infd(%rip), %rax
