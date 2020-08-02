@@ -1,57 +1,46 @@
 ( Lists )
 record:
-    cell field: list-link
-    cell field: list-data
-       1 field: list-flag
+   cell field: list-link
+   cell field: list-data
+      1 field: list-flag
 value /list
 
-: list ( data flag link 'list -> )
-    push
-    r@ list-link !
-    r@ list-flag 1!
-    r@ list-data !
-    rdrop ;
+: .addr  (h.) type ;
 
-: list: ( data flag link -> )    create  here  /list allot  list ;
+: list ( data flag link 'list -> )
+   tuck list-link !  tuck list-flag 1!  list-data ! ;
+
+: list: ( data flag link -> )
+   create  here /list allot  list ;
 
 : .elem ( elem -> )
-   dup list-flag 1@ .
-   dup list-data @  .  ." -> "
-       list-link @  .  cr ;
+   dup .addr ." : "
+   dup list-flag 1@ .  dup list-data @ .
+   ." -> "  list-link @  .addr  cr ;
 
 : .list ( list -> )
-   dup 0 = if drop exit then
-   dup .elem  list-link @ .list ;
+   dup if  dup .elem  list-link @ .list  then ;
 
 67890 234 0 list: Ll
 12345 255 Ll list: Lr
 
-." List" cr
+." List:" cr
 Lr .list cr
 
 
 ( Trees )
 record:
-    cell cell field: tree-left
-    cell cell field: tree-right
+   cell field: tree-left
+   cell field: tree-right
 value /tree
 
-: tree ( left right 'tree -> )
-   push
-   r@ tree-right !
-   r@ tree-left !
-   rdrop ;
-
-: tree: ( left right -> )    create here  /tree allot  tree ;
+: tree ( left right 'tree -> )   tuck tree-right !  tree-left ! ;
+: tree: ( left right -> )        create  here /tree allot  tree ;
 
 : .tree ( 'tree -> )
-    ." left  "  dup tree-left  @ dup . ." : " .elem
-    ." right "      tree-right @ dup . ." : " .elem ;
+   ." left : "  dup tree-left  @ .addr cr
+   ." right: "      tree-right @ .addr cr ;
 
-." Tree " cr
+." Tree:" cr
 Ll Lr tree: T
 T .tree cr
-
-
-( Strings )
-" ABCDEFGHIJ" dup print cr  print cr
