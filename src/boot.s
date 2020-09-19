@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
+
 .macro dup_
     lea -8(%rbp), %rbp
     mov %rax, (%rbp)

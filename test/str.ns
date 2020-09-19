@@ -1,3 +1,6 @@
+\ SPDX-License-Identifier: MIT
+\ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
+
 create s1 " abcd" drop
 create s2 " abcD" drop
 create s3 " abc"  drop

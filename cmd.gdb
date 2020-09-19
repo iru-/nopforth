@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
+
 define dstk
   echo T\040\040\040\040
   print/z $rax

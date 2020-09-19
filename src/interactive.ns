@@ -1,3 +1,6 @@
+\ SPDX-License-Identifier: MIT
+\ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
+
 \ We define forth words using the macros, so they can be used interactively
 forth
 : dup    dup ;

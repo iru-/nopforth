@@ -1,3 +1,6 @@
+\ SPDX-License-Identifier: MIT
+\ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
+
 : test-not-pos   1 not if 0 abort then ;      test-not-pos
 : test-not-neg   0 not if exit then 0 abort ; test-not-neg
 

@@ -1,3 +1,6 @@
+\ SPDX-License-Identifier: MIT
+\ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
+
 create fname " test.out" drop
 create wbuf " text file" drop
 create rbuf wbuf str-len @ 5 +  dup allot  value /rbuf

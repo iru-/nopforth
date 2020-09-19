@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
+
 .equ PROT_READ,     0x1
 .equ PROT_WRITE,    0x2
 .equ PROT_EXEC,     0x4

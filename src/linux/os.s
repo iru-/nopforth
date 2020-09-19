@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
+
     .text
 
 # System V x86-64 ABI requires a stack aligned on a 16 bytes boundary.
