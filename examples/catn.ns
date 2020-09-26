@@ -1,7 +1,7 @@
+#! /usr/bin/env nop
 \ SPDX-License-Identifier: MIT
 \ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
 
-#! /usr/bin/env nop
 \
 \ Print files' contents with line numbers
 \
