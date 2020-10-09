@@ -1,1004 +1,753 @@
-## Stack manipulation
-```dup``` ```n -> n n```  _macro+forth_
+# Stack manipulation
+dup ( n -> n n )
+   Duplicate top element.
 
-  Duplicate top element
+drop ( n -> )
+   Remove top element.
 
-```drop``` ```n ->``` _macro+forth_
+swap ( m n -> n m )
+   Swap top with second element.
 
-  Remove top element
+over ( m n -> m n m )
+   Copy second element to top.
 
-```swap``` ```m n -> n m``` _macro+forth_
+nip ( m n -> n )
+   Remove second element.
 
-  Swap top and second elements
+push ( n -> ) R( -> n )
+   Push top of data stack to return stack.
 
-```over``` ```m n -> m n m``` _macro+forth_
+pop R( n -> ) ( -> n )
+   Pop top of return stack to data stack.
 
-  Copy second element to top
+r@ R( n -> n ) ( -> n )
+   Copy top of return stack to data stack.
 
-```nip``` ```m n -> n``` _macro+forth_
+rdrop R( n -> )
+   Drop top of return stack.
 
-  Remove second element
+rdec R( n -> n-1 )
+   Decrement top of return stack.
 
-```push``` ```n ->``` ```r:-> n``` _macro_
+2dup ( m n -> m n m n )
+   Duplicate top two elements.
 
-  Push top of data stack to return stack
+2push ( m n -> ) R( -> m n )
+   Push top two elements of data stack to return stack.
 
-```pop``` ```r:n ->``` ```-> n``` _macro_
+2pop R( m n -> ) ( -> m n )
+   Pop top two return stack elements to data stack.
 
-  Pop top of return stack to data stack
+tuck ( m n -> n m n )
+   Insert top element in third place.
 
-```r@``` ```r:n -> n``` ```-> n``` _macro_
+S0 variable
+   Bottom of data stack.
 
-  Copy top of return stack to data stack
+sp@ ( -> a )
+   Return the address of the top of the data stack.
 
-```rdrop``` ```r:n ->``` _macro_
+depth ( -> u )
+   Return current data stack depth.
 
-  Drop top of return stack
+.S
+   Output data stack contents with top as the rightmost element.
 
-```rdec``` ```r:n -> n-1``` _macro_
 
-  Decrement top of return stack
+# Operating System interface
+sysread ( a u fd -> u' )
+   Read at most `u` bytes from file descriptor `fd` into address `a`.
+   Return number of bytes read.
 
-```2dup``` ```m n -> m n m n``` _macro+forth_
+syswrite ( a u fd -> u' )
+   Write `u` bytes starting at address `a` to file descriptor `fd`.
+   Return number of bytes written.
 
-  Duplicate top two elements
+sysexit ( n -> )
+   Exit process with status `n`.
 
-```2push``` ```m n ->``` ```r:-> m n``` _macro_
+open-file ( a u flags mode -> fd )
+   Open file named by buffer in `mode` with `flags`.
+   Return file descriptor.
 
-  Push top two elements of data stack to return stack
+create-file ( a u mode -> fd )
+   Create file named by buffer and open it in given `mode`.
+   Return file descriptor.
 
-```2pop``` ```r:m n ->``` ```-> m n``` _macro_
+sysclose ( fd -> err )
+   Close file descriptor `fd`.
+   Return error code, 0 on success.
 
-  Pop top two return stack elements to data stack
+sysseek ( off ref fd -> off' )
+   Reposition file descriptor `fd` to offset `off` relative to `ref`.
+   On success, return resulting offset from beginning of file. On error, return -1.
 
-```tuck``` ```m n -> n m n```
+file-position ( fd -> u  )
+   Return current position of file descriptor.
 
-  Insert top element in third place
+fsize ( fd -> u )
+   Return file size.
 
-```S0```  _variable_
+sysmmap ( addr length prot flags fh offset -> addr' )
+   Map file to memory.
+   Check OS manuals for the meaning of arguments and return value.
 
-  Bottom of data stack
+fmap ( fd -> a u )
+   Map file to memory.
+   Return pointer to mapped file.
 
-```sp@``` ```-> a```
+sysmunmap ( a u -> err )
+   Unmap file mapping at `a` with length `u`.
 
-  Return the address of the top of the data stack
+syscall1 ( n1 syscall# -> nr )
+syscall2 ( n1 n2 syscall# -> nr )
+syscall3 ( n1 n2 n3 syscall# -> nr )
+syscall4 ( n1 n2 n3 n4 syscall# -> nr )
+syscall5 ( n1 n2 n3 n4 n5 syscall# -> nr )
+syscall6 ( n1 n2 n3 n4 n5 n6 syscall# -> nr)
+   Call system call with given arguments.
+   Return system call status.
 
-```depth``` ```-> u```
+dlopen dlsym dlerror dlclose
+   Check your OS manuals for their description and usage.
 
-  Return current data stack depth
+#!
+   Same as `\`.
 
-```.S``` ```... -> ...```
+#args variable
+   Number of command line arguments.
 
-  Output data stack contents with top as the rightmost element
+arg ( i -> a u )
+   Return buffer of ith command line argument.
 
+next-arg ( -> a u )
+   Return buffer of next unprocessed command line argument.
 
-## Operating System interface
-```sysread``` ```a u fh -> u'```
+getenv ( var -> value )
+   Return pointer to value of environment variable `var`.
 
-  Read at most `u` bytes from file handler `fh` into address `a`.
-  Return number of bytes read.
 
-```syswrite``` ```a u fh -> u'```
+# I/O
+read-line ( a u fd -> # )
+   Read at most `u` bytes from file descriptor into address `a`.
+   Return number of bytes read. It will be less then `u` if less bytes are.
+   available or a newline is found.
 
-  Write `u` bytes starting at address `a` to file handler `fh`.
-  Return number of bytes written.
+read-byte ( fd -> b err )
+   Read byte from file descriptor `fd`.
+   Return byte and false on success, 0 and true on failure.
 
-```sysexit``` ```n ->```
+expect ( a u -> # )
+   Same as `read-line` with current input as the file descriptor.
 
-  Exit process with status `n`
+type ( a u -> )
+   Write `u` bytes from address `a` to the current output.
 
-```open-file``` ```a u flags mode -> fh```
+emit ( b -> )
+   Write byte to the current output.
 
-  Open file named by the string `a u` in `mode` with `flags`.
-  Return file handle.
+'key variable
+   Pointer to current `key` routine.
 
-```create-file``` ```a u mode -> fh```
+key ( -> b )
+   Run current key routine. By default, read byte from the current input.
+   Return byte on success, -1 on failure.
 
-  Create file named by the string `a u` and open it in the given `mode`.
-  Return file handle.
+write-byte ( b fd -> n )
+   Write byte to file descriptor.
+   Return 1 on success, -1 on failure.
 
-```sysclose``` ```fh -> err```
+write-line ( a u fd -> # )
+   Write buffer followed by a newline to file.
+   Return number of bytes written on success, -1 on failure.
 
-  Close file handle `fh`.
-  Return error code, 0 on success.
+reset-input
+   Reset current input buffer state.
 
-```sysseek``` ```n ref fh -> n'```
+refill ( -> n )
+   Refill current input buffer, i.e. run current refill routine.
+   Return number of bytes refilled `(> 0)` on sucess, `(<= 0)` on failure.
 
-  Position file to position `n`.
-  Check OS manuals for the meaning of `ref` and the return value.
+'refill variable
+   Pointer to current input refill routine.
 
-```file-position``` ```fh -> u```
+refilled? ( -> n )
+   Execute `refill` if the current input buffer is exhausted.
+   Return `n > 0` on sucess, `n < 0` on failure.
 
-  Convert file handler to its current file position
+infd variable
+   File descriptor from which to fill the input buffer.
 
-```fsize``` ```fh -> u```
+inbuf variable
+   Pointer to the input buffer.
 
-  Convert file handler to file size
+intot variable
+   Number of bytes allocated in the input buffer.
 
-```sysmmap``` ```addr length prot flags fh offset -> addr'```
+inused variable
+   Number of used bytes in the input buffer.
 
-  Map file to memory.
-  Check OS manuals for the meaning of arguments and return value.
+inpos variable
+   Position of first unprocessed byte in the input buffer.
 
-```fmap``` ```fh -> a u```
+source ( -> a u )
+   Return unprocessed portion of the input buffer.
 
-  Map file to memory.
-  Return buffer to mapped file.
+cr
+   Emit ASCII newline.
 
-```sysmunmap``` ```a u -> err```
+space
+   Emit ASCII space.
 
-  Unmap file from memory.
-  Check OS manuals for the meaning of arguments and return value.
+spaces ( u -> )
+   Emit `u` ASCII spaces.
 
-```syscall1``` ```n1 syscall# -> nr```
+printable? ( b -> bool )
+   Return true if it `b` is a printable ASCII character, `false` otherwise.
 
-```syscall2``` ```n1 n2 syscall# -> nr```
+char ( -> u )
+   Return ASCII code of next byte in the input buffer.
 
-```syscall3``` ```n1 n2 n3 syscall# -> nr```
+[char]
+   Compile literal ASCII code of the next byte in the input letter.
 
-```syscall4``` ```n1 n2 n3 n4 syscall# -> nr```
+(.) ( n -> )
+   Output number.
 
-```syscall5``` ```n1 n2 n3 n4 n5 syscall# -> nr```
+. ( n -> )
+   Same as `(.) space`.
 
-```syscall6``` ```n1 n2 n3 n4 n5 n6 syscall# -> nr```
+.addr ( a -> )
+   Output address in hex and zero-filled to the left.
 
-  Call system call with given arguments.
-  Return system call status.
+hb. ( b -> )
+   Output byte in hex.
 
-```dlopen dlsym dlerror dlclose```
+bytes ( a u -> )
+   Output bytes of buffer in hex, separated by a single space each.
 
-  Check your OS manuals for their description and usage
+c. ( b -> )
+   Output byte if it is printable, dot otherwise.
 
-```#!```
+text ( a u -> )
+   Output `u` bytes of buffer using `c.`.
 
-  Same as `\`
+dump ( a u -> )
+   Dump buffer in format `addr  hex-representation  ascii-representation`.
 
-```#args```
+'rel variable
+   Pointer to current `rel` routine.
 
-  Number of command line arguments
+rel
+   Run current read-eval loop. See `refill` and `eval`.
 
-```arg``` ```u -> a u'```
+'warm variable
+   Pointer to current `warm` routine.
 
-  Return buffer of command line argument `u`
+warm
+   Run current warm boot. By default it is a nil routine.
 
-```next-arg``` ```-> a u```
+'abort variable
+   Pointer to current abort routine.
 
-  Return buffer of next unprocessed command line argument
+abort ( str -> )
+   Run current abort routine. By default, output string if its non-zero, reset.
+   input, reset stacks and warm boot.
 
-```getenv``` ```a -> a'```
+?abort ( flag str -> )
+   Execute `abort` if `flag` is not false.
 
-  Convert environment variable named by string `a` to its value represented by
-  string `a'`
+?underflow
+   Execute `abort` if data stack has underflowed.
 
+evaluate ( -> ... )
+   Same as `eval` with the input buffer as buffer.
 
-## I/O
-```expect``` ```a u -> u'```
+included ( a u -> )
+   Read and `evaluate` file named by buffer.
 
-  Read at most `u` bytes from the current input into address `a`.
-  Return number of bytes read.
+include
+   Same as `included` with the remaining line in the input buffer as file name.
+   This means file names can't have newline characters (ascii $A) in them.
 
-```type``` ```a u ->```
 
-  Write `u` bytes from address `a` to the current output
+# Memory
+A buffer is defined as an address on second element and a length in the top
+element, denoted by `a u`.
 
-```emit``` ```b ->```
+cell value
+   Number of bytes in memory cell.
 
-  Write byte to the current output
+@ ( a -> n )
+   Fetch cell from address `a`.
 
-```'key```  _variable_
+1@ ( a -> b )
+   Fetch byte from address `a`.
 
-  Address of the current key routine
+! ( n a -> )
+   Store cell at address `a`.
 
-```key``` ```-> b```
+1! ( b a -> )
+   Store byte at address `a`.
 
-  Read byte from the current input.
-  Return byte on success, -1 on failure.
+4! ( n a -> )
+   Store 4-byte number `n` at address `a`.
 
-```read-byte``` ```fh -> b err```
+a ( -> n )
+   Return contents of register `a`.
 
-  Read byte from file.
-  Return byte and false on success, 0 and true on failure.
+a! ( n -> )
+   Store `n` into register `a`.
 
-```read-line``` ```a u fh -> n```
+@+ ( -> n )
+   Fetch cell from address in register `a`. Increment a by 1 cell.
 
-  Read at most `u` bytes from file into address `a`.
-  Return number of bytes read.
-  Check OS manuals for the meaning of the failure return values.
+1@+ ( -> b )
+   Fetch byte from address in register `a`. Increment a by 1.
 
-```write-byte``` ```b fh -> n```
+!+ ( n -> )
+   Store `n` into address in register `a`. Increment a by 1 cell.
 
-  Write byte to file.
-  Return 1 on success.
-  Check OS manuals for the meaning of the failure return values.
+1!+ ( b -> )
+   Store byte into address in register `a`. Increment a by 1.
 
-```write-line``` ```a u fh -> n```
+move ( src dst u -> )
+   Copy `u` bytes from `src` to `dst`.
 
-  Write buffer followed by a newline to file.
-  Return number of bytes written on success.
-  Check OS manuals for the meaning of the failure return values.
+cells ( n -> n' )
+   Convert number of cells to number of bytes.
 
-```reset-input```
+advance ( a u n -> a+n u-n )
+   Advance buffer by `n` bytes.
 
-  Reset current input state
+mem, ( a u -> )
+   Write buffer to the dictionary.
 
-```refill``` ```-> u```
+mem= ( a1 u1 a2 u2 -> bool )
+   Return true if the two buffer contents are equal, false otherwise.
 
-  Refill current input.
-  Return `u > 0` if refilled, `u <= 0` otherwise.
+skip ( a u b -> a' u' )
+   Skip a sequence of delimeter byte `b` starting at buffer.
+   Return remaining buffer after the sequence, if any, or the same buffer.
 
-```infd```  _variable_
+scan ( a u b -> a' u' )
+   Scan buffer for byte `b`.
+   Return remaining buffer, starting at the first `b`. If `b` was not found,.
+   `u'` is zero.
 
-  File descriptor feeding the input
+number ( a u -> n err )
+   Convert buffer to a number. If the first byte is $, the rest is treated as a.
+   positive hex number. If not, the whole buffer is treated as a decimal number.
+   Return converted number and error, which is zero on success.
 
-```inbuf```  _variable_
+head ( a u b -> a u' )
+   Scan buffer for a delimiter byte `b`.
+   Return buffer from `a` to the last byte before the delimiter.
 
-  Pointer to input buffer
+tail ( a u b -> a' u' )
+   Scan buffer for a delimiter byte `b`.
+   Return remaining buffer after first delimiter `b`.
 
-```intot```  _variable_
 
-  Total number of bytes in input buffer
+# Strings
+word ( b -> a u )
+   Skip a sequence of delimiter byte `b` in the input buffer.
+   Return buffer from the first byte after the sequence up to the next.
+   delimiter.
 
-```inused```  _variable_
+next-word ( -> a u )
+   Return next word from input buffer. A word is any sequence of non-whitespace.
+   bytes.
 
-  Number of filled bytes in input buffer
+str-len ( str -> a )
+   Return pointer to string length.
 
-```inpos```  _variable_
+str-data ( str -> a )
+   Return pointer to string contents.
 
-  Input buffer position
+/str value
+   Size of string record.
 
-```source ``` ```-> a u```
+str! ( a u dst -> )
+   Point string `dst` at buffer. The buffer contents are not copied.
 
-  Return a string describing the part of the input buffer yet to be processed
+str>mem ( str -> a u )
+   Get buffer from string.
 
-```cr```
+str, ( a u -> )
+   Write buffer contents and a string pointing to them to the dictionary. The.
+   string is written at `here`, the contents after it.
 
-  Emit ASCII newline
+str-len= ( str1 str2 -> bool )
+   Return true if the two strings have equal lengths, false otherwise.
 
-```space```
+str= ( str1 str2 -> bool )
+   Return true if the contents of the two strings are equal, false otherwise.
+   Note that the strings may be equal by pointing to two distinct buffers with.
+   the same contents.
 
-  Emit ASCII space
+str-size ( str -> # )
+   Return total size of a string in memory (contents + string record).
 
-```spaces``` ```n ->```
+str-copy ( src dst -> )
+   Copy `src` string contents to `dst`. Note that the destination will be a.
+   distinct string with the same contents.
 
-  Emit `n` ASCII spaces
+str-concat ( src dst -> )
+   Concatenate `src` string contents to string `dst`. The user is responsible.
+   for guaranteeing there is enough space in `dst` for the operation.
 
-```printable?``` ```b -> flag```
+" ( -> a )
+   Return address of string delimited by next " in the input buffer.
 
-  Substitute byte by true if it is a printable ASCII character, by false
-  otherwise
+" macro
+   Same as `"` but compile returned address as a literal.
 
-```char``` ```-> n``` _consumes input_
+."
+   Output string ended by next " in the input buffer.
 
-  Return ASCII code of next input letter
+print ( str -> )
+   Output string.
 
-```[char]```  _macro_  _consumes input_
+println ( str -> )
+   Output string followed by newline.
 
-  Compile literal ASCII code of the next input letter
+s>z ( a u -> a' )
+   Convert buffer to nul-terminated string. The contents are copied to the.
+   destination.
 
-```(.)``` ```n ->```
+zlen ( a -> u )
+   Return length of nul-terminated string.
 
-  Output number
+z" ( -> a )
+   Return address of nul-terminated string ended by next " in the input buffer.
 
-```.``` ```n ->```
+z>mem ( a -> a u )
+   Convert nul-terminated string to buffer. No copying is performed.
 
-  Output number and space
+<# ( n -> 0 n )
+   Expect a number on the stack to start pictured numeric conversion.
 
-```.addr``` ```a ->```
+#> ( ... -> a u )
+   End pictured numeric conversion.
+   Return resulting buffer.
 
-  Output address in hex and zero-filled to the left
+hold ( b -> )
+   Add byte to picture.
 
-```hb.``` ```b ->```
+# ( n -> )
+   Add next digit of number to picture.
 
-  Output byte in hex
+#s ( n -> )
+   Add remaining digits of number to picture.
 
-```bytes``` ```a u ->```
+sign ( n -> )
+   If number is negative, add minus character to picture.
 
-  Output bytes of buffer in hex, separated by spaces
+abs ( n -> |n| )
+   Convert number to its absolute value.
 
-```c.``` ```b ->```
 
-  Output byte if it is printable, dot otherwise
-
-```text``` ```a u ->```
-
-  Output printable bytes of buffer as is; as dots if non-printable
-
-```dump``` ```a u ->```
-
-  Dump buffer
-
-```'rel```  _variable_
-
-  Address of read-eval loop routine
-
-```rel```
-
-  Read-eval loop
-
-```'warm```  _variable_
-
-  Address of warm boot routine
-
-```warm```
-
-  Warm boot
-
-```abort``` ```str ->```
-
-  Output string if its non-zero, reset input and stacks and warm boot
-
-```?abort``` ```flag str ->```
-
-  Abort if `flag` is non-zero
-
-```?underflow```
-
-  Abort on data stack underflow
-
-```evaluate``` ```-> ...```
-
-  Interpret or compile input buffer
-
-```'refill```  _variable_
-
-  Address of input refill routine
-
-```refill```
-
-  Refill input buffer
-
-```refilled?``` ```-> flag```
-
-  Return true if the current input state lead to a refill, false otherwise
-
-```included``` ```a u ->```
-
-  Load and evaluate file named by buffer
-
-```include```  _consumes input_
-
-  Same as included with file named by the remaining line of input
-
-
-## Memory
-```cell```  _value_
-
-  Number of bytes of memory cell
-
-```@``` ```a -> n``` _macro+forth_
-
-  Fetch cell from address `a`
-
-```1@``` ```a -> b``` _macro+forth_
-
-  Fetch byte from address `a`
-
-```!``` ```n a ->``` _macro+forth_
-
-  Store n at address `a`
-
-```1!``` ```b a ->``` _macro+forth_
-
-  Store byte `b` at address `a`
-
-```4!``` ```n a ->``` _macro_
-
-  Store half-cell `n` at address `a`
-
-```a``` ```-> n``` _macro+forth_
-
-  Return contents of register `a`
-
-```a!``` ```n ->``` _macro+forth_
-
-  Store n into register `a`
-
-```@+``` ```-> n``` _macro+forth_
-
-  Fetch cell from address in register `a`. Increment a by cell.
-
-```1@+``` ```-> b``` _macro+forth_
-
-  Fetch byte from address in register `a`. Increment a by 1.
-
-```!+``` ```n ->``` _macro+forth_
-
-  Store n into address in register `a`. Increment a by cell.
-
-```1!+``` ```b ->``` _macro+forth_
-
-  Store byte into address in register `a`. Increment a by 1.
-
-```move``` ```src dst u ->```
-
-  Copy `u` bytes from `src` to `dst`
-
-```cells``` ```n -> n'```
-
-  Convert number of cells to number of bytes
-
-```advance``` ```a u n -> a+n u-n```
-
-  Advance buffer by `n` bytes
-
-```mem,``` ```a u ->```
-
-  Write buffer to the dictionary
-
-```mem=``` ```a1 u1 a2 u2 -> flag```
-
-  Substitute two buffer by true if their contents are equal, by false otherwise
-
-```skip``` ```a u b -> a' u'```
-
-  Skip sequence of byte `b` in buffer `a u`.
-  Return the remaining buffer after the sequence.
-
-```scan``` ```a u b -> a' u'```
-
-  Scan buffer `a u` for byte `b`.
-  Return the remaining buffer, starting at the first `b`. If `b` was not found,
-  the top of the stack is zero.
-
-```number``` ```a u -> n err```
-
-  Convert buffer `a u` to a number. If the first byte is $, the rest is treated
-  as a positive hex number. Otherwise, it is a decimal number.
-  Return converted number and error, which is zero on success.
-
-```head``` ```a u b -> a u'```
-
-  Scan buffer `a u` and return the buffer up to the last byte before delimiter `b`
-
-```tail``` ```a u b -> a' u'```
-
-  Scan buffer `a u` and return the buffer after delimiter `b`
-
-
-## Strings
-```infd```  _variable_
-
-  Input file descriptor
-
-```inbuf```  _variable_
-
-  Input buffer
-
-```intot```  _variable_
-
-  Total length of input buffer
-
-```inused```  _variable_
-
-  Used length in input buffer
-
-```inpos```  _variable_
-
-  Position in input buffer
-
-```source``` ```-> a u```
-
-  Return the unprocessed part of input buffer
-
-```word``` ```b -> a u``` _consumes input_
-
-  Skip a sequence of the delimiter byte b in the input buffer.
-  Return buffer from the first byte after the sequence upto the next delimiter.
-
-```next-word``` ```-> a u``` _consumes input_
-
-  Return next word from input buffer. A word is any sequence of non-whitespace
-  bytes.
-
-```str-len``` ```a -> a'```
-
-  Convert string address to address of its length
-
-```str-data``` ```a -> a'```
-
-  Convert string address to address of its data
-
-```/str```  _value_
-
-  Size of a string record
-
-```str!``` ```a u dst ->```
-
-  Write string representation for buffer `a u` in `dst`. The contents are not
-  copied.
-
-```str>mem``` ```a -> a' u```
-
-  Convert string to its buffer representation
-
-```str,``` ```a u ->```
-
-  Write string representation and contents of buffer `a u` to the dictionary
-
-```str-len=``` ```a a' -> flag```
-
-  Substitute two strings by true if they have equal lengths, by false otherwise
-
-```str=``` ```a a' -> flag```
-
-  Substitute two strings by true if their contents are equal, by false
-  otherwise
-
-```str-size``` ```a -> u```
-
-  Convert string by its total size in memory (contents + string record)
-
-```str-copy``` ```src dst ->```
-
-  Copy `src` string contents to `dst`. Note that the destination will be
-  a different string with the same contents.
-
-```str-concat``` ```src dst ->```
-
-  Concatenate source string contents to destination string. The user is
-  responsible to guaranteeing there ir enough space for the operation.
-
-```"``` ```-> a``` _macro+forth_  _consumes input_
-
-  Return address of string ended by next " in input
-
-```."```  _macro+forth_  _consumes input_
-
-  Output string ended by next " in input
-
-```print``` ```a ->```
-
-  Output string
-
-```println``` ```a ->```
-
-  Output string as a line
-
-```s>z``` ```a u -> a'```
-
-  Convert buffer to a nul-terminated string. The contents are copied to
-  destination.
-
-```zlen``` ```a -> u```
-
-  Convert nul-terminated string to its length
-
-```z"```  _consumes input_
-
-  Return address of nul-terminated string ended by next " in input
-
-```z>mem``` ```a -> a u```
-
-  Convert nul-terminated string to its buffer representation
-
-```<#``` ```n -> 0 n```
-
-  Expect a number on the stack to start pictured numeric conversion
-
-```#>``` ```... -> a u```
-
-  End pictured numeric conversion and return the resulting buffer
-
-```hold``` ```b ->```
-
-  Add byte to picture
-
-```#``` ```n -> ...```
-
-  Add next digit to picture
-
-```#s``` ```n -> ...```
-
-  Add remaining digits to picture
-
-```sign``` ```n ->```
-
-  If number is negative, add its sign to picture
-
-```abs``` ```n -> |n|```
-
-  Convert number to its absolute value
-
-
-## Dictionary
+# Dictionary
 The current dictionary is where definitions are compiled
 
-```flatest``` ```-> a```
+flatest ( -> a )
+   Return address of latest word defined in the forth dictionary.
 
-  Return address of latest word defined in the forth dictionary
+mlatest ( -> a )
+   Return address of latest word defined in the macro dictionary.
 
-```mlatest``` ```-> a```
+latest ( -> a )
+   Return the address of latest word defined in the current dictionary.
 
-  Return address of latest word defined in the macro dictionary
+macro
+   Set macro as the current dictionary.
 
-```latest``` ```-> a```
+forth
+   Set forth as the current dictionary.
 
-  Return the address of latest word defined in the current dictionary
+1, ( b -> )
+2, ( n -> )
+3, ( n -> )
+4, ( n -> )
+, ( n -> )
+   Store one-, two-, three-, four-, or cell-byte number in the dictionary.
 
-```macro```
+entry, ( a u -> a' )
+   Create empty dictionary entry named by buffer.
+   Return address of entry.
 
-  Set macro as the current dictionary
+entry
+   Same as `entry` with name from the next input word.
 
-```forth```
+created ( a u -> )
+   Create definition named by buffer.
+   When executed, returns the next dictionary address available at the time of.
+   its creation.
 
-  Set forth as the current dictionary
+create
+   Same as `created` with name from the next input word.
 
-```,``` ```n ->```
+variable
+   Create variable named by the next input word.
 
-  Store cell-sized number in dictionary
+value
+   Create value named by the next input word.
 
-```2,``` ```n ->```
+dfind ( a u d -> a' )
+   Search entry named by buffer in dictionary `d`.
+   If found, return pointer to entry. If not, return 0.
 
-  Store two-byte number in the dictionary
+find ( -> a )
+   Same as `dfind` using the current dictionary.
 
-```3,``` ```n ->```
+?find ( -> a )
+   Same as `find`, but `abort`s on definition not found.
 
-  Store three-byte number in the dictionary
+' ( -> a )
+   Search entry named by the next input word in the current dictionary.
+   If found, return pointer to the code of the entry. If not, abort.
 
-```4,``` ```n ->```
+[']
+   Same as `'`, but compiled return address as a literal.
 
-  Store four-byte number in the dictionary
+f' ( -> a )
+   Same as `'` but using the forth dictionary.
 
-```1,``` ```b ->```
+[f']
+   Same as `[']` but using forth dictionary.
 
-  Store byte in dictionary
+`
+   Compile macro named by the next input word as a literal (instead of.
+   executing it).
 
-```entry,``` ```a u -> a'```
+does> ( a -> )
+   Mark start of runtime behavior for a defining word.
 
-  Create empty dictionary entry named by `a u`.
-  Return address of entry.
+to ( n -> )
+   Store `n` to the value named by the next input word.
 
-```entry```  _consumes input_
+>cfa ( a -> cfa )
+   Return code field address (CFA) for entry `a`.
 
-  Same as `entry` with name in the next input word
+cfa ( a -> a' )
+   Return pointer to the code for entry `a`.
 
-```created``` ```a u ->```
+pfa ( a -> a' )
+   Return parameter field address (PFA) for entry `a`.
 
-  Create definition named by `a u`. When executed, returns the next dictionary
-  address available at the time of its creation.
+h variable
+   Dictionary pointer.
 
-```create```  _consumes input_
+here ( -> a )
+   Return next available address in dictionary space.
 
-  Same as `created` with name in the next input word
+allot ( n -> )
+   Advance dictionary pointer by `n`, i.e. consume `n` bytes of dictionary.
+   space.
 
-```_variable_```  _consumes input_
+call! ( a dst -> )
+   Store call to `a` in `dst`.
 
-  Create variable named by the next input word
+call, ( a -> )
+   Compile call to `a` in dictionary space.
 
-```value```  _consumes input_
+]
+   Switch to compilation mode.
 
-  Create value named by the next input word
 
-```dfind``` ```a u d -> a'```
+[
+   Switch to interpretation mode.
 
-  Search entry named `a u` in dictionary at address `d`.
-  If found, return the entry's address. If not, return 0.
+:
+   Create definition named by the next input word.
 
-```find``` ```-> a``` _consumes input_
+anon: ( -> a )
+   Create anonymous/headless definition.
+   Return address of definition.
 
-  Same as `dfind` using the current dictionary
+exit
+   Return from definition.
 
-```?find``` ```-> a``` _consumes input_
+;
+   Compile `exit` and switch to execution mode.
 
-  Same as `find` but aborting when definition is not found
+lit ( n -> )
+   Compile `n` as a literal to be pushed at runtime.
 
-*\`* _macro_  _consumes input_
+marker
+   Create marker named by the next input word. When executed, the marker will.
+   restore the dictionary to the state before the marker was created.
 
-  Compile macro named by the next input word
+empty
+   Restore state of dictionary at boot.
 
-```'``` ```-> a``` _consumes input_
+record:
+   Start record definition.
 
-  Search entry named by the next input word in the current dictionary.
-  If found, return the entry's code address as literal. If not, abort.
+field: ( off size -> off' )
+   Define record field named by the next input word. The field has given.
+   `offset` and `size`.
+   Return offset after field, i.e. `off + size`.
 
-```f'``` ```-> a``` _consumes input_
+bl value
+   ASCII code for space character.
 
-  Same as `'` but using the forth dictionary
 
-```[']```  _macro_  _consumes input_
+# Intepreter
+execute ( a -> ... )
+   Jump to word at address `a`.
 
-  Search entry named by the next input word in the current dictionary.
-  If found, compile the entry's code address as literal. If not, abort.
+eval ( a u -> ... )
+   Evaluate source code in buffer.
 
-```[f']```  _macro_  _consumes input_
+   When interpreting:.
+   1. Search the word in the forth dictionary.
+   2. If found, `execute` it.
+   3. If not, search in the macro dictionary.
+   4. If found, `execute` it.
+   5. If not, convert to number.
+   6. If conversion succeeded, push number to stack.
+   7. If not, abort.
 
-  Same as `[']` but using forth dictionary
+   When compiling:.
+   1. Search the word in the macro dictionary.
+   2. If found, execute it.
+   3. If not, search in the forth dictionary.
+   4. If found, compile it.
+   5. If not, convert to number.
+   6. If conversion succeeded, compile literal.
+   7. If not, abort.
 
-```does>``` ```a ->``` _macro_
+   The itens left on the stack are the results from the evaluation.
 
-  Mark start of runtime behavior for a defining word
 
-```to``` ```n ->``` macro+forth  _consumes input_
+# Arithmetic
++ ( m n -> m+n )
+   Return sum of first and second elements.
 
-  Store n to the value named by the next input word
+- ( m n -> m-n )
+   Return difference of second and first elements.
 
-```>cfa``` ```a -> a'```
+* ( m n -> m*n )
+   Return product of first and second elements.
 
-  Convert entry address to its code field address (CFA)
+/ ( p q -> p/q )
+   Return quotient of second and first elements.
 
-```cfa``` ```a -> a'```
+mod ( p q -> r )
+   Return remainder of division of the second by the first element.
 
-  Convert entry address to its code address
+/mod ( p q -> r p/q )
+   Return remainder and quotient of second and first elements, respectively.
 
-```pfa``` ```a -> a'```
+negate ( n -> -n )
+   Invert sign of top element.
 
-  Convert entry address to its parameter field address (PFA)
 
-```h```  _variable_
+# Logic
+false ( -> 0 )
+   Return proper and only false value.
 
-  Dictionary pointer
+true ( -> -1 )
+   Return proper true value. Note that any non-false value may be used as true.
 
-```here``` ```-> a```
+= ( m n -> bool )
+   Return true if top two elements are equal.
 
-  Return next available address in dictionary
+~= ( m n -> bool )
+   Return true if top two elements are different.
 
-```allot``` ```n ->```
+< ( m n -> bool )
+   Return true if the second element is lesser than the first.
 
-  Advance dictionary pointer by `n`
+> ( m n -> bool )
+   Return true if the second element is greater than the first.
 
-```call!``` ```'code dst ->```
+<= ( m n -> bool )
+   Return true if the second element is lesser than or equal to the first.
 
-  Store call to address `'code` in `dst`
+>= ( m n -> bool )
+   Return true if the second element is greater than or equal to the first.
 
-```call,``` ```a ->```
+not ( n -> ~n )
+   Return logical negation of `n`, i.e. `false` becomes `true` and any.
+   non-false becomes `false`.
 
-  Compile call to address `a` in dictionary
+within ( n lo hi -> bool )
+   Return true if `lo <= n < hi`.
 
-```]```  _macro_
+min ( m n -> p )
+   Return the lesser of the top two elements.
 
-  Switch to compilation mode
 
-```[```  _macro_
+# Bitwise operations
+lshift ( n p -> n' )
+   Shift bits of `n` `p` places to the left.
 
-  Switch to interpretation mode
+rshift ( n p -> n' )
+   Shift bits of `n` `p` places to the right.
 
-```:```  _macro_  _consumes input_
+and ( m n -> p )
+   Return bitwise AND of the top two elements.
 
-  Create definition named by the next input word
+or ( m n -> p )
+   Return bitwise OR of the top two elements.
 
-```anon:``` ```-> a``` _consumes input_
+xor ( m n -> p )
+   Return bitwise XOR of the top two elements.
 
-  Create anonymous/headless definition.
-  Return address of the definition.
+~ ( m n -> p )
+   Return bitwise NOT of the top two elements.
 
-```exit```  _macro_
 
-  Exit/return from definition
+# Miscellaneous
+banner
+   Output nop banner.
 
-```;```  _macro_
+bye
+   Exit with zero status.
 
-  Compile exit and switch to execution mode
+\
+   Comment remainder of current line.
 
-```lit``` ```n ->``` _macro_
+(
+   Comment until closing parenthesis or end of line, whichever comes first.
 
-  Compile `n` as a literal to be pushed at runtime
+align ( a u -> a' )
+   Return next `u`-byte aligned address starting from and including `a`.
 
-```marker```  _consumes input_
+aligned ( a -> a' )
+   Return next cell aligned address starting from and including `a`.
 
-  Create marker named by the next input word. When executed, the marker will
-  restore the dictionary to the state before the marker was created.
+Br
+   Trap into debugger. x86_64 int3 instruction.
 
-```empty```
 
-  Restore state of dictionary at boot
+# Conditionals
+if ( n -> )
+   Branch if `n` is false, continue otherwise; drop `n` either way.
 
-```record:```
+else
+   Start alternative branch in an `if, i.e. when `n` is false.
 
-  Start record definition
+then
+   End an `if` conditional.
 
-```field:``` ```offset size alignment -> offset'``` _consumes input_
+begin
+   Begin indefinite loop.
 
-  Define record field named by the next input word, at given `offset`, with
-  given `size` and `alignment`
+while ( n -> )
+   Stop indefinite loop if `n` is false, continue otherwise; drop `n` either way.
 
-```bl```  _value_
+again
+   Branch back to start of indefinite (`begin` only) loop.
 
-  ASCII code for space character
+repeat
+   Branch back to start of indefinite (`begin-while`) loop.
 
+for ( u -> )
+   Start definite countdown loop of `u` steps.
 
-## Intepreter
-```'abort``` _variable_
-
-  Address of abort routine
-
-```abort```
-
-  Run abort routine. By default, reset data and return stacks and jump to the
-  interpreter loop.
-
-```eval``` ```a u -> ...```
-
-  Evaluate source code in buffer a u.
-  When interpreting:
-  1. Search the word in the forth dictionary
-  2. If found, execute it
-  3. If not, search in the macro dictionary
-  4. If found, execute it
-  5. If not, convert to number
-  6. If conversion succeeded, push number to stack
-  7. If not, abort
-
-  When compiling:
-  1. Search the word in the macro dictionary
-  2. If found, execute it
-  3. If not, search in the forth dictionary
-  4. If found, compile it
-  5. If not, convert to number
-  6. If conversion succeeded, compile literal
-  7. If not, abort
-
-  The itens left on the stack are the results from the evaluation.
-
-```execute``` ```a -> ...```
-
-  Jump to word at address `a`
-
-
-## Arithmetic
-```+``` ```m n -> m+n``` _macro+forth_
-
-  Substitute top two elements by their sum
-
-```-``` ```m n -> m-n``` _macro+forth_
-
-  Substitute top two elements by their difference
-
-```*``` ```m n -> m*n``` _macro+forth_
-
-  Substitute top two elements by their product
-
-```/``` ```m n -> m/n``` forth```
-
-  Substitute top two elements by their quotient
-
-```mod``` ```m n -> remainder(m,n)``` forth```
-
-  Substitute top two elements by the remainder of their division
-
-```/mod``` ```m n -> remainder(m,n) m/n``` _macro+forth_
-
-  Substitute top two elements by their remainder and quotient, respectively
-
-```negate``` ```n -> -n``` _macro+forth_
-
-  Invert sign of top element
-
-
-## Logic
-```true``` ```-> flag```
-
-  Proper true value
-
-```false``` ```-> flag```
-
-  Proper false value
-
-```=``` ```m n -> flag``` _macro+forth_
-
-  Substitute top two elements by true if they are equal, by false otherwise
-
-```~=``` ```m n -> flag``` _macro+forth_
-
-  Substitute top two elements by true if they are different, by false otherwise
-
-```<``` ```m n -> flag``` _macro+forth_
-
-  Substitute top two elements by true if the first is less than the second, by
-  false otherwise
-
-```>``` ```m n -> flag``` _macro+forth_
-
-  Substitute top two elements by true if the first is greater than the second,
-  by false otherwise
-
-```<=``` ```m n -> flag``` _macro+forth_
-
-  Substitute top two elements by true if the first is less than or equal to the
-  second, by false otherwise
-
-```>=``` ```m n -> flag``` _macro+forth_
-
-  Substitute top two elements by true if the first is greater than or equal to
-  the second, by false otherwise
-
-```not``` ```n -> ~n``` _macro+forth_
-
-  Substitute top element by true if its false, by false if its true
-
-```within``` ```n lo hi -> flag```
-
-  Substitute top three elments by true if `lo <= n < hi`, by false otherwise
-
-```min``` ```m n -> min(m,n)```
-
-  Substitute top two elements by the lesser of the two
-
-
-## Bitwise operations
-```lshift``` ```n m -> n'``` _macro+forth_
-
-  Substitute top two elements by n shifted m places to the left
-
-```rshift``` ```n m -> n'``` _macro+forth_
-
-  Substitute top two elements by n shifted m places to the right
-
-```and``` ```m n -> AND(m,n)``` _macro+forth_
-
-  Substitute top two elements by their bitwise AND
-
-```or``` ```m n -> OR(m,n)``` _macro+forth_
-
-  Substitute top two elements by their bitwise OR
-
-```xor``` ```m n -> XOR(m,n)``` _macro+forth_
-
-  Substitute top two elements by their bitwise XOR
-
-```~``` ```m -> NOT(n)``` _macro+forth_
-
-  Substitute top element by its bitwise negation
-
-
-## Miscellaneous
-```banner```
-
-  Output nop banner
-
-```bye```
-
-  Exit with zero status
-
-```\```  _macro_  _consumes input_
-
-  Comment remainder of current line
-
-```(```  _macro_  _consumes input_
-
-  Comment until closing parenthesis
-
-```align``` ```a u -> a'```
-
-  Starting from `a`, return next `u`-byte aligned address
-
-```aligned``` ```a -> a'```
-
-  Starting from `a`, return next 8-byte aligned address
-
-```Br```
-
-  Trap into debugger. x86_64 int3 instruction.
-
-
-## Conditionals
-```if``` ```n ->``` _macro_
-
-  Branch if `n` is zero, continue otherwise; drop `n` either way
-
-```then```  _macro_
-
-  Mark the end of an if conditional
-
-```begin```  _macro_
-
-  Begin indefinite loop
-
-```while``` ```n ->``` _macro_
-
-  Stop loop if `n` is zero, continue otherwise; drop `n` either way
-
-```again```  _macro_
-
-  Branch back to begin of indefinite loop
-
-```repeat```  _macro_
-
-  Branch back to begin of `begin-while` loop
-
-```for``` ```n ->``` _macro_
-
-  Begin definite countdown loop of `n` steps
-
-```next```  _macro_
-
-  Finish a for-loop
+next
+   End a `for`-loop.
