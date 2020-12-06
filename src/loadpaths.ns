@@ -1,0 +1,52 @@
+\ SPDX-License-Identifier: MIT
+\ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
+
+record:
+   cell field: path-next
+   cell field: path-len
+   cell field: path-data
+value /path
+
+: path, ( a u -> a' )   here push  0 , , ,  pop ;
+: path-str ( a -> a u )   dup path-data @  swap path-len @ ;
+
+variable 'head   variable 'tail
+: load-paths ( -> a )   'head @ ;
+
+: .load-paths   load-paths begin   dup   while
+      dup path-str type cr  path-next @
+   repeat   drop ;
+
+: add-path ( path -> )
+   'tail @ if   dup 'tail @ path-next !   then   'tail !
+   'head @ 0 = if   'tail @ 'head !   then ;
+
+: add-load-path ( a u -> )   path, add-path ;
+
+: env-elem ( a u -> 'rest rest# 'elem elem# )
+   2dup [char] : head 2push  [char] : tail  2pop ;
+
+: add-env-value ( a u -> )
+   begin   dup   while   env-elem add-load-path   repeat   2drop ;
+
+: init-load-paths ( env -> )
+   " NOPLIBS" getenv dup if   str>mem add-env-value   then ;
+
+: notfound ( a u -> )
+   " can't find '" print  type  " ' in load paths" println 0 abort ;
+
+\ Accumulate tentative file path at `here` without alloting
+: +path ( path -> a )   path-str tuck  here swap move  here + ;
+: +sep ( a -> a' )   [char] / over 1!  1 + ;
+: +file ( a u a' -> a u a'' )   push 2dup r@  swap move  pop over + ;
+: +ext ( a -> a' )   push  " .ns" str>mem tuck  r@ swap move  pop + ;
+: curstr ( a -> a' u )   here -  here swap ;
+
+: floaded ( a u -> )
+   load-paths begin   dup   while
+      dup push  +path +sep +file +ext
+      curstr included 0 = if   2drop rdrop exit   then
+      pop path-next @
+   repeat   drop notfound ;
+
+: fload   10 word floaded ;
