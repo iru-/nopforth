@@ -14,6 +14,7 @@ SRC=\
 	src/go.ns\
 	src/interactive.ns\
 	src/interpreter.ns\
+	src/loadpaths.ns\
 	src/memory.ns\
 	src/pictured.ns\
 	src/shell.ns\
@@ -39,7 +40,6 @@ d: all
 
 test: bin/nop
 	bin/nop test/logic.ns
-	bin/nop test/str.ns
 	bin/nop test/fileio.ns && rm -f test.out
 	bin/nop test/clib.ns
 	bin/nop test/endian.ns
