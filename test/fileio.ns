@@ -1,40 +1,39 @@
 \ SPDX-License-Identifier: MIT
 \ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
 
-create fname " test.out" drop
-create wbuf " text file" drop
-create rbuf wbuf str-len @ 5 +  dup allot  value /rbuf
+" test.out" value #fname value fname
+" text file" value #wbuf value wbuf
+create rbuf #wbuf 5 +  dup allot  value /rbuf
 
-: ?fail   if 0 abort then ;
+: ?fail   if 0 0 abort then ;
 
 -1 value fd
 
 : test-create
-   fname str>mem 420 create-file
+   fname #fname 420 create-file
    dup 0 < ?fail  to fd ;
 
 : test-close   fd sysclose ?fail ;
 
 : test-open
-   fname str>mem 2 0 open-file
+   fname #fname 2 0 open-file
    dup 0 < ?fail  to fd ;
 
 : test-write
-   wbuf str>mem fd syswrite
-   wbuf str-len @ ~= ?fail ;
+   wbuf #wbuf fd syswrite  #wbuf ~= ?fail ;
 
 : test-read
    rbuf /rbuf fd sysread
    dup 1 < " test-read: read failed" ?abort
 
-   push  wbuf str-data @  rbuf  pop mem= not
+   push  wbuf rbuf  pop mem= not
    " test-read: contents do not match" ?abort ;
 
 : test-read-byte-err   -1 read-byte   nip true ~= ?fail ;
 
 : test-read-byte-ok
    fd read-byte   " test-read-byte-ok: read failed" ?abort
-   wbuf str-data @ 1@ ~= " test-read-byte-ok: contents do not match" ?abort ;
+   wbuf 1@ ~= " test-read-byte-ok: contents do not match" ?abort ;
 
 test-create
 test-write

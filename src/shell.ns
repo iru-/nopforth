@@ -4,8 +4,8 @@
 : #!   ` \ ;
 : arg ( u -> a u' )   cells args + @ z>mem ;
 
-: getenv ( name -> value )
-   str>mem s>z (getenv)  dup if  z>mem here str! here  then ;
+: getenv ( name #name -> value #value )
+   s>z (getenv)  dup if  z>mem  else  0  then ;
 
 variable arg-offset
 : next-arg ( -> a u )

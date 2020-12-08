@@ -8,19 +8,19 @@ forth
 0 value 'warm
 : warm   'warm dup if execute then  bye ;
 
-: .abort ( str -> )
-   dup 0 ~= if println exit then  drop
-   inbuf @ inpos @ here str!  here print  [char] ? emit cr ;
+: .abort ( a u -> )
+   dup 0 ~= if type cr exit then  drop
+   inbuf @ inpos @ type  [char] ? emit cr ;
 
-: abort ( str -> )         .abort reset-input resetstacks warm ;
-: ?abort ( flag str -> )   push  if pop abort then  rdrop ;
+: abort ( a u -> )         .abort reset-input resetstacks warm ;
+: ?abort ( flag a u -> )   2push  if 2pop abort then  2pop 2drop ;
 
 : ?underflow
    depth 0 >= if exit then
-   " stack underflow!" println  0 abort ;
+   " stack underflow!" println  0 0 abort ;
 
 : evaluate
-   next-word dup 0 = if  drop drop exit  then
+   next-word dup 0 = if  2drop exit  then
    eval ?underflow evaluate ;
 
 variable 'refill  \ must be set before use

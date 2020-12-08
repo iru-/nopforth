@@ -250,11 +250,11 @@ warm
 'abort variable
    Pointer to current abort routine.
 
-abort ( str -> )
-   Run current abort routine. By default, output string if its non-zero, reset.
-   input, reset stacks and warm boot.
+abort ( msg # -> )
+   Run current abort routine. By default, output message, reset input, reset
+   stacks and warm boot.
 
-?abort ( flag str -> )
+?abort ( flag msg # -> )
    Execute `abort` if `flag` is not false.
 
 ?underflow
@@ -359,61 +359,20 @@ next-word ( -> a u )
    Return next word from input buffer. A word is any sequence of non-whitespace.
    bytes.
 
-str-len ( str -> a )
-   Return pointer to string length.
-
-str-data ( str -> a )
-   Return pointer to string contents.
-
-/str value
-   Size of string record.
-
-str! ( a u dst -> )
-   Point string `dst` at buffer. The buffer contents are not copied.
-
-str>mem ( str -> a u )
-   Get buffer from string.
-
-str, ( a u -> )
-   Write buffer contents and a string pointing to them to the dictionary. The.
-   string is written at `here`, the contents after it.
-
-str-len= ( str1 str2 -> bool )
-   Return true if the two strings have equal lengths, false otherwise.
-
-str= ( str1 str2 -> bool )
-   Return true if the contents of the two strings are equal, false otherwise.
-   Note that the strings may be equal by pointing to two distinct buffers with.
-   the same contents.
-
-str-size ( str -> # )
-   Return total size of a string in memory (contents + string record).
-
-str-copy ( src dst -> )
-   Copy `src` string contents to `dst`. Note that the destination will be a.
-   distinct string with the same contents.
-
-str-concat ( src dst -> )
-   Concatenate `src` string contents to string `dst`. The user is responsible.
-   for guaranteeing there is enough space in `dst` for the operation.
-
-" ( -> a )
-   Return address of string delimited by next " in the input buffer.
+" ( -> a u )
+   Return string delimited by next " in the input buffer.
 
 " macro
-   Same as `"` but compile returned address as a literal.
+   Compile string inside definition. At runtime, behave as `"`.
 
 ."
    Output string ended by next " in the input buffer.
 
-print ( str -> )
-   Output string.
-
-println ( str -> )
+println ( a u -> )
    Output string followed by newline.
 
 s>z ( a u -> a' )
-   Convert buffer to nul-terminated string. The contents are copied to the.
+   Convert string to nul-terminated string. The contents are copied to the.
    destination.
 
 zlen ( a -> u )

@@ -30,16 +30,16 @@ variable 'head   variable 'tail
    begin   dup   while   env-elem add-load-path   repeat   2drop ;
 
 : init-load-paths ( env -> )
-   " NOPLIBS" getenv dup if   str>mem add-env-value   then ;
+   " NOPLIBS" getenv dup 0 = if   2drop exit   then   add-env-value ;
 
 : notfound ( a u -> )
-   " can't find '" print  type  " ' in load paths" println 0 abort ;
+   " can't find '" type  type  " ' in load paths" type cr  0 0 abort ;
 
 \ Accumulate tentative file path at `here` without alloting
 : +path ( path -> a )   path-str tuck  here swap move  here + ;
 : +sep ( a -> a' )   [char] / over 1!  1 + ;
 : +file ( a u a' -> a u a'' )   push 2dup r@  swap move  pop over + ;
-: +ext ( a -> a' )   push  " .ns" str>mem tuck  r@ swap move  pop + ;
+: +ext ( a -> a' )   push  " .ns" tuck  r@ swap move  pop + ;
 : curstr ( a -> a' u )   here -  here swap ;
 
 : floaded ( a u -> )

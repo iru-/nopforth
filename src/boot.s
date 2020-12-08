@@ -796,10 +796,9 @@ abortxt:
     ret
 
 abort1:
-    # Discard the argument passed in. It is there only to make this abort
+    # Discard the two arguments passed in. It is there only to make this abort
     # consistent with the portable one
     mov _inbuf(%rip), %rax
-    dup_
     mov _inpos(%rip), %rax
     call type
     dup_
