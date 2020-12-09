@@ -5,7 +5,7 @@ forth
 : cfa ( a -> a' )   >cfa @ ;
 
 macro
-: `   next-word mlatest dfind dup 0 = if abort then  cfa call, ;
+: `   next-word mlatest dfind dup 0 = if drop abort then  cfa call, ;
 
 macro : true    -1 ` lit ;
 forth : true    true ;

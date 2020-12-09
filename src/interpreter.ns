@@ -8,16 +8,15 @@ forth
 0 value 'warm
 : warm   'warm dup if execute then  bye ;
 
-: .abort ( a u -> )
-   dup 0 ~= if type cr exit then  drop
-   inbuf @ inpos @ type  [char] ? emit cr ;
-
-: abort ( a u -> )         .abort reset-input resetstacks warm ;
-: ?abort ( flag a u -> )   2push  if 2pop abort then  2pop 2drop ;
+: (abort)   reset-input resetstacks warm ;
+: .abortline   inbuf @ inpos @ type  [char] ? emit cr ;
+: abort   .abortline (abort) ;
+: ?abort ( flag msg # -> )
+   2push if  2pop println (abort)  then  2pop 2drop ;
 
 : ?underflow
    depth 0 >= if exit then
-   " stack underflow!" println  0 0 abort ;
+   " stack underflow!" println  (abort) ;
 
 : evaluate
    next-word dup 0 = if  2drop exit  then

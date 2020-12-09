@@ -4,8 +4,8 @@
 forth
 : find ( a u -> a'|0 )   latest @ dfind ;
 
-: ' ( -> a )      next-word            find dup 0 = if 0 abort then  cfa ;
-: f' ( -> a|0 )   next-word flatest @ dfind dup 0 = if 0 abort then  cfa ;
+: ' ( -> a )      next-word            find dup 0 = if drop abort then  cfa ;
+: f' ( -> a|0 )   next-word flatest @ dfind dup 0 = if drop abort then  cfa ;
 
 macro
 : [']    '  ` lit ;
@@ -42,7 +42,7 @@ forth
 : variable   create 0 , ;
 : value      create ,  does> @ ;
 
-: ?find ( -> a )   next-word find   dup 0 = if 0 abort then ;
+: ?find ( -> a )   next-word find   dup 0 = if drop abort then ;
 
 macro
 : to ( n -> )   ?find pfa  ` lit ` ! ;

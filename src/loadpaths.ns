@@ -33,7 +33,7 @@ variable 'head   variable 'tail
    " NOPLIBS" getenv dup 0 = if   2drop exit   then   add-env-value ;
 
 : notfound ( a u -> )
-   " can't find '" type  type  " ' in load paths" type cr  0 0 abort ;
+   " can't find '" type  type  " ' in load paths" type cr  abort ;
 
 \ Accumulate tentative file path at `here` without alloting
 : +path ( path -> a )   path-str tuck  here swap move  here + ;

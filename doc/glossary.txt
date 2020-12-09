@@ -247,12 +247,11 @@ rel
 warm
    Run current warm boot. By default it is a nil routine.
 
-'abort variable
-   Pointer to current abort routine.
+(abort)
+   Reset input, reset stacks and `warm` boot.
 
-abort ( msg # -> )
-   Run current abort routine. By default, output message, reset input, reset
-   stacks and warm boot.
+abort
+   Output current source line and call `(abort)`.
 
 ?abort ( flag msg # -> )
    Execute `abort` if `flag` is not false.

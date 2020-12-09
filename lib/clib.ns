@@ -3,8 +3,8 @@
 
 1 value RTLD_LAZY
 
-: errorstr ( -> a u )   dlerror dup 0 = if z>mem exit then drop 0 0 ;
-: ?clib-abort ( flag -> )   if errorstr abort then ;
+: errorstr ( -> a u )   dlerror dup if z>mem exit then  0 ;
+: ?clib-abort ( flag -> )   errorstr ?abort ;
 
 : clib-load ( a u -> handle )
    s>z RTLD_LAZY dlopen dup 0 = ?clib-abort ;

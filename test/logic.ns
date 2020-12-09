@@ -1,25 +1,27 @@
 \ SPDX-License-Identifier: MIT
 \ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
 
-: test-not-pos   1 not if 0 0 abort then ;      test-not-pos
-: test-not-neg   0 not if exit then 0 0 abort ; test-not-neg
+: ?fail   if abort then ;
 
-: test-=-pos   1 1 = if exit then 0 0 abort ; test-=-pos
-: test-=-neg   1 2 = if 0 0 abort then ;      test-=-neg
+: test-not-pos   1 not ?fail ; test-not-pos
+: test-not-neg   0 not if exit then abort ; test-not-neg
 
-: test-~=-pos   1 2 ~= if exit then 0 0 abort ; test-~=-pos
-: test-~=-neg   1 1 ~= if 0 0 abort then ;      test-~=-neg
+: test-=-pos   1 1 = if exit then abort ; test-=-pos
+: test-=-neg   1 2 = ?fail ; test-=-neg
 
-: test-<-pos   1 2 < if exit then 0 0 abort ; test-<-pos
-: test-<-neg   1 1 < if 0 0 abort then ;      test-<-neg
+: test-~=-pos   1 2 ~= if exit then abort ; test-~=-pos
+: test-~=-neg   1 1 ~= ?fail ; test-~=-neg
 
-: test-<=-pos    1 2 <= if exit then 0 0 abort ; test-<=-pos
-: test-<=-pos2   1 1 <= if exit then 0 0 abort ; test-<=-pos2
-: test-<=-neg    2 1 <= if 0 0 abort then ;      test-<=-neg
+: test-<-pos   1 2 < if exit then abort ; test-<-pos
+: test-<-neg   1 1 < ?fail ; test-<-neg
 
-: test->-pos   2 1 > if exit then 0 0 abort ; test->-pos
-: test->-neg   1 1 > if 0 0 abort then ;      test->-neg
+: test-<=-pos    1 2 <= if exit then abort ; test-<=-pos
+: test-<=-pos2   1 1 <= if exit then abort ; test-<=-pos2
+: test-<=-neg    2 1 <= ?fail ; test-<=-neg
 
-: test->=-pos    2 1 > if exit then 0 0 abort ;  test->=-pos
-: test->=-pos2   1 1 >= if exit then 0 0 abort ; test->=-pos2
-: test->=-neg    1 2 >= if 0 0 abort then ;      test->=-neg
+: test->-pos   2 1 > if exit then abort ; test->-pos
+: test->-neg   1 1 > ?fail ; test->-neg
+
+: test->=-pos    2 1 > if exit then abort ;  test->=-pos
+: test->=-pos2   1 1 >= if exit then abort ; test->=-pos2
+: test->=-neg    1 2 >= ?fail ; test->=-neg
