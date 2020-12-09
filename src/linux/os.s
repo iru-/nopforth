@@ -200,6 +200,7 @@ _dlclose:
 
 _dlerror:
     prolog
+    dup_
     call dlerror@plt
     epilog
     ret
