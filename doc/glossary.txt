@@ -80,7 +80,8 @@ sysclose ( fd -> err )
 
 sysseek ( off ref fd -> off' )
    Reposition file descriptor `fd` to offset `off` relative to `ref`.
-   On success, return resulting offset from beginning of file. On error, return -1.
+   On success, return resulting offset from beginning of file. On error,
+   return -1.
 
 file-position ( fd -> u  )
    Return current position of file descriptor.
@@ -130,7 +131,7 @@ getenv ( var -> value )
 # I/O
 read-line ( a u fd -> # )
    Read at most `u` bytes from file descriptor into address `a`.
-   Return number of bytes read. It will be less then `u` if less bytes are.
+   Return number of bytes read. It will be less then `u` if less bytes are
    available or a newline is found.
 
 read-byte ( fd -> b err )
@@ -331,11 +332,11 @@ skip ( a u b -> a' u' )
 
 scan ( a u b -> a' u' )
    Scan buffer for byte `b`.
-   Return remaining buffer, starting at the first `b`. If `b` was not found,.
+   Return remaining buffer, starting at the first `b`. If `b` was not found,
    `u'` is zero.
 
 number ( a u -> n err )
-   Convert buffer to a number. If the first byte is $, the rest is treated as a.
+   Convert buffer to a number. If the first byte is $, the rest is treated as a
    positive hex number. If not, the whole buffer is treated as a decimal number.
    Return converted number and error, which is zero on success.
 
@@ -351,11 +352,11 @@ tail ( a u b -> a' u' )
 # Strings
 word ( b -> a u )
    Skip a sequence of delimiter byte `b` in the input buffer.
-   Return buffer from the first byte after the sequence up to the next.
+   Return buffer from the first byte after the sequence up to the next
    delimiter.
 
 next-word ( -> a u )
-   Return next word from input buffer. A word is any sequence of non-whitespace.
+   Return next word from input buffer. A word is any sequence of non-whitespace
    bytes.
 
 " ( -> a u )
@@ -371,7 +372,7 @@ println ( a u -> )
    Output string followed by newline.
 
 s>z ( a u -> a' )
-   Convert string to nul-terminated string. The contents are copied to the.
+   Convert string to nul-terminated string. The contents are copied to the
    destination.
 
 zlen ( a -> u )
@@ -440,7 +441,7 @@ entry
 
 created ( a u -> )
    Create definition named by buffer.
-   When executed, returns the next dictionary address available at the time of.
+   When executed, returns the next dictionary address available at the time of
    its creation.
 
 create
@@ -476,7 +477,7 @@ f' ( -> a )
    Same as `[']` but using forth dictionary.
 
 `
-   Compile macro named by the next input word as a literal (instead of.
+   Compile macro named by the next input word as a literal (instead of
    executing it).
 
 does> ( a -> )
@@ -501,7 +502,7 @@ here ( -> a )
    Return next available address in dictionary space.
 
 allot ( n -> )
-   Advance dictionary pointer by `n`, i.e. consume `n` bytes of dictionary.
+   Advance dictionary pointer by `n`, i.e. consume `n` bytes of dictionary
    space.
 
 call! ( a dst -> )
@@ -534,7 +535,7 @@ lit ( n -> )
    Compile `n` as a literal to be pushed at runtime.
 
 marker
-   Create marker named by the next input word. When executed, the marker will.
+   Create marker named by the next input word. When executed, the marker will
    restore the dictionary to the state before the marker was created.
 
 empty
@@ -544,7 +545,7 @@ record:
    Start record definition.
 
 field: ( off size -> off' )
-   Define record field named by the next input word. The field has given.
+   Define record field named by the next input word. The field has given
    `offset` and `size`.
    Return offset after field, i.e. `off + size`.
 
@@ -559,23 +560,23 @@ execute ( a -> ... )
 eval ( a u -> ... )
    Evaluate source code in buffer.
 
-   When interpreting:.
-   1. Search the word in the forth dictionary.
-   2. If found, `execute` it.
-   3. If not, search in the macro dictionary.
-   4. If found, `execute` it.
-   5. If not, convert to number.
-   6. If conversion succeeded, push number to stack.
-   7. If not, abort.
+   When interpreting:
+   1. Search the word in the forth dictionary
+   2. If found, `execute` it
+   3. If not, search in the macro dictionary
+   4. If found, `execute` it
+   5. If not, convert to number
+   6. If conversion succeeded, push number to stack
+   7. If not, abort
 
-   When compiling:.
-   1. Search the word in the macro dictionary.
-   2. If found, execute it.
-   3. If not, search in the forth dictionary.
-   4. If found, compile it.
-   5. If not, convert to number.
-   6. If conversion succeeded, compile literal.
-   7. If not, abort.
+   When compiling:
+   1. Search the word in the macro dictionary
+   2. If found, execute it
+   3. If not, search in the forth dictionary
+   4. If found, compile it
+   5. If not, convert to number
+   6. If conversion succeeded, compile literal
+   7. If not, abort
 
    The itens left on the stack are the results from the evaluation.
 
@@ -629,7 +630,7 @@ true ( -> -1 )
    Return true if the second element is greater than or equal to the first.
 
 not ( n -> ~n )
-   Return logical negation of `n`, i.e. `false` becomes `true` and any.
+   Return logical negation of `n`, i.e. `false` becomes `true` and any
    non-false becomes `false`.
 
 within ( n lo hi -> bool )
