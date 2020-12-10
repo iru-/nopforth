@@ -3,7 +3,7 @@
 
 include lib/clib.ns
 
-library: libc.so.6
+library:
 1 1 Cfunction: puts puts
 z" clib test" puts drop
 
