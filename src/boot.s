@@ -269,15 +269,8 @@ parse:
     jnz 1f
     pop %rcx
     ret
-1:  push %rax
-    dup_
-    mov 8(%rsp), %rax       # retrieve delimiter
-    call skip
-    pop %rcx
-    sub %rax, %rcx          # rcx = consumed bytes
-    add %rcx, _inpos(%rip)
 
-    pop %rcx                # retrieve delimiter
+1:  pop %rcx                # retrieve delimiter
     # save start and count of string
     push (%rbp)
     push %rax
