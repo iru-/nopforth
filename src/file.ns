@@ -58,4 +58,4 @@ forth
    sysclose drop  inbuf @ intot @ sysmunmap drop
    restore-input  false ;
 
-: include   10 word included " can't include file" ?abort ;
+: include   10 parse included " can't include file" ?abort ;

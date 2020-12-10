@@ -12,14 +12,14 @@ forth
 
 : printable? ( c -> flag )    bl 127 within ;
 
-: char ( -> b )     bl word drop 1@ ;
+: char ( -> b )     bl parse drop 1@ ;
 macro
 : [char] ( -> b )   char ` lit ;
 forth
 
 : s>z ( a u -> a' )     here push  dup allot  r@ swap move  0 1,  pop ;
 : zlen ( a -> u )       a! 0 begin 1@+ while 1 + repeat ;
-: z" ( -> a )           [char] " word s>z ;
+: z" ( -> a )           [char] " parse s>z ;
 : z>mem ( a -> a' u )   dup zlen ;
 
 macro
@@ -28,14 +28,14 @@ macro
    \ r: len addr-of-string-start addr-of-branch-dst
    mem,  pop ` then  pop ` lit  pop ` lit ;
 
-macro : "   [char] " word  ` memlit ;
+macro : "   [char] " parse  ` memlit ;
 forth : " ( -> a u )
-  [char] " word  tuck  here dup push  over allot  swap move  pop swap ;
+  [char] " parse  tuck  here dup push  over allot  swap move  pop swap ;
 
 : println   type cr ;
 
 macro : ."   ` "  [f'] type call, ;
-forth : ."   [char] " word type ;
+forth : ."   [char] " parse type ;
 
 
 : depth ( -> u )   S0 sp@ - 8 /  2 - ;

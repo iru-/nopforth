@@ -49,4 +49,4 @@ variable 'head   variable 'tail
       pop path-next @
    repeat   drop notfound ;
 
-: fload   10 word floaded ;
+: fload   10 parse floaded ;

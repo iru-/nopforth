@@ -48,7 +48,7 @@ forth
 
 : library:
    handle if handle dlclose drop then
-   next-word clib-load to handle ;
+   word clib-load to handle ;
 
 : Cfunction: ( #args #ret "Cname" "nopname" -> )
-   swap  handle next-word next-word cfunc>entry  callC, ;
+   swap  handle word word cfunc>entry  callC, ;

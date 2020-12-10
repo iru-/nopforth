@@ -19,7 +19,7 @@ forth
    " stack underflow!" println  (abort) ;
 
 : evaluate
-   next-word dup 0 = if  2drop exit  then
+   word dup 0 = if  2drop exit  then
    eval ?underflow evaluate ;
 
 variable 'refill  \ must be set before use

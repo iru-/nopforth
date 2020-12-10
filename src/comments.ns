@@ -1,6 +1,6 @@
 macro
-: \  10 word drop drop ;
-: (  41 word drop drop ;
+: \  10 parse drop drop ;
+: (  41 parse drop drop ;
 
 \ SPDX-License-Identifier: MIT
 \ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza

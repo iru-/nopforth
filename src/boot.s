@@ -234,7 +234,7 @@ source:
     xor %rax, %rax
 1:  ret
 
-nextword:
+word:
     call source
     test %rax, %rax
     jnz 1f
@@ -261,7 +261,7 @@ nextword:
     mov %rcx, %rax
     ret
 
-word:
+parse:
     push %rax               # save delimiter
     drop_
     call source
@@ -372,7 +372,7 @@ aligned:
     ret
 
 entry:
-    call nextword
+    call word
 
 centry:
     mov _h(%rip), %rcx
@@ -913,7 +913,7 @@ readloop:
     cmp %rcx, %rdx
     jne 1f
     ret
-1:  call nextword
+1:  call word
     test %rax, %rax
     jnz 2f
     drop_
