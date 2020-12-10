@@ -53,7 +53,8 @@ forth
 
 : included ( a u -> err )
    0 0 open-file dup 0 < if exit then
-   save-input  dup dup fmap 0 0 ['] frefill input!
+   save-input  dup dup fmap  over -1 = if drop exit then
+   0 0 ['] frefill input!
    push rel pop
    sysclose drop  inbuf @ intot @ sysmunmap drop
    restore-input  false ;
