@@ -7,7 +7,8 @@
 : ?clib-abort ( flag -> )   errorstr ?abort ;
 
 : clib-load ( a u -> handle )
-   s>z RTLD_LAZY dlopen dup 0 = ?clib-abort ;
+   dup if  s>z  else  0  then
+   RTLD_LAZY dlopen dup 0 = ?clib-abort ;
 
 : clib-symbol ( handle a u -> 'func )
    s>z dlsym dup 0 = ?clib-abort ;
