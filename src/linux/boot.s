@@ -10,7 +10,7 @@
 
     .text
 setupenv:
-	# setup argc, argv and environment
+    # setup argc, argv and environment
     dec %rdi                       # discard the interpreter name
     mov %rdi, _nargs(%rip)
     mov (%rsi), %rcx
