@@ -29,7 +29,7 @@ all: bin/nop
 
 bin/nop: bin/nop.o
 	${CC} -ggdb -o $@ $^ -ldl
-	@bin/nop /dev/null   # test the bootstrap
+	@echo -n | bin/nop   # test the bootstrap
 
 bin/nop.o: ${SRC}
 	mkdir -p bin
