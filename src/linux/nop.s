@@ -3,7 +3,6 @@
 
 .text
 .include "boot.s"
-.include "linux/boot.s"
 .include "linux/os.s"
 
 .data

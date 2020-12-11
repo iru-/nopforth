@@ -3,7 +3,6 @@
 
 .text
 .include "boot.s"
-.include "netbsd/boot.s"
 .include "netbsd/os.s"
 
 .data

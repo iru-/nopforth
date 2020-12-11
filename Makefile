@@ -21,7 +21,6 @@ SRC=\
 	src/string.ns\
 	src/boot.s\
 	src/dicts.s\
-	src/${NOPSYS}/boot.s\
 	src/${NOPSYS}/os.s\
 	src/${NOPSYS}/nop.s\
 
