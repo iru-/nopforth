@@ -44,12 +44,15 @@ forth
 : fmap ( fd -> a u ) \ PROT_READ MAP_PRIVATE
    dup push fsize  0 over 1 2 pop 0 sysmmap  swap ;
 
-: inbuf+                inbuf +! ;
-: intot-                negate intot +! ;
-: setup                 0 inpos !  inused @ dup inbuf+ intot- ;
+
+\ After a file is mmaped for inclusion the input state is intot = filesize,
+\ inused = 0, inpos = 0. Each refill then advances inused to after the next
+\ newline. Hence, even though the whole file is available at the onset, the
+\ interpreter sees only one line at a time.
+
 : ?skip ( a u -> a' )   0 = if exit then   dup 1@ 10 = if 1 + then ;
-: eolscan               inbuf @ intot @ 10 scan  ?skip ;
-: frefill ( -> n )      setup  eolscan inbuf @ -  dup inused ! ;
+: eolscan ( -> a )   inbuf @ intot @  inused @ advance 10 scan  ?skip ;
+: frefill ( -> n )   eolscan  inbuf @ -  dup inused @ -  swap inused ! ;
 
 : included ( a u -> err )
    0 0 open-file dup 0 < if exit then
