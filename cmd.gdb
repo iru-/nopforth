@@ -3,7 +3,7 @@
 
 define dstk
   echo T\040\040\040\040
-  print/z $rax
+  print/x $rax
   set $p = $rbp
   while $p < &dstack0
     x/gx $p
@@ -27,9 +27,9 @@ end
 
 define instate
   echo inpos\040\040
-  print/z (short)inpos
+  print/x (short)inpos
   echo inbuflen\040\040
-  print/z (short)inbuflen
+  print/x (short)inbuflen
 end
 
 define dh
