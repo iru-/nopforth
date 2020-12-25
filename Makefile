@@ -24,10 +24,21 @@ SRC=\
 	src/${NOPSYS}/os.s\
 	src/${NOPSYS}/nop.s\
 
-all: bin/nop
+all: ${NOPSYS} test_bootstrap
+
+linux:
+	LDFLAGS=-ldl make bin/nop
+
+openbsd:
+	LDFLAGS=-Wl,-z,wxneeded make bin/nop
+
+netbsd: bin/nop
+freebsd: bin/nop
 
 bin/nop: bin/nop.o
-	${CC} -ggdb -o $@ $^ -ldl
+	${CC} -ggdb -o bin/nop bin/nop.o ${LDFLAGS}
+
+test_bootstrap:
 	@echo -n | bin/nop   # test the bootstrap
 
 bin/nop.o: ${SRC}
@@ -37,7 +48,7 @@ bin/nop.o: ${SRC}
 d: all
 	gdb -x cmd.gdb bin/nop
 
-test: bin/nop
+test: all
 	bin/nop test/logic.ns
 	bin/nop test/fileio.ns && rm -f test.out
 	bin/nop test/clib.ns
