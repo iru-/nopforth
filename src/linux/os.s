@@ -29,7 +29,7 @@ syserrno:
     dup_
     call __errno_location@plt
     mov (%rax), %eax
-    movsxd %eax, %rax
+    movsx %eax, %rax
     epilog
     ret
 
@@ -68,7 +68,7 @@ sysopen:
     drop_
     mov %rax, %rdi
     call open@plt
-    movsxd %eax, %rax
+    movsx %eax, %rax
     epilog
     ret
 
@@ -78,7 +78,7 @@ syscreate:
     drop_
     mov %rax, %rdi
     call creat@plt
-    movsxd %eax, %rax
+    movsx %eax, %rax
     epilog
     ret
 
@@ -86,7 +86,7 @@ sysclose:
     prolog
     mov %rax, %rdi
     call close@plt
-    movsxd %eax, %rax
+    movsx %eax, %rax
     epilog
     ret
 
@@ -125,7 +125,7 @@ sysmunmap:
     mov %rax, %rdi
     call munmap@plt
     epilog
-    movsxd %eax, %rax
+    movsx %eax, %rax
     ret
 
 sysalloc:
