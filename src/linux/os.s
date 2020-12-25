@@ -238,6 +238,7 @@ resetdict:
     mov $-1, %r8         # fd
     mov $0, %r9          # offset (ignored)
     call mmap@plt
+    test %rax, %rax
     jz 1f
     mov %rax, _h(%rip)
     drop_
