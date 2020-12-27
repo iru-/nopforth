@@ -26,7 +26,7 @@
 syserrno:
     prolog
     dup_
-    call errnoaddr@plt
+    call errnoaddr
     mov (%rax), %eax
     movsx %eax, %rax
     epilog
@@ -39,7 +39,7 @@ sysread:
     mov %rax, %rdx
     drop_
     mov %rax, %rsi
-    call read@plt
+    call read
     epilog
     ret
 
@@ -50,14 +50,14 @@ syswrite:
     mov %rax, %rdx
     drop_
     mov %rax, %rsi
-    call write@plt
+    call write
     epilog
     ret
 
 sysexit:
     prolog
     mov %rax, %rdi
-    call exit@plt
+    call exit
 
 sysopen:
     prolog
@@ -66,7 +66,7 @@ sysopen:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call open@plt
+    call open
     movsx %eax, %rax
     epilog
     ret
@@ -76,7 +76,7 @@ syscreate:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call creat@plt
+    call creat
     movsx %eax, %rax
     epilog
     ret
@@ -84,7 +84,7 @@ syscreate:
 sysclose:
     prolog
     mov %rax, %rdi
-    call close@plt
+    call close
     movsx %eax, %rax
     epilog
     ret
@@ -96,7 +96,7 @@ sysseek:
     mov %rax, %rdx
     drop_
     mov %rax, %rsi
-    call lseek@plt
+    call lseek
     epilog
     ret
 
@@ -113,7 +113,7 @@ sysmmap:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call mmap@plt
+    call mmap
     epilog
     ret
 
@@ -122,7 +122,7 @@ sysmunmap:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call munmap@plt
+    call munmap
     epilog
     movsx %eax, %rax
     ret
@@ -130,7 +130,7 @@ sysmunmap:
 sysalloc:
     prolog
     mov %rax, %rdi
-    call malloc@plt
+    call malloc
     epilog
     ret
 
@@ -139,14 +139,14 @@ sysresize:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call realloc@plt
+    call realloc
     epilog
     ret
 
 sysfree:
     prolog
     mov %rax, %rdi
-    call free@plt
+    call free
     drop_
     epilog
     ret
@@ -184,7 +184,7 @@ _dlopen:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call dlopen@plt
+    call dlopen
     epilog
     ret
 
@@ -193,28 +193,28 @@ _dlsym:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call dlsym@plt
+    call dlsym
     epilog
     ret
 
 _dlclose:
     prolog
     mov %rax, %rdi
-    call dlclose@plt
+    call dlclose
     epilog
     ret
 
 _dlerror:
     prolog
     dup_
-    call dlerror@plt
+    call dlerror
     epilog
     ret
 
 sysgetenv:
     prolog
     mov %rax, %rdi
-    call getenv@plt
+    call getenv
     epilog
     ret
 
@@ -236,7 +236,7 @@ resetdict:
     mov $(MAP_ANONYMOUS | MAP_SHARED), %rcx          # flags
     mov $-1, %r8         # fd
     mov $0, %r9          # offset (ignored)
-    call mmap@plt
+    call mmap
     test %rax, %rax
     jz 1f
     mov %rax, _h(%rip)
