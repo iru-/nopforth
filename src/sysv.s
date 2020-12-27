@@ -6,7 +6,6 @@
 .equ PROT_EXEC,     0x4
 .equ MAP_SHARED,    0x1
 .equ MAP_PRIVATE,   0x2
-.equ MAP_ANONYMOUS, 0x1000
 
     .text
 
@@ -27,7 +26,7 @@
 syserrno:
     prolog
     dup_
-    call __error@plt
+    call errnoaddr@plt
     mov (%rax), %eax
     movsx %eax, %rax
     epilog

@@ -21,19 +21,18 @@ SRC=\
 	src/string.ns\
 	src/boot.s\
 	src/dicts.s\
-	src/${NOPSYS}/os.s\
-	src/${NOPSYS}/nop.s\
+	src/${NOPSYS}.s\
 
 all: ${NOPSYS} test_bootstrap
 
-linux:
+Linux:
 	LDFLAGS=-ldl make bin/nop
 
-openbsd:
+OpenBSD:
 	LDFLAGS=-Wl,-z,wxneeded make bin/nop
 
-netbsd: bin/nop
-freebsd: bin/nop
+NetBSD: bin/nop
+FreeBSD: bin/nop
 
 bin/nop: bin/nop.o
 	${CC} -ggdb -o bin/nop bin/nop.o ${LDFLAGS}
@@ -43,7 +42,7 @@ test_bootstrap:
 
 bin/nop.o: ${SRC}
 	mkdir -p bin
-	${AS} -ggdb ${ASFLAGS} -o $@ src/${NOPSYS}/nop.s
+	${AS} -ggdb ${ASFLAGS} -o $@ src/${NOPSYS}.s
 
 d: all
 	gdb -x cmd.gdb bin/nop

@@ -1,9 +1,12 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
 
+.equ MAP_ANONYMOUS, 0x20
+errnoaddr = __errno_location
+
 .text
 .include "boot.s"
-.include "netbsd/os.s"
+.include "sysv.s"
 
 .data
 .include "dicts.s"
