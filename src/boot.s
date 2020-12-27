@@ -170,7 +170,7 @@ number:
     pop %rcx
     cmpq $0, %rax
     jl 5f
-    add %rax, %rbx
+    addq %rax, %rbx
     inc %rsi
     loop 3b
 
@@ -243,7 +243,7 @@ word:
     call skipws
     pop %rcx
     sub %rax, %rcx          # rcx = consumed bytes
-    add %rcx, _inpos(%rip)
+    addq %rcx, _inpos(%rip)
 
     # save start and count of string
     push (%rbp)
@@ -251,11 +251,11 @@ word:
     call scanws
     pop %rcx
     sub %rax, %rcx          # rcx = consumed bytes
-    add %rcx, _inpos(%rip)
+    addq %rcx, _inpos(%rip)
 
     test %rax, %rax         # c was not found
     jz 2f
-    add $1, _inpos(%rip)    # consume c
+    addq $1, _inpos(%rip)   # consume c
 
 2:  pop (%rbp)
     mov %rcx, %rax
@@ -279,11 +279,11 @@ parse:
     call scan
     pop %rcx
     sub %rax, %rcx          # rcx = consumed bytes
-    add %rcx, _inpos(%rip)
+    addq %rcx, _inpos(%rip)
 
     test %rax, %rax         # c was not found
     jz 2f
-    add $1, _inpos(%rip)    # consume c
+    addq $1, _inpos(%rip)   # consume c
 
 2:  pop (%rbp)
     mov %rcx, %rax
@@ -328,14 +328,14 @@ forth:
 comma:
     mov _h(%rip), %rdx
     mov %rax, (%rdx)
-    add $8, _h(%rip)
+    addq $8, _h(%rip)
     drop_
     ret
 
 comma4:
     mov _h(%rip), %rdx
     mov %eax, (%rdx)
-    add $4, _h(%rip)
+    addq $4, _h(%rip)
     drop_
     ret
 
@@ -349,7 +349,7 @@ comma1:
 comma2:
     mov _h(%rip), %rdx
     movw %ax, (%rdx)
-    add $2, _h(%rip)
+    addq $2, _h(%rip)
     drop_
     ret
 
@@ -360,7 +360,7 @@ comma3:
     ret
 
 aligned:
-    add $7, %rax
+    addq $7, %rax
     and $~7, %rax
     ret
 
@@ -396,7 +396,7 @@ centry:
     dup_
     call comma1
     mov _h(%rip), %rcx
-    add %rax, %rcx
+    addq %rax, %rcx
     mov %rcx, _h(%rip)
     drop_
 
@@ -521,7 +521,7 @@ ccall:
     # calculate call offset
     dup_
     call here
-    add $5, %rax
+    addq $5, %rax
     sub %rax, (%rbp)
     # data stack: call-destination offset where-to-compile-offset
 
