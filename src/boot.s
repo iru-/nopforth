@@ -946,7 +946,7 @@ _args: .quad 0           # address of argv[1]
 _interpname: .quad 0     # address of argv[0]
 
     .text
-    .global main
+    .global main, _main
 args:
     dup_
 	mov _args(%rip), %rax
@@ -962,6 +962,7 @@ interpname:
     mov _interpname(%rip), %rax
     ret
 
+_main:
 main:
     mov %rsp, _R0(%rip)
     call setupenv

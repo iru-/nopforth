@@ -35,6 +35,7 @@ NetBSD: bin/nop
 	paxctl +m bin/nop
 
 FreeBSD: bin/nop
+Darwin: bin/nop
 
 bin/nop: bin/nop.o
 	${CC} -ggdb -o bin/nop bin/nop.o ${LDFLAGS}
