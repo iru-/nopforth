@@ -211,7 +211,7 @@ _dlerror:
     epilog
     ret
 
-_getenv:
+sysgetenv:
     prolog
     mov %rax, %rdi
     call getenv@plt

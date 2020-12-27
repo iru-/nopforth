@@ -496,15 +496,15 @@ interpname_header:
     .ascii "interpname"
 
     .align 8
-getenv_header:
+sysgetenv_header:
     .quad interpname_header
-    .quad _getenv
+    .quad sysgetenv
     .byte 8
     .ascii "(getenv)"
 
     .align 8
 resetstacks_header:
-    .quad getenv_header
+    .quad sysgetenv_header
     .quad resetstacks
     .byte 11
     .ascii "resetstacks"
