@@ -36,7 +36,7 @@ key:
     jmp *_keyxt(%rip)
 
 skip:
-    cmp $0, (%rbp)     # empty string
+    cmpq $0, (%rbp)    # empty string
     jnz 1f
     drop_
     ret
@@ -60,7 +60,7 @@ skipws:
 1:  test %rax, %rax
     jz 2f
     movzbq (%rdx), %rbx
-    cmp $0x20, %bl       # ascii space
+    cmpb $0x20, %bl      # ascii space
     jg 2f
     inc %rdx
     dec %rax
@@ -71,7 +71,7 @@ scanws:
 1:  test %rax, %rax
     jz 2f
     movzbq (%rdx), %rbx
-    cmp $0x20, %bl       # ascii space
+    cmpb $0x20, %bl      # ascii space
     jle 2f
     inc %rdx
     dec %rax
@@ -80,7 +80,7 @@ scanws:
 3:  ret
 
 scan:
-    cmp $0, (%rbp)     # empty string
+    cmpq $0, (%rbp)    # empty string
     jnz 1f
     drop_
     ret
@@ -100,9 +100,9 @@ scan:
     ret
 
 toupper:
-    cmp $'a', %rax
+    cmpb $'a', %al
     jl 2f             # not lower case
-    cmp $'z', %rax
+    cmpb $'z', %al
     jg 2f             # not lower case
     xor $32, %rax
 2:  ret
@@ -113,18 +113,18 @@ digit:
     drop_                 # rax = ascii digit
     call toupper          # normalize to upper case
     sub $'0', %rax        # convert to binary
-    cmp $9, %rax          # is it <= 9?
+    cmpq $9, %rax         # is it <= 9?
     jle 2f                # yes, go out
                           # no, number is in a base > 10
     sub $7, %rax          # subtract the digits between '9' and 'A'
-    cmp $10, %rax         # is it < 10?
+    cmpq $10, %rax        # is it < 10?
     mov $0, %rcx          # no, rcx = 0
     jnl 1f                # yes,
     mov $-1, %rcx         # rcx = -1
 1:  or %rcx, %rax
-2:  cmp $0, %rax
+2:  cmpq $0, %rax
     jl 3f
-    cmp %rdx, %rax        # is the number less than base?
+    cmpq %rdx, %rax       # is the number less than base?
     jl 4f                 # yes, we're done
 3:  mov $-1, %rax         # no, it is an error
 4:  ret
@@ -133,11 +133,11 @@ number:
     mov %rax, %rcx        # rcx = length
     drop_                 # rax = string
 
-    cmp $0, %rcx          # zero length string?
+    cmpq $0, %rcx         # zero length string?
     je 4f
 
     movzbq (%rax), %rsi
-    cmp $'-', %rsi        # is the number negative?
+    cmpq $'-', %rsi       # is the number negative?
     jne 0f                # no, jump
     push $1               # yes, push 1
     inc %rax              # advance to next byte
@@ -168,7 +168,7 @@ number:
     call digit
     pop %rdx
     pop %rcx
-    cmp $0, %rax
+    cmpq $0, %rax
     jl 5f
     add %rax, %rbx
     inc %rsi
@@ -176,7 +176,7 @@ number:
 
     mov %rbx, %rax
     pop %rsi
-    cmp $1, %rsi
+    cmpq $1, %rsi
     jne 4f
     neg %rax
 
@@ -429,10 +429,10 @@ anon:
 cexit:
     call here
     sub $5, %rax
-    cmp %rax, _hole(%rip)
+    cmpq %rax, _hole(%rip)
     jne 1f
     mov (%rax), %cl
-    cmp $0xE8, %cl      # is it a call?
+    cmpb $0xE8, %cl     # is it a call?
     jne 1f
     movb $0xE9, (%rax)  # convert to a jump
     drop_
@@ -486,7 +486,7 @@ dfind:
     ret
 2:
     movzbq 16(%rax), %rdx  # name length
-    cmp %rcx, %rdx
+    cmpq %rcx, %rdx
     jne 3f
     push %rsi
     push %rcx
@@ -903,7 +903,7 @@ setreadkern:
 readloop:
     mov _inpos(%rip), %rcx
     mov _inused(%rip), %rdx
-    cmp %rcx, %rdx
+    cmpq %rcx, %rdx
     jne 1f
     ret
 1:  call word
@@ -996,9 +996,9 @@ _overerrlen = . - _overerr
 
     .text
 checkstacks:
-    cmp _S0(%rip), %rbp
+    cmpq _S0(%rip), %rbp
     jg 1f
-    cmp _Send(%rip), %rbp
+    cmpq _Send(%rip), %rbp
     jl 2f
     ret
 1:
