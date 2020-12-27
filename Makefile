@@ -32,6 +32,8 @@ OpenBSD:
 	LDFLAGS=-Wl,-z,wxneeded make bin/nop
 
 NetBSD: bin/nop
+	paxctl +m bin/nop
+
 FreeBSD: bin/nop
 
 bin/nop: bin/nop.o
