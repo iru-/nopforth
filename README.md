@@ -2,8 +2,18 @@
 Nop is a dialect of the Forth programming language. It provides an environment
 for the user to interact with and control computers.
 
-Currently nop supports Linux, FreeBSD, OpenBSD, NetBSD and Windows (cygwin)
-running on x86_64 CPUs.
+Currently it runs on x86_64 CPUs and the following operating systems are
+supported
+
+ OS              | Build | Boot | Dynamic libraries |
+-----------------|-------|------|-------------------|
+Linux            | ok    | ok   | ok                |
+FreeBSD          | ok    | ok   | ok                |
+OpenBSD          | ok    | ok   | ok                |
+NetBSD           | ok    | ok   | ok                |
+macOS            | ok    | ok   | not supported     |
+Windows (cygwin) | ok    | ok   | not supported     |
+
 
 ## Preparing nop for use
 To run nop, you first need to build it using a straightforward
