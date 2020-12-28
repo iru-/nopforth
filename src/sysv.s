@@ -122,7 +122,7 @@ sysmunmap:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call munmap
+    call munmap@plt
     epilog
     movsx %eax, %rax
     ret
@@ -193,14 +193,14 @@ _dlsym:
     mov %rax, %rsi
     drop_
     mov %rax, %rdi
-    call dlsym
+    call dlsym@plt
     epilog
     ret
 
 _dlclose:
     prolog
     mov %rax, %rdi
-    call dlclose
+    call dlclose@plt
     epilog
     ret
 
@@ -236,7 +236,7 @@ resetdict:
     mov $(MAP_ANONYMOUS | MAP_SHARED), %rcx          # flags
     mov $-1, %r8         # fd
     mov $0, %r9          # offset (ignored)
-    call mmap
+    call mmap@plt
     test %rax, %rax
     jz 1f
     mov %rax, _h(%rip)
