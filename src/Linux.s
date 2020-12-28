@@ -2,7 +2,7 @@
 # Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
 
 .equ MAP_ANONYMOUS, 0x20
-errnoaddr = __errno_location
+errnoaddr = __errno_location@plt
 
 .text
 .include "boot.s"
