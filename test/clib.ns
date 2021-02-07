@@ -5,6 +5,14 @@ include lib/clib.ns
 
 library:
 1 1 Cfunction: puts puts
+0 1 Cfunction: fork fork
+
 z" clib test" puts drop
+
+anon:
+   fork dup 0 = if  drop " i'm child" println exit  then
+   ." i'm parent. child pid is " . cr
+; execute
+
 
 \ TODO test for errors

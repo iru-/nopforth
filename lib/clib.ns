@@ -30,6 +30,9 @@
 : callC2   $C68948 3, ` drop ;
 : callC1   $C78948 3, ;
 
+: callC0  \ no input arguments, only create space for return value
+   ` dup ;
+
 : xcall,   here call! allot ;
 
 : callC, ( #ret #args 'func -> )
@@ -39,7 +42,8 @@
    dup 3 > if callC4 then
    dup 2 > if callC3 then
    dup 1 > if callC2 then
-       0 > if callC1 then
+       0 > if callC1 else
+              callC0 then
    pop xcall,  0 = if ` drop then  epilog ` exit ;
 
 forth
