@@ -11,7 +11,7 @@ Linux            | ok    | ok   | ok                |
 FreeBSD          | ok    | ok   | ok                |
 OpenBSD          | ok    | ok   | ok                |
 NetBSD           | ok    | ok   | ok                |
-macOS            | ok    | ok   | not supported     |
+macOS            | ok    | ok   | ok                |
 Windows (cygwin) | ok    | ok   | not supported     |
 
 
@@ -19,6 +19,11 @@ Windows (cygwin) | ok    | ok   | not supported     |
 To run nop, you first need to build it using a straightforward
 ```
 % make
+```
+
+If you are on macOS, use the following command instead
+```
+% NOPSYS=Darwin make
 ```
 
 This will build an executable in `bin/nop` and perform a smoke test of the
