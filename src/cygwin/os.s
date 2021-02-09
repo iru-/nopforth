@@ -122,7 +122,7 @@ syscall3:  push %rax; drop_; jmp sys3
 syscall2:  push %rax; drop_; jmp sys2
 syscall1:  push %rax; drop_; jmp sys1
 
-_dlopen:
+sysdlopen:
     sub $(32 + 8), %rsp
     mov %rax, %rdx
     drop_
@@ -131,7 +131,7 @@ _dlopen:
     add $(32 + 8), %rsp
     ret
 
-_dlsym:
+sysdlsym:
     sub $(32 + 8), %rsp
     mov %rax, %rdx
     drop_
@@ -140,14 +140,14 @@ _dlsym:
     add $(32 + 8), %rsp
     ret
 
-_dlclose:
+sysdlclose:
     sub $(32 + 8), %rsp
     mov %rax, %rcx
     call dlclose
     add $(32 + 8), %rsp
     ret
 
-_dlerror:
+sysdlerror:
     sub $(32 + 8), %rsp
     dup_
     call dlerror

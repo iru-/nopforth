@@ -179,7 +179,7 @@ syscall3:  push %rax; drop_; jmp sys3
 syscall2:  push %rax; drop_; jmp sys2
 syscall1:  push %rax; drop_; jmp sys1
 
-_dlopen:
+sysdlopen:
     prolog
     mov %rax, %rsi
     drop_
@@ -188,7 +188,7 @@ _dlopen:
     epilog
     ret
 
-_dlsym:
+sysdlsym:
     prolog
     mov %rax, %rsi
     drop_
@@ -197,14 +197,14 @@ _dlsym:
     epilog
     ret
 
-_dlclose:
+sysdlclose:
     prolog
     mov %rax, %rdi
     call dlclose@plt
     epilog
     ret
 
-_dlerror:
+sysdlerror:
     prolog
     dup_
     call dlerror@plt

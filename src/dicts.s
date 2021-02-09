@@ -77,36 +77,36 @@ sysmunmap_header:
     .ascii "sysmunmap"
 
     .align 8
-_dlclose_header:
+sysdlclose_header:
     .quad sysmunmap_header
-    .quad _dlclose
+    .quad sysdlclose
     .byte 7
     .ascii "dlclose"
 
    .align 8
-_dlerror_header:
-    .quad _dlclose_header
-    .quad _dlerror
+sysdlerror_header:
+    .quad sysdlclose_header
+    .quad sysdlerror
     .byte 7
     .ascii "dlerror"
 
    .align 8
-_dlsym_header:
-    .quad _dlerror_header
-    .quad _dlsym
+sysdlsym_header:
+    .quad sysdlerror_header
+    .quad sysdlsym
     .byte 5
     .ascii "dlsym"
 
    .align 8
-_dlopen_header:
-    .quad _dlsym_header
-    .quad _dlopen
+sysdlopen_header:
+    .quad sysdlsym_header
+    .quad sysdlopen
     .byte 6
     .ascii "dlopen"
 
    .align 8
 sysalloc_header:
-    .quad _dlopen_header
+    .quad sysdlopen_header
     .quad sysalloc
     .byte 8
     .ascii "sysalloc"
