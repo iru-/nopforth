@@ -1,0 +1,32 @@
+\ SPDX-License-Identifier: MIT
+\ Copyright (c) 2021 Iruatã Martins dos Santos Souza
+
+fload clib
+
+library:
+2 1 Cfunction: clock_gettime clock_gettime
+2 1 Cfunction: localtime_r localtime_r
+
+0 value CLOCK_REALTIME
+
+record:
+   cell field: tv-sec
+   cell field: tv-nsec
+value /timespec
+
+record:
+   4 field: tm-sec
+   4 field: tm-min
+   4 field: tm-hour
+   4 field: tm-mday
+   4 field: tm-mon
+   4 field: tm-year
+   4 field: tm-wday
+   4 field: tm-yday
+   4 field: tm-isdst
+   8 field: tm-gmtoff
+   cell align 8 field: tm-zone
+value /tm
+
+: realtime ( a -> )   CLOCK_REALTIME swap clock_gettime ;
+
