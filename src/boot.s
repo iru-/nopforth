@@ -901,20 +901,15 @@ setreadkern:
     ret
 
 readloop:
-    mov _inpos(%rip), %rcx
-    mov _inused(%rip), %rdx
-    cmpq %rcx, %rdx
-    jne 1f
-    ret
-1:  call word
+    call word
     test %rax, %rax
-    jnz 2f
-    drop_
-    drop_
-    jmp readloop
-2:  call eval
+    jz 2f
+    call eval
     call checkstacks
     jmp readloop
+2:  drop_
+    drop_
+    ret
 
     .data
 _banner:    .ascii "nop forth\n"
