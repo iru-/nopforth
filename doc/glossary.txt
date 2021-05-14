@@ -326,14 +326,14 @@ mem, ( a u -> )
 mem= ( a1 u1 a2 u2 -> bool )
    Return true if the two buffer contents are equal, false otherwise.
 
-skip ( a u b -> a' u' )
-   Skip a sequence of delimeter byte `b` starting at buffer.
+skip ( a u delim -> a' u' )
+   Skip sequence of delimeter byte in buffer.
    Return remaining buffer after the sequence, if any, or the same buffer.
 
-scan ( a u b -> a' u' )
-   Scan buffer for byte `b`.
-   Return remaining buffer, starting at the first `b`. If `b` was not found,
-   `u'` is zero.
+scan ( a u delim -> a' u' )
+   Scan buffer for delimiter byte.
+   Return remaining buffer starting at the first delimiter. If the latter was
+   not found, `u'` is zero.
 
 number ( a u -> n err )
    Convert buffer to a number. If the first byte is $, the rest is treated as a
