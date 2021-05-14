@@ -350,12 +350,12 @@ tail ( a u b -> a' u' )
 
 
 # Strings
-word ( b -> a u )
-   Skip a sequence of delimiter byte `b` in the input buffer.
+parse ( delim -> a u )
+   Skip a sequence of delimiter byte in the input buffer.
    Return buffer from the first byte after the sequence up to the next
    delimiter.
 
-next-word ( -> a u )
+word ( -> a u )
    Return next word from input buffer. A word is any sequence of non-whitespace
    bytes.
 
@@ -453,8 +453,8 @@ variable
 value
    Create value named by the next input word.
 
-dfind ( a u d -> a' )
-   Search entry named by buffer in dictionary `d`.
+dfind ( name #name dict -> entry )
+   Search entry with given `name` in dictionary `dict`.
    If found, return pointer to entry. If not, return 0.
 
 find ( -> a )
