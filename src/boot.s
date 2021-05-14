@@ -778,17 +778,10 @@ clit:
     jmp comma
 
     .data
-_abortxt:  .quad abort1
 _qmsg:     .ascii "?\n"
 _qlen =    . - _qmsg
-
     .text
-abortxt:
-    dup_
-    lea _abortxt(%rip), %rax
-    ret
-
-abort1:
+abort:
     dup_
     mov _inbuf(%rip), %rax
     dup_
@@ -802,9 +795,6 @@ abort1:
     call resetinput
     call resetstacks
     jmp warm
-
-abort:
-    jmp *_abortxt(%rip)
 
     .data
 _search:
