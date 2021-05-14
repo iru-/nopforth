@@ -12,12 +12,12 @@
 .endm
 
     .text
-expect:
+expect:  # a u -> #
     dup_
     mov _infd(%rip), %rax
     jmp sysread
 
-type:
+type:  # a u ->
     dup_
     mov $1, %rax    # stdout
     call syswrite
@@ -27,15 +27,15 @@ type:
     .data
 _keyxt: .quad 0
     .text
-keyxt:
+keyxt:  # -> a
     dup_
     lea _keyxt(%rip), %rax
     ret
 
-key:
+key:  # -> b
     jmp *_keyxt(%rip)
 
-skip:
+skip:  # a u delim -> a' u'
     cmpq $0, (%rbp)    # empty string
     jnz 1f
     drop_
@@ -55,7 +55,7 @@ skip:
     mov %rcx, %rax
     ret
 
-skipws:
+skipws:  # a u -> a' u'
     mov (%rbp), %rdx
 1:  test %rax, %rax
     jz 2f
@@ -66,7 +66,7 @@ skipws:
     dec %rax
     jmp 1b
 
-scanws:
+scanws:  # a u -> a' u'
     mov (%rbp), %rdx
 1:  test %rax, %rax
     jz 2f
@@ -79,7 +79,7 @@ scanws:
 2:  mov %rdx, (%rbp)
 3:  ret
 
-scan:
+scan:  # a u delim -> a' u'
     cmpq $0, (%rbp)    # empty string
     jnz 1f
     drop_
@@ -99,7 +99,7 @@ scan:
     mov %rcx, %rax
     ret
 
-toupper:
+toupper:  # b -> b'
     cmpb $'a', %al
     jl 2f             # not lower case
     cmpb $'z', %al
@@ -108,7 +108,7 @@ toupper:
 2:  ret
 
 # translated from cmforth
-digit:
+digit:  # b -> b'
     mov %rax, %rdx        # rdx = base
     drop_                 # rax = ascii digit
     call toupper          # normalize to upper case
@@ -129,7 +129,7 @@ digit:
 3:  mov $-1, %rax         # no, it is an error
 4:  ret
 
-number:
+number:  # a u -> n err
     mov %rax, %rcx        # rcx = length
     drop_                 # rax = string
 
@@ -222,7 +222,7 @@ inpos:
     lea _inpos(%rip), %rax
     ret
 
-source:
+source:  # -> a u
     dup_
     mov _inbuf(%rip), %rax
     mov _inpos(%rip), %rcx
@@ -234,7 +234,7 @@ source:
     xor %rax, %rax
 1:  ret
 
-word:
+word:  # -> a u
     call source
     test %rax, %rax
     jnz 1f
@@ -261,7 +261,7 @@ word:
     mov %rcx, %rax
     ret
 
-parse:
+parse:  # delim -> a u
     push %rax               # save delimiter
     drop_
     call source
@@ -325,28 +325,28 @@ forth:
     mov %rcx, _latest(%rip)
     ret
 
-comma:
+comma:  # n ->
     mov _h(%rip), %rdx
     mov %rax, (%rdx)
     addq $8, _h(%rip)
     drop_
     ret
 
-comma4:
+comma4:  # n ->
     mov _h(%rip), %rdx
     mov %eax, (%rdx)
     addq $4, _h(%rip)
     drop_
     ret
 
-comma1:
+comma1:  # n ->
     mov _h(%rip), %rdx
     movb %al, (%rdx)
     incq _h(%rip)
     drop_
     ret
 
-comma2:
+comma2:  # n ->
     mov _h(%rip), %rdx
     movw %ax, (%rdx)
     addq $2, _h(%rip)
@@ -354,20 +354,20 @@ comma2:
     ret
 
 # XXX off-by-one
-comma3:
+comma3:  # n ->
     call comma4
     decq _h(%rip)
     ret
 
-aligned:
+aligned:  # a -> a'
     addq $7, %rax
     and $~7, %rax
     ret
 
-entry:
+entry:  # -> entry
     call word
 
-centry:
+centry:  # name #name -> entry
     mov _h(%rip), %rcx
     push %rcx
 
@@ -421,7 +421,7 @@ colon:
     drop_
     ret
 
-anon:
+anon:  # -> a
     dup_
     mov _h(%rip), %rax
     jmp startcomp
@@ -472,16 +472,16 @@ startcomp:
     mov %rcx, _action+24(%rip)
     ret
 
-dfind:
+dfind:  # name #name dict -> entry
     cld
     push %rax
     drop_
-    mov %rax, %rcx        # string count
+    mov %rax, %rcx         # string length
     drop_
-    mov %rax, %rsi        # string length
-    pop %rax              # list address
+    mov %rax, %rsi         # string address
+    pop %rax               # list address
 1:
-    test %rax, %rax       # end of list?
+    test %rax, %rax        # end of list?
     jnz 2f
     ret
 2:
@@ -514,7 +514,7 @@ here:
     mov _h(%rip), %rax
     ret
 
-ccall:
+ccall:  # a ->
     mov _h(%rip), %rdx
     mov %rdx, _hole(%rip)
 
@@ -809,7 +809,7 @@ _action:
     .text
 nil: ret
 
-eval:
+eval:  # a u -> ...
     # save string
     push %rax
     push (%rbp)
@@ -870,7 +870,7 @@ dictrewind:
     drop_
     jmp stopcomp
 
-execute:
+execute:  # a -> ...
     mov %rax, %rcx
     drop_
     jmp *%rcx
