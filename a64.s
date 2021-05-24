@@ -60,6 +60,94 @@ scanws:  // a u -> a' u'
     ret
 
     .p2align 2
+toupper:  // b -> b'
+    cmp x0, #'a'
+    b.lt 1f       // not lower case
+    cmp x0, #'z'
+    b.gt 1f       // not lower case
+    eor x0, x0, #32
+1:  ret
+
+    .p2align 2
+digit:  // b base -> b'
+    stp x30, xzr, [sp, #-16]!
+    mov x9, x0        // x9 = base
+    drop_
+    bl toupper        // normalize to upper case
+    sub x0, x0, #'0'  // convert to binary
+    cmp x0, #9        // is it <= 9?
+    b.le 2f           // yes, go out
+                      // no, number in a base > 10
+    sub x0, x0, #7    // subtract the digits between '9' and 'A'
+    cmp x0, #10       // is it < 10?
+    mov x10, #0       // no, x10 = 0
+    b.ge 1f           // yes,
+    mov x10, #-1      // x10 = -1
+1:  orr x0, x10, x0
+2:  cmp x0, #0
+    b.lt 3f
+    cmp x0, x9        // is the number less than base?
+    b.lt 4f           // yes, we're done
+3:  mov x0, #-1       // no, it is an error
+4:  ldp x30, xzr, [sp], #16
+    ret
+
+    .p2align 2
+number:  // a u -> n err
+    stp x30, xzr, [sp, #-16]!
+    stp x19, x20, [sp, #-16]!
+    stp x21, x22, [sp, #-16]!
+    stp x23, x24, [sp, #-16]!
+
+    mov x19, x0       // x19 = length
+    cbz x19, 6f       // zero length string? exit
+    drop_
+    mov x20, x0       // x20 = string address
+
+    ldrb w21, [x20]   // x21 = first byte
+    cmp x21, #'-'     // is the number negative?
+    b.ne 0f           // no, jump
+    mov x22, #-1      // x22 = -1 (negative number)
+    add x20, x20, 1   // advance to next byte
+    sub x19, x19, 1
+    b 1f
+
+0:  mov x22, #1       // x22 = 1 (positive number)
+1:  ldrb w21, [x20]
+    cmp x21, #'$'     // is the number in hex?
+    b.ne 2f
+    mov x23, #16      // x23 = base 16
+    add x20, x20, 1   // advance to next byte
+    sub x19, x19, 1
+    b 3f
+
+2:  mov x23, #10      // x23 = base 10
+3:  mov x24, #0       // x24 = accumulator
+    mov x0, #0
+
+4:  mul x24, x24, x23
+    ldrb w0, [x20]    // x0 = current byte
+    dup_
+    mov x0, x23
+    bl digit
+    cmp x0, #0        // error converting digit? exit
+    b.lt 5f
+    add x24, x24, x0
+    add x20, x20, 1   // advance to next byte
+    subs x19, x19, 1
+    b.ne 4b
+
+    mov x0, x24
+    mul x0, x24, x22  // negate result if it should be negative
+5:  dup_
+    mov x0, x19
+6:  ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x30, xzr, [sp], #16
+    ret
+
+    .p2align 2
 source:  // -> a u
     adr x9, _inbuf
     ldr x9, [x9]
@@ -249,7 +337,7 @@ eval:  // a u -> ...
     ldr x0, [x0]
     adr x9, _action
     ldr x9, [x9]
-    b 3f
+    b 4f
 
 1:  mov x0, x20
     dup_
@@ -263,14 +351,24 @@ eval:  // a u -> ...
     ldr x0, [x0]
     adr x9, _action
     ldr x9, [x9, #8]
-    b 3f
+    b 4f
 
-2:  adr x9, _action
+2:  mov x0, x20
+    dup_
+    mov x0, x19
+    bl number
+    cbnz x0, 3f
+    drop_
+    adr x9, _action
+    ldr x9, [x9, #16]
+    b 4f
+
+3:  adr x9, _action
     ldr x9, [x9, #24]
     blr x9
     adr x9, abort
 
-3:  ldp x19, x20, [sp], #16
+4:  ldp x19, x20, [sp], #16
     ldp x30, xzr, [sp], #16
     br x9
 
