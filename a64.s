@@ -106,8 +106,8 @@ word:  // -> a u
     str x19, [x22]     // update input position
     str x21, [fp]
 
-2:  ldp x19, x20, [sp], #16
-    ldp x21, x22, [sp], #16
+2:  ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
     ldp x30, xzr, [sp], #16
     ret
 
@@ -233,7 +233,7 @@ _action:
 nil: ret
 
     .p2align 2
-eval:  // a u ->
+eval:  // a u -> ...
     stp x30, xzr, [sp, #-16]!
     stp x19, x20, [sp, #-16]!
 
