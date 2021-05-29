@@ -230,7 +230,130 @@ hello_header:
 _flatest: .quad hello_header
 _mlatest: .quad 0
 
+_h: .quad 0  // next dictionary address
+_latest: .quad _flatest
+
     .text
+    .p2align 2
+comma:  // n ->
+    adr x9, _h
+    ldr x10, [x9]
+    str x0, [x10], #8
+    drop_
+    str x10, [x9]
+    ret
+
+    .text
+    .p2align 2
+comma4:  // n ->
+    adr x9, _h
+    ldr x10, [x9]
+    str w0, [x10], #4
+    drop_
+    str x10, [x9]
+    ret
+
+    .p2align 2
+comma1:  // n ->
+    adr x9, _h
+    ldr x10, [x9]
+    strb w0, [x10], #1
+    drop_
+    str x10, [x9]
+    ret
+
+    .p2align 2
+move:  // src dst count ->
+    mov x9, x0   // x9 = count
+    drop_
+    mov x10, x0  // x10 = dst
+    drop_
+    mov x11, x0  // x11 = src
+    drop_
+_move:
+    cbz x9, 2f
+    ldrb w12, [x11], #1
+    strb w12, [x10], #1
+    sub x9, x9, 1
+    b _move
+2:  ret
+
+    .p2align 2
+aligned:  // a -> a'
+    add x0, x0, #7
+    and x0, x0, #~7
+    ret
+
+    .p2align 2
+entry:  // -> entry
+    stp x30, xzr, [sp, #-16]!
+    bl word
+    ldp x30, xzr, [sp], #16
+
+centry:  // name #name -> entry
+    stp x30, xzr, [sp, #-16]!
+    adr x13, _h
+    ldr x13, [x13]     // x13 = entry address
+    mov x14, x0        // x14 = name length
+
+    // copy name to the correct place
+    dup_
+    add x15, x13, #17  // x15 = entry after link, cfa and name length
+    str x15, [fp]
+    bl move
+
+    // store link
+    dup_
+    adr x0, _latest
+    ldr x0, [x0]
+    ldr x0, [x0]
+    bl comma
+
+    // store empty cfa
+    dup_
+    mov x0, #0
+    bl comma
+
+    // commit name
+    dup_
+    mov x0, x14
+    bl comma1
+    adr x9, _h
+    add x15, x15, x14  // advance x15 past name
+    str x14, [x9]      // update dictionary pointer
+
+    // align dictionary pointer
+    dup_
+    mov x0, x15
+    bl aligned
+    adr x9, _h
+    str x0, [x9]
+
+    // update latest definition
+    mov x0, x13
+    adr x9, _latest
+    ldr x9, [x9]
+    str x0, [x9]
+    ldp x30, xzr, [sp], #16
+    ret
+
+anon:  // -> a
+    dup_
+    adr x0, _h
+    ldr x0, [x0]
+    b startcomp
+
+colon:
+    stp x30, xzr, [sp, #-16]!
+    bl entry
+    bl anon
+    mov x9, x0        // x9 = code address
+    drop_             // x0 = entry address
+    str x9, [x0, #8]  // store code in cfa
+    drop_
+    ldp x30, xzr, [sp], #16
+    ret
+
     .p2align 2
 stopcomp:
     // search in forth then macro
@@ -246,6 +369,23 @@ stopcomp:
     // do nothing for numbers and abort
     adr x10, nil
     stp x10, x10, [x9, #16]
+    ret
+
+startcomp:
+    // search in macro then forth
+    adr x9, _search
+    adr x10, _mlatest
+    adr x11, _flatest
+    stp x10, x11, [x9]
+
+    adr x9, _action
+    adr x10, execute     // execute if found in macro
+    adr x11, ccall       // compile call if found in forth
+    stp x10, x11, [x9]
+
+    adr x10, nil /*clit*/        // compile literal for numbers
+    adr x11, nil /*dictrewind*/  // rewind dictionary for abort
+    stp x10, x11, [x9, #16]
     ret
 
     .p2align 2
@@ -281,6 +421,34 @@ dfind:  // name #name dict -> entry
 
 5:  ldr x9, [x9]          // load previous dict entry
     b 1b
+
+h:  // -> a
+    dup_
+    adr x0, _h
+    ret
+
+here:  // -> a
+    dup_
+    adr x0, _h
+    ldr x0, [x0]
+    ret
+
+ccall:  // a ->
+    stp x30, xzr, [sp, #-16]!
+
+    // calculate call offset
+    bl here
+    ldr x9, [fp]
+    sub x0, x9, x0
+
+    // TODO: check if it fits in a direct branch
+    asr x0, x0, #2
+    and x0, x0, #0x3FFFFFF
+    mov x9, #0x94000000
+    orr x0, x0, x9
+
+    ldp x30, xzr, [sp], #16
+    b comma4
 
     .data
 _qmsg:  .ascii "?\n"
@@ -431,6 +599,17 @@ spin:
     .p2align 2
 resetstacks:
     adr fp, dstack0+8
+    ret
+
+    .data
+dictspace: .space 8192, 0
+
+    .text
+    .p2align 2
+resetdict:
+    adr x9, dictspace
+    adr x10, _h
+    str x9, [x10]
     ret
 
 _kernbuf:
