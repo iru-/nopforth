@@ -654,6 +654,7 @@ readloop:
     .p2align 2
 main:
     bl resetstacks
+    bl resetdict
     bl stopcomp
     bl setreadkern
 warm:
