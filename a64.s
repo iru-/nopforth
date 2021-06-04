@@ -383,8 +383,8 @@ startcomp:
     adr x11, ccall       // compile call if found in forth
     stp x10, x11, [x9]
 
-    adr x10, nil /*clit*/        // compile literal for numbers
     adr x11, nil /*dictrewind*/  // rewind dictionary for abort
+    adr x10, clit        // compile literal for numbers
     stp x10, x11, [x9, #16]
     ret
 
@@ -449,6 +449,72 @@ ccall:  // a ->
 
     ldp x30, xzr, [sp], #16
     b comma4
+
+cdup:
+    dup_
+    mov x0, #0x8FA0
+    movk x0, #0xF81F, lsl #16
+    b comma4
+
+cdrop:
+    dup_
+    mov x0, #0x87A0
+    movk x0, #0xF840, lsl #16
+    b comma4
+
+clit:  // n ->
+    stp x30, xzr, [sp, #-16]!
+    stp x19, x20, [sp, #-16]!
+    bl cdup
+    mov x19, x0
+
+    // compile 1st 16-bit
+    mov x0, xzr
+    movk x0, #0xD280, lsl #16  // movz
+    and x20, x19, #0xFFFF      // imm16
+    lsl x20, x20, #5           // ...
+    orr x0, x0, x20
+    bl comma4
+
+    lsr x19, x19, #16          // did we exhaust the literal?
+    cbz x19, 1f                // yes, we're done
+
+    // compile 2nd 16-bit
+    dup_
+    mov x0, xzr
+    movk x0, #0xF2A0, lsl #16  // movk
+    and x20, x19, #0xFFFF      // imm16
+    lsl x20, x20, #5           // ...
+    orr x0, x0, x20
+    bl comma4
+
+    lsr x19, x19, #16          // did we exhaust the literal?
+    cbz x19, 1f                // yes, we're done
+
+    // compile 3nd 16-bit
+    dup_
+    mov x0, xzr
+    movk x0, #0xF2C0, lsl #16  // movk
+    and x20, x19, #0xFFFF      // imm16
+    lsl x20, x20, #5           // ...
+    orr x0, x0, x20
+    bl comma4
+
+    lsr x19, x19, #16          // did we exhaust the literal?
+    cbz x19, 1f                // yes, we're done
+
+    // compile 4th 16-bit
+    dup_
+    mov x0, xzr
+    movk x0, #0xF2E0, lsl #16  // movk
+    and x20, x19, #0xFFFF      // imm16
+    lsl x20, x20, #5           // ...
+    orr x0, x0, x20
+    bl comma4
+
+1:  ldp x19, x20, [sp], #16
+    ldp x30, xzr, [sp], #16
+    ret
 
     .data
 _qmsg:  .ascii "?\n"
