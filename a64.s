@@ -235,6 +235,24 @@ _latest: .quad _flatest
 
     .text
     .p2align 2
+flatest:
+    dup_
+    adr x0, _flatest
+    ret
+
+    .p2align 2
+mlatest:
+    dup_
+    adr x0, _mlatest
+    ret
+
+    .p2align 2
+latest:
+    dup_
+    adr x0, _latest
+    ret
+
+    .p2align 2
 comma:  // n ->
     adr x9, _h
     ldr x10, [x9]
@@ -383,8 +401,8 @@ startcomp:
     adr x11, ccall       // compile call if found in forth
     stp x10, x11, [x9]
 
-    adr x11, nil /*dictrewind*/  // rewind dictionary for abort
     adr x10, clit        // compile literal for numbers
+    adr x11, dictrewind  // rewind dictionary for abort
     stp x10, x11, [x9, #16]
     ret
 
@@ -605,6 +623,18 @@ eval:  // a u -> ...
 4:  ldp x19, x20, [sp], #16
     ldp x30, xzr, [sp], #16
     br x9
+
+    .p2align 2
+dictrewind:
+    stp x30, xzr, [sp, #-16]!
+    bl latest
+    ldr x0, [x0]    // x0 = [mf]latest
+    ldr x9, [x0]    // x9 = latest defined header in current dict
+    ldr x9, [x9]    // x9 = next to latest defined header
+    str x9, [x0]    // make next to latest the new latest
+    drop_
+    ldp x30, xzr, [sp], #16
+    ret
 
     .p2align 2
 execute:
