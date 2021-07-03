@@ -22,4 +22,6 @@ marker empty
 
 : term-loop   0  here 128 dup allot  0 0 ['] term-refill input!  rel ;
 
+' abort 'abort !
+
 : file-abort   1 sysexit ;
