@@ -419,8 +419,15 @@ ccall_header:
     .ascii "call,"
 
     .align 8
-abort_header:
+abortxt_header:
     .quad ccall_header
+    .quad abortxt
+    .byte 6
+    .ascii "'abort"
+
+    .align 8
+abort_header:
+    .quad abortxt_header
     .quad abort
     .byte 5
     .ascii "abort"
