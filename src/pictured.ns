@@ -17,10 +17,10 @@ forth
 : abs ( n -> |n| )   dup 0 < if negate then ;
 : sign ( n -> )   0 < if  [char] - hold  then ;
 
-: (.) ( n -> )   dup push abs <#  #s pop sign #> ;
+: (.) ( n -> a u )   dup push abs <#  #s pop sign #> ;
 : . ( n -> )     (.) type space ;
 
-: (h.) ( n -> )   <# h#s #> ;
+: (h.) ( n -> a u )   <# h#s #> ;
 : h. ( n -> )     (h.) type space ;
 
 : .S   depth S0 16 - swap for  dup @ . 8 -  next drop  ." <- top " ;
