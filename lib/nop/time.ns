@@ -1,7 +1,7 @@
 \ SPDX-License-Identifier: MIT
 \ Copyright (c) 2021 Iruatã Martins dos Santos Souza
 
-fload clib
+fload nop/clib
 
 library:
 2 1 Cfunction: clock_gettime clock_gettime
