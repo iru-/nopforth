@@ -227,8 +227,31 @@ hello_header:
     .byte 5
     .ascii "hello"
 
+    // macro
+    .align 8
+colon_header:
+    .quad 0
+    .quad colon
+    .byte 1
+    .ascii ":"
+
+    .align 8
+semicolon_header:
+    .quad colon_header
+    .quad semicolon
+    .byte 1
+    .ascii ";"
+
+    .align 8
+stopcomp_header:
+    .quad semicolon_header
+    .quad stopcomp
+    .byte 1
+    .ascii "["
+
+    .p2align 2
 _flatest: .quad hello_header
-_mlatest: .quad 0
+_mlatest: .quad stopcomp_header
 
 _h: .quad 0  // next dictionary address
 _latest: .quad _flatest
@@ -572,6 +595,7 @@ abort:
     b warm
 
     .data
+    .p2align 2
 _search:
   .quad 0          // 1st dictionary to be searched
   .quad 0          // 2nd dictionary to be searched
