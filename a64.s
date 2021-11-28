@@ -361,6 +361,19 @@ anon:  // -> a
     ldr x0, [x0]
     b startcomp
 
+cexit:
+    dup_
+    mov x0, #0x03C0
+    movk x0, #0xD65F, lsl #16
+    b comma4
+
+semicolon:
+    stp x30, xzr, [sp, #-16]!
+    bl cexit
+    bl stopcomp
+    ldp x30, xzr, [sp], #16
+    ret
+
 colon:
     stp x30, xzr, [sp, #-16]!
     bl entry
