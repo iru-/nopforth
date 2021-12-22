@@ -30,7 +30,7 @@ type:
     mov x1, x0   // x1 = buffer
     mov x2, x9   // x2 = size
     mov x0, #1   // x0 = stdout
-    bl write
+    bl _write
     drop_
     ldp x30, xzr, [sp], #16
     ret
@@ -767,9 +767,10 @@ readloop:
     ldp x30, xzr, [sp], #16
     ret
 
-    .global main
+    .global main, _main
     .text
     .p2align 2
+_main:
 main:
     bl resetstacks
     bl resetdict
