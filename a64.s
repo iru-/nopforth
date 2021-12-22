@@ -149,13 +149,16 @@ number:  // a u -> n err
 
     .p2align 2
 source:  // -> a u
-    adr x9, _inbuf
+    adrp x9, _inbuf@PAGE
+    add x9, x9, _inbuf@PAGEOFF
     ldr x9, [x9]
-    adr x10, _inpos
+    adrp x10, _inpos@PAGE
+    add x10, x10, _inpos@PAGEOFF
     ldr x10, [x10]
     add x9, x9, x10     // x9 <- address of source
 
-    adr x11, _inused
+    adrp x11, _inused@PAGE
+    add x11, x11, _inused@PAGEOFF
     ldr x11, [x11]
     subs x11, x11, x10  // x11 <- remaining length
     b.pl 1f             // if remaining length is negative,
@@ -175,7 +178,8 @@ word:  // -> a u
     cbz x0, 2f
 
     mov x20, x0        // x20 = input length
-    adr x19, _inpos
+    adrp x19, _inpos@PAGE
+    add x19, x19, _inpos@PAGEOFF
     ldr x19, [x19]     // x19 = input position
 
     // skip leading white spaces
@@ -190,7 +194,8 @@ word:  // -> a u
     sub x0, x20, x0    // x0 = consumed bytes = word length
     add x19, x19, x0   // advance position
 
-    adr x22, _inpos
+    adrp x22, _inpos@PAGE
+    add x22, x22, _inpos@PAGEOFF
     str x19, [x22]     // update input position
     str x21, [fp]
 
@@ -207,7 +212,8 @@ hellolen= . - hellostr
     .text
 hello:
     dup_
-    adr x0, hellostr
+    adrp x0, hellostr@PAGE
+    add x0, x0, hellostr@PAGEOFF
     dup_
     mov x0, hellolen
     b type
@@ -260,24 +266,28 @@ _latest: .quad _flatest
     .p2align 2
 flatest:
     dup_
-    adr x0, _flatest
+    adrp x0, _flatest@PAGE
+    add x0, x0, _flatest@PAGEOFF
     ret
 
     .p2align 2
 mlatest:
     dup_
-    adr x0, _mlatest
+    adrp x0, _mlatest@PAGE
+    add x0, x0, _mlatest@PAGEOFF
     ret
 
     .p2align 2
 latest:
     dup_
-    adr x0, _latest
+    adrp x0, _latest@PAGE
+    add x0, x0, _latest@PAGEOFF
     ret
 
     .p2align 2
 comma:  // n ->
-    adr x9, _h
+    adrp x9, _h@PAGE
+    add x9, x9, _h@PAGEOFF
     ldr x10, [x9]
     str x0, [x10], #8
     drop_
@@ -287,7 +297,8 @@ comma:  // n ->
     .text
     .p2align 2
 comma4:  // n ->
-    adr x9, _h
+    adrp x9, _h@PAGE
+    add x9, x9, _h@PAGEOFF
     ldr x10, [x9]
     str w0, [x10], #4
     drop_
@@ -296,7 +307,8 @@ comma4:  // n ->
 
     .p2align 2
 comma1:  // n ->
-    adr x9, _h
+    adrp x9, _h@PAGE
+    add x9, x9, _h@PAGEOFF
     ldr x10, [x9]
     strb w0, [x10], #1
     drop_
@@ -333,7 +345,8 @@ entry:  // -> entry
 
 centry:  // name #name -> entry
     stp x30, xzr, [sp, #-16]!
-    adr x13, _h
+    adrp x13, _h@PAGE
+    add x13, x13, _h@PAGEOFF
     ldr x13, [x13]     // x13 = entry address
     mov x14, x0        // x14 = name length
 
@@ -345,7 +358,8 @@ centry:  // name #name -> entry
 
     // store link
     dup_
-    adr x0, _latest
+    adrp x0, _latest@PAGE
+    add x0, x0, _latest@PAGEOFF
     ldr x0, [x0]
     ldr x0, [x0]
     bl comma
@@ -359,7 +373,8 @@ centry:  // name #name -> entry
     dup_
     mov x0, x14
     bl comma1
-    adr x9, _h
+    adrp x9, _h@PAGE
+    add x9, x9, _h@PAGEOFF
     add x15, x15, x14  // advance x15 past name
     str x14, [x9]      // update dictionary pointer
 
@@ -367,12 +382,14 @@ centry:  // name #name -> entry
     dup_
     mov x0, x15
     bl aligned
-    adr x9, _h
+    adrp x9, _h@PAGE
+    add x9, x9, _h@PAGEOFF
     str x0, [x9]
 
     // update latest definition
     mov x0, x13
-    adr x9, _latest
+    adrp x9, _latest@PAGE
+    add x9, x9, _latest@PAGEOFF
     ldr x9, [x9]
     str x0, [x9]
     ldp x30, xzr, [sp], #16
@@ -380,7 +397,8 @@ centry:  // name #name -> entry
 
 anon:  // -> a
     dup_
-    adr x0, _h
+    adrp x0, _h@PAGE
+    add x0, x0, _h@PAGEOFF
     ldr x0, [x0]
     b startcomp
 
@@ -411,34 +429,48 @@ colon:
     .p2align 2
 stopcomp:
     // search in forth then macro
-    adr x9, _search
-    adr x10, _flatest
-    adr x11, _mlatest
+    adrp x9, _search@PAGE
+    add x9, x9, _search@PAGEOFF
+    adrp x10, _flatest@PAGE
+    add x10, x10, _flatest@PAGEOFF
+    adrp x11, _mlatest@PAGE
+    add x11, x11, _mlatest@PAGEOFF
     stp x10, x11, [x9]
 
-    adr x9, _action
+    adrp x9, _action@PAGE
+    add x9, x9, _action@PAGEOFF
     // execute if found in any of the dicts
-    adr x10, execute
+    adrp x10, execute@PAGE
+    add x10, x10, execute@PAGEOFF
     stp x10, x10, [x9]
     // do nothing for numbers and abort
-    adr x10, nil
+    adrp x10, nil@PAGE
+    add x10, x10, nil@PAGEOFF
     stp x10, x10, [x9, #16]
     ret
 
 startcomp:
     // search in macro then forth
-    adr x9, _search
-    adr x10, _mlatest
-    adr x11, _flatest
+    adrp x9, _search@PAGE
+    add x9, x9, _search@PAGEOFF
+    adrp x10, _mlatest@PAGE
+    add x10, x10, _mlatest@PAGEOFF
+    adrp x11, _flatest@PAGE
+    add x11, x11, _flatest@PAGEOFF
     stp x10, x11, [x9]
 
-    adr x9, _action
-    adr x10, execute     // execute if found in macro
-    adr x11, ccall       // compile call if found in forth
+    adrp x9, _action@PAGE
+    add x9, x9, _action@PAGEOFF
+    adrp x10, execute@PAGE
+    add x10, x10, execute@PAGEOFF     // execute if found in macro
+    adrp x11, ccall@PAGE
+    add x11, x11, ccall@PAGEOFF       // compile call if found in forth
     stp x10, x11, [x9]
 
-    adr x10, clit        // compile literal for numbers
-    adr x11, dictrewind  // rewind dictionary for abort
+    adrp x10, clit@PAGE
+    add x10, x10, clit@PAGEOFF        // compile literal for numbers
+    adrp x11, dictrewind@PAGE
+    add x11, x11, dictrewind@PAGEOFF  // rewind dictionary for abort
     stp x10, x11, [x9, #16]
     ret
 
@@ -478,12 +510,14 @@ dfind:  // name #name dict -> entry
 
 h:  // -> a
     dup_
-    adr x0, _h
+    adrp x0, _h@PAGE
+    add x0, x0, _h@PAGEOFF
     ret
 
 here:  // -> a
     dup_
-    adr x0, _h
+    adrp x0, _h@PAGE
+    add x0, x0, _h@PAGEOFF
     ldr x0, [x0]
     ret
 
@@ -578,14 +612,17 @@ _qlen = . - _qmsg
 abort:
     stp x30, xzr, [sp, #-16]!
     dup_
-    adr x0, _inbuf
+    adrp x0, _inbuf@PAGE
+    add x0, x0, _inbuf@PAGEOFF
     ldr x0, [x0]
     dup_
-    adr x0, _inpos
+    adrp x0, _inpos@PAGE
+    add x0, x0, _inpos@PAGEOFF
     ldr x0, [x0]
     bl type
     dup_
-    adr x0, _qmsg
+    adrp x0, _qmsg@PAGE
+    add x0, x0, _qmsg@PAGEOFF
     dup_
     mov x0, #_qlen
     bl type
@@ -618,13 +655,15 @@ eval:  // a u -> ...
     ldr x20, [fp]     // x20 = string address
 
     dup_
-    adr x0, _search
+    adrp x0, _search@PAGE
+    add x0, x0, _search@PAGEOFF
     ldr x0, [x0]
     bl dfind
     cbz x0, 1f        // entry not found, continue
     add x0, x0, #8    // get CFA
     ldr x0, [x0]
-    adr x9, _action
+    adrp x9, _action@PAGE
+    add x9, x9, _action@PAGEOFF
     ldr x9, [x9]
     b 4f
 
@@ -632,13 +671,15 @@ eval:  // a u -> ...
     dup_
     mov x0, x19
     dup_
-    adr x0, _search
+    adrp x0, _search@PAGE
+    add x0, x0, _search@PAGEOFF
     ldr x0, [x0, #8]
     bl dfind
     cbz x0, 2f        // entry not found, continue
     add x0, x0, #8    // get CFA
     ldr x0, [x0]
-    adr x9, _action
+    adrp x9, _action@PAGE
+    add x9, x9, _action@PAGEOFF
     ldr x9, [x9, #8]
     b 4f
 
@@ -648,14 +689,17 @@ eval:  // a u -> ...
     bl number
     cbnz x0, 3f
     drop_
-    adr x9, _action
+    adrp x9, _action@PAGE
+    add x9, x9, _action@PAGEOFF
     ldr x9, [x9, #16]
     b 4f
 
-3:  adr x9, _action
+3:  adrp x9, _action@PAGE
+    add x9, x9, _action@PAGEOFF
     ldr x9, [x9, #24]
     blr x9
-    adr x9, abort
+    adrp x9, abort@PAGE
+    add x9, x9, abort@PAGEOFF
 
 4:  ldp x19, x20, [sp], #16
     ldp x30, xzr, [sp], #16
@@ -682,25 +726,32 @@ execute:
     .p2align 2
 resetinput:
     mov x9, #0
-    adr x10, _inused
-    adr x11, _inpos
+    adrp x10, _inused@PAGE
+    add x10, x10, _inused@PAGEOFF
+    adrp x11, _inpos@PAGE
+    add x11, x11, _inpos@PAGEOFF
     str x9, [x10]
     str x9, [x11]
     ret
 
     .p2align 2
 setreadkern:
-    adr x9, _kernbuf
-    adr x10, _inbuf
+    adrp x9, _kernbuf@PAGE
+    add x9, x9, _kernbuf@PAGEOFF
+    adrp x10, _inbuf@PAGE
+    add x10, x10, _inbuf@PAGEOFF
     str x9, [x10]
 
     mov x9, #_kerntot
-    adr x10, _intot
+    adrp x10, _intot@PAGE
+    add x10, x10, _intot@PAGEOFF
     str x9, [x10]
-    adr x10, _inused
+    adrp x10, _inused@PAGE
+    add x10, x10, _inused@PAGEOFF
     str x9, [x10]
 
-    adr x9, _inpos
+    adrp x9, _inpos@PAGE
+    add x9, x9, _inpos@PAGEOFF
     str xzr, [x9]
     ret
 
@@ -732,7 +783,8 @@ spin:
 
     .p2align 2
 resetstacks:
-    adr fp, dstack0+8
+    adrp fp, dstack0+8@PAGE
+    add fp, fp, dstack0+8@PAGEOFF
     ret
 
     .data
@@ -741,8 +793,10 @@ dictspace: .space 8192, 0
     .text
     .p2align 2
 resetdict:
-    adr x9, dictspace
-    adr x10, _h
+    adrp x9, dictspace@PAGE
+    add x9, x9, dictspace@PAGEOFF
+    adrp x10, _h@PAGE
+    add x10, x10, _h@PAGEOFF
     str x9, [x10]
     ret
 
