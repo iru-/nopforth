@@ -487,12 +487,13 @@ stopcomp:
     mov x20, x1  // x20 = length
     mov x2, #(PROT_READ | PROT_EXEC)
     bl _mprotect // TODO abort on error
-    drop_
     mov x0, x19
     mov x1, x20
+    bl _sys_icache_invalidate
+    drop_
     ldp x19, x20, [sp], #16
     ldp x30, xzr, [sp], #16
-    b _sys_icache_invalidate
+    ret
 
 startcomp:
     stp x30, xzr, [sp, #-16]!
