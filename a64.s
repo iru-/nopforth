@@ -619,9 +619,8 @@ clit:  // n ->
     bl cdup
     mov x19, x0
 
-    // compile 1st 16-bit
-    mov x0, xzr
-    movk x0, #0xD280, lsl #16  // movz
+    // compile 1st 16 bits
+    movz x0, #0xD280, lsl #16  // movz
     and x20, x19, #0xFFFF      // imm16
     lsl x20, x20, #5           // ...
     orr x0, x0, x20
@@ -630,10 +629,9 @@ clit:  // n ->
     lsr x19, x19, #16          // did we exhaust the literal?
     cbz x19, 1f                // yes, we're done
 
-    // compile 2nd 16-bit
+    // compile 2nd 16 bits
     dup_
-    mov x0, xzr
-    movk x0, #0xF2A0, lsl #16  // movk
+    movz x0, #0xF2A0, lsl #16  // movk
     and x20, x19, #0xFFFF      // imm16
     lsl x20, x20, #5           // ...
     orr x0, x0, x20
@@ -642,10 +640,9 @@ clit:  // n ->
     lsr x19, x19, #16          // did we exhaust the literal?
     cbz x19, 1f                // yes, we're done
 
-    // compile 3nd 16-bit
+    // compile 3nd 16 bits
     dup_
-    mov x0, xzr
-    movk x0, #0xF2C0, lsl #16  // movk
+    movz x0, #0xF2C0, lsl #16  // movk
     and x20, x19, #0xFFFF      // imm16
     lsl x20, x20, #5           // ...
     orr x0, x0, x20
@@ -654,10 +651,9 @@ clit:  // n ->
     lsr x19, x19, #16          // did we exhaust the literal?
     cbz x19, 1f                // yes, we're done
 
-    // compile 4th 16-bit
+    // compile 4th 16 bits
     dup_
-    mov x0, xzr
-    movk x0, #0xF2E0, lsl #16  // movk
+    movz x0, #0xF2E0, lsl #16  // movk
     and x20, x19, #0xFFFF      // imm16
     lsl x20, x20, #5           // ...
     orr x0, x0, x20
