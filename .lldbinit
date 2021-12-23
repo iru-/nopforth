@@ -1,0 +1,4 @@
+command script import a64.py
+target create bin/nop
+b main
+run
