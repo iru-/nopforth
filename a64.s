@@ -592,7 +592,7 @@ ccall:  // a ->
     bl here           // x0 = instruction address
     ldr x19, [fp]     // x19 = target address
     mov x20, x19      // x20 = target address
-    sub x19, x0, x19  // x19 = offset to target
+    sub x19, x19, x0  // x19 = offset to target
 
     // is offset greater than 128MB?
     mov x10, #0x0800
