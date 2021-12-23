@@ -14,6 +14,11 @@ _Send: .quad 0  // parameter stack end
     ldr x0, [fp], #8
 .endm
 
+// Darwin
+.equ PROT_READ,     0x1
+.equ PROT_WRITE,    0x2
+.equ PROT_EXEC,     0x4
+
     .data
 _infd:   .quad 0  // file descriptor feeding the input
 _inbuf:  .quad 0  // pointer to input buffer
@@ -255,33 +260,34 @@ stopcomp_header:
     .byte 1
     .ascii "["
 
-    .p2align 2
-_flatest: .quad hello_header
-_mlatest: .quad stopcomp_header
+    .p2align 3
+flatestp: .quad hello_header
+mlatestp: .quad stopcomp_header
+latestp: .quad flatestp
 
-_h: .quad 0  // next dictionary address
-_latest: .quad _flatest
+_h: .quad 0   // next code address
+_dp: .quad 0  // next dictionary address
 
     .text
     .p2align 2
 flatest:
     dup_
-    adrp x0, _flatest@PAGE
-    add x0, x0, _flatest@PAGEOFF
+    adrp x0, flatestp@PAGE
+    add x0, x0, flatestp@PAGEOFF
     ret
 
     .p2align 2
 mlatest:
     dup_
-    adrp x0, _mlatest@PAGE
-    add x0, x0, _mlatest@PAGEOFF
+    adrp x0, mlatestp@PAGE
+    add x0, x0, mlatestp@PAGEOFF
     ret
 
     .p2align 2
 latest:
     dup_
-    adrp x0, _latest@PAGE
-    add x0, x0, _latest@PAGEOFF
+    adrp x0, latestp@PAGE
+    add x0, x0, latestp@PAGEOFF
     ret
 
     .p2align 2
@@ -345,51 +351,44 @@ entry:  // -> entry
 
 centry:  // name #name -> entry
     stp x30, xzr, [sp, #-16]!
-    adrp x13, _h@PAGE
-    add x13, x13, _h@PAGEOFF
+    adrp x13, _dp@PAGE
+    add x13, x13, _dp@PAGEOFF
     ldr x13, [x13]     // x13 = entry address
     mov x14, x0        // x14 = name length
 
+    // store link
+    adrp x9, latestp@PAGE
+    add x9, x9, latestp@PAGEOFF
+    ldr x9, [x9]
+    ldr x9, [x9]  // x9 = latest entry in dictionary
+    str x9, [x13]
+
+    // zero cfa
+    mov x9, #0xEEEE
+    str x9, [x13, #8]
+
+    // store name length
+    strb w14, [x13, #16]
+
     // copy name to the correct place
     dup_
-    add x15, x13, #17  // x15 = entry after link, cfa and name length
+    add x15, x13, #17  // x15 = address after link, cfa and name length
     str x15, [fp]
     bl move
 
-    // store link
-    dup_
-    adrp x0, _latest@PAGE
-    add x0, x0, _latest@PAGEOFF
-    ldr x0, [x0]
-    ldr x0, [x0]
-    bl comma
-
-    // store empty cfa
-    dup_
-    mov x0, #0
-    bl comma
-
-    // commit name
-    dup_
-    mov x0, x14
-    bl comma1
-    adrp x9, _h@PAGE
-    add x9, x9, _h@PAGEOFF
-    add x15, x15, x14  // advance x15 past name
-    str x14, [x9]      // update dictionary pointer
-
     // align dictionary pointer
     dup_
+    add x15, x15, x14 // x15 = address after entry
     mov x0, x15
     bl aligned
-    adrp x9, _h@PAGE
-    add x9, x9, _h@PAGEOFF
+    adrp x9, _dp@PAGE
+    add x9, x9, _dp@PAGEOFF
     str x0, [x9]
 
     // update latest definition
     mov x0, x13
-    adrp x9, _latest@PAGE
-    add x9, x9, _latest@PAGEOFF
+    adrp x9, latestp@PAGE
+    add x9, x9, latestp@PAGEOFF
     ldr x9, [x9]
     str x0, [x9]
     ldp x30, xzr, [sp], #16
@@ -427,14 +426,14 @@ colon:
     ret
 
     .p2align 2
-stopcomp:
+execmode:
     // search in forth then macro
     adrp x9, _search@PAGE
     add x9, x9, _search@PAGEOFF
-    adrp x10, _flatest@PAGE
-    add x10, x10, _flatest@PAGEOFF
-    adrp x11, _mlatest@PAGE
-    add x11, x11, _mlatest@PAGEOFF
+    adrp x10, flatestp@PAGE
+    add x10, x10, flatestp@PAGEOFF
+    adrp x11, mlatestp@PAGE
+    add x11, x11, mlatestp@PAGEOFF
     stp x10, x11, [x9]
 
     adrp x9, _action@PAGE
@@ -449,14 +448,39 @@ stopcomp:
     stp x10, x10, [x9, #16]
     ret
 
+stopcomp:
+    // Based on https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon?preferredLanguage=occ
+    stp x30, xzr, [sp, #-16]!
+    bl execmode
+    dup_
+    mov x0, #1
+    bl _pthread_jit_write_protect_np
+    adrp x0, _codestart@PAGE
+    add x0, x0, _codestart@PAGEOFF
+    ldr x0, [x0]
+    mov x19, x0  // x19 = address
+    mov x1, #(_codesize & 0xFFFF)
+    mov x22, #(_codesize >> 16)
+    add x1, x1, x22, lsl #16
+    mov x22, x1  // x22 = length
+    mov x2, #(PROT_READ | PROT_EXEC)
+    bl _mprotect // TODO abort on error
+    drop_
+    mov x0, x19
+    mov x1, x22
+    ldp x30, xzr, [sp], #16
+    b _sys_icache_invalidate
+    ret
+
 startcomp:
+    stp x30, xzr, [sp, #-16]!
     // search in macro then forth
     adrp x9, _search@PAGE
     add x9, x9, _search@PAGEOFF
-    adrp x10, _mlatest@PAGE
-    add x10, x10, _mlatest@PAGEOFF
-    adrp x11, _flatest@PAGE
-    add x11, x11, _flatest@PAGEOFF
+    adrp x10, mlatestp@PAGE
+    add x10, x10, mlatestp@PAGEOFF
+    adrp x11, flatestp@PAGE
+    add x11, x11, flatestp@PAGEOFF
     stp x10, x11, [x9]
 
     adrp x9, _action@PAGE
@@ -472,6 +496,22 @@ startcomp:
     adrp x11, dictrewind@PAGE
     add x11, x11, dictrewind@PAGEOFF  // rewind dictionary for abort
     stp x10, x11, [x9, #16]
+
+    // Based on https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon?preferredLanguage=occ
+    dup_
+    adrp x0, _codestart@PAGE
+    add x0, x0, _codestart@PAGEOFF
+    ldr x0, [x0]
+    mov x1, #(_codesize & 0xFFFF)
+    mov x22, #(_codesize >> 16)
+    add x1, x1, x22, lsl #16
+    mov x2, #(PROT_READ | PROT_WRITE)
+    bl _mprotect // TODO abort on error
+
+    mov x0, #0
+    bl _pthread_jit_write_protect_np
+    drop_
+    ldp x30, xzr, [sp], #16
     ret
 
     .p2align 2
@@ -774,7 +814,7 @@ _main:
 main:
     bl resetstacks
     bl resetdict
-    bl stopcomp
+    bl execmode
     bl setreadkern
 warm:
     bl readloop
@@ -789,17 +829,45 @@ resetstacks:
     ret
 
     .data
-dictspace: .space 8192, 0
+_dictstart: .quad 0
+_dictsize = 0x100000
+_codestart: .quad 0
+_codesize = 0x100000
 
     .text
     .p2align 2
 resetdict:
-    adrp x9, dictspace@PAGE
-    add x9, x9, dictspace@PAGEOFF
-    adrp x10, _h@PAGE
-    add x10, x10, _h@PAGEOFF
-    str x9, [x10]
+    stp x30, xzr, [sp, #-16]!
+
+    // dictionary
+    dup_
+    mov x0, #_dictsize
+    bl _malloc
+    cmp x0, #0
+    b.eq 1f
+    adrp x9, _dp@PAGE
+    add x9, x9, _dp@PAGEOFF
+    adrp x10, _dictstart@PAGE
+    add x10, x10, _dictstart@PAGEOFF
+    str x0, [x9]
+    str x0, [x10]
+
+    // code space
+    mov x0, #_codesize
+    bl _malloc
+    cmp x0, #0
+    b.eq 1f
+    adrp x9, _h@PAGE
+    add x9, x9, _h@PAGEOFF
+    adrp x10, _codestart@PAGE
+    add x10, x10, _codestart@PAGEOFF
+    str x0, [x9]
+    str x0, [x10]
+    drop_
+
+    ldp x30, xzr, [sp], #16
     ret
+1:  b _exit
 
 _kernbuf:
 .incbin "hello.ns"
