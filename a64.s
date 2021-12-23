@@ -400,16 +400,15 @@ centry:  // name #name -> entry
 
 anon:  // -> a
     stp x30, xzr, [sp, #-16]!
+    bl startcomp
     bl here
 
     // compile: stp x30, xzr, [sp, #-16]!
     dup_
     mov x0, #0x7FFE
     movk x0, #0xA9BF, lsl #16
-    bl comma4
-
     ldp x30, xzr, [sp], #16
-    b startcomp
+    b comma4
 
 cexit:
     stp x30, xzr, [sp, #-16]!
