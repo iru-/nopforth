@@ -472,6 +472,7 @@ execmode:
 stopcomp:
     // Based on https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon?preferredLanguage=occ
     stp x30, xzr, [sp, #-16]!
+    stp x19, x20, [sp, #-16]!
     bl execmode
     dup_
     mov x0, #1
@@ -481,17 +482,17 @@ stopcomp:
     ldr x0, [x0]
     mov x19, x0  // x19 = address
     mov x1, #(_codesize & 0xFFFF)
-    mov x22, #(_codesize >> 16)
-    add x1, x1, x22, lsl #16
-    mov x22, x1  // x22 = length
+    mov x20, #(_codesize >> 16)
+    add x1, x1, x20, lsl #16
+    mov x20, x1  // x20 = length
     mov x2, #(PROT_READ | PROT_EXEC)
     bl _mprotect // TODO abort on error
     drop_
     mov x0, x19
-    mov x1, x22
+    mov x1, x20
+    ldp x19, x20, [sp], #16
     ldp x30, xzr, [sp], #16
     b _sys_icache_invalidate
-    ret
 
 startcomp:
     stp x30, xzr, [sp, #-16]!
@@ -524,8 +525,8 @@ startcomp:
     add x0, x0, _codestart@PAGEOFF
     ldr x0, [x0]
     mov x1, #(_codesize & 0xFFFF)
-    mov x22, #(_codesize >> 16)
-    add x1, x1, x22, lsl #16
+    mov x11, #(_codesize >> 16)
+    add x1, x1, x11, lsl #16
     mov x2, #(PROT_READ | PROT_WRITE)
     bl _mprotect // TODO abort on error
 
@@ -834,6 +835,12 @@ readloop:
 _main:
 main:
     bl resetstacks
+    dup_
+    mov x0, #0xdead
+    dup_
+    dup_
+    mov x0, #0xbeef
+
     bl resetdict
     bl execmode
     bl setreadkern
