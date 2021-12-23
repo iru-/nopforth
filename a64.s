@@ -223,6 +223,10 @@ hello:
     mov x0, hellolen
     b type
 
+bye:
+    mov x0, #0
+    b _exit
+
     .data
     .align 8
 end_header:
@@ -835,9 +839,7 @@ main:
     bl setreadkern
 warm:
     bl readloop
-
-spin:
-    b spin
+    b bye
 
     .p2align 2
 resetstacks:
