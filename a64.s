@@ -586,20 +586,91 @@ here:  // -> a
 
 ccall:  // a ->
     stp x30, xzr, [sp, #-16]!
+    stp x19, x20, [sp, #-16]!
 
     // calculate call offset
-    bl here
-    ldr x9, [fp]
-    sub x0, x9, x0
+    bl here           // x0 = instruction address
+    ldr x19, [fp]     // x19 = target address
+    mov x20, x19      // x20 = target address
+    sub x19, x0, x19  // x19 = offset to target
 
-    // TODO: check if it fits in a direct branch
+    // is offset greater than 128MB?
+    mov x10, #0x0800
+    lsl x10, x10, #16
+    cmp x19, x10
+    b.gt 1f
+
+    // is offset smaller than -128MB?
+    mov x11, #-1
+    mul x10, x10, x11
+    cmp x19, x10
+    b.lt 1f
+
+    // offset between [-128, 128] MB, compile: bl offset
+    mov x0, x19
     asr x0, x0, #2
     and x0, x0, #0x3FFFFFF
-    mov x9, #0x94000000
-    orr x0, x0, x9
+    mov x9, #0x94000000        // bl
+    orr x0, x0, x9             // offset
+    bl comma4
+    b 3f
 
-    ldp x30, xzr, [sp], #16
-    b comma4
+1:  mov x19, x20               // x19 = target address
+
+    // compile 1st 16 bits
+    movz x0, #0xD280, lsl #16  // movz
+    and x20, x19, #0xFFFF      // imm16
+    lsl x20, x20, #5           // ...
+    add x20, x20, #9           // reg = x9
+    orr x0, x0, x20
+    bl comma4
+
+    lsr x19, x19, #16          // did we exhaust the literal?
+    cbz x19, 2f                // yes, we're done
+
+    // compile 2nd 16 bits
+    dup_
+    movz x0, #0xF2A0, lsl #16  // movk
+    and x20, x19, #0xFFFF      // imm16
+    lsl x20, x20, #5           // ...
+    add x20, x20, #9           // reg = x9
+    orr x0, x0, x20
+    bl comma4
+
+    lsr x19, x19, #16          // did we exhaust the literal?
+    cbz x19, 2f                // yes, we're done
+
+    // compile 3nd 16 bits
+    dup_
+    movz x0, #0xF2C0, lsl #16  // movk
+    and x20, x19, #0xFFFF      // imm16
+    lsl x20, x20, #5           // ...
+    add x20, x20, #9           // reg = x9
+    orr x0, x0, x20
+    bl comma4
+
+    lsr x19, x19, #16          // did we exhaust the literal?
+    cbz x19, 2f                // yes, we're done
+
+    // compile 4th 16 bits
+    dup_
+    movz x0, #0xF2E0, lsl #16  // movk
+    and x20, x19, #0xFFFF      // imm16
+    lsl x20, x20, #5           // ...
+    add x20, x20, #9           // reg = x9
+    orr x0, x0, x20
+    bl comma4
+
+2:  movz x0, #0xD63F, lsl #16  // blr
+    movz x19, #9               // reg = x9
+    lsl x19, x19, #5
+    add x0, x0, x19
+    bl comma4
+
+3:  ldp x19, x20, [sp], #16
+    ldp x30, x21, [sp], #16
+    ret
+
 
 cdup:
     dup_
@@ -834,7 +905,6 @@ main:
     bl resetstacks
     dup_
     mov x0, #0xdead
-    dup_
     dup_
     mov x0, #0xbeef
 
