@@ -395,16 +395,33 @@ centry:  // name #name -> entry
     ret
 
 anon:  // -> a
+    stp x30, xzr, [sp, #-16]!
+    bl here
+
+    // compile: stp x30, xzr, [sp, #-16]!
     dup_
-    adrp x0, _h@PAGE
-    add x0, x0, _h@PAGEOFF
-    ldr x0, [x0]
+    mov x0, #0x7FFE
+    movk x0, #0xA9BF, lsl #16
+    bl comma4
+
+    ldp x30, xzr, [sp], #16
     b startcomp
 
 cexit:
+    stp x30, xzr, [sp, #-16]!
+
+    // compile: ldp x30, xzr, [sp], #16
+    dup_
+    mov x0, #0x7FFE
+    movk x0, #0xA8C1, lsl #16
+    bl comma4
+
+    // compile: ret
     dup_
     mov x0, #0x03C0
     movk x0, #0xD65F, lsl #16
+
+    ldp x30, xzr, [sp], #16
     b comma4
 
 semicolon:
