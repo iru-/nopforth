@@ -40,7 +40,6 @@ type:
     ldp x30, xzr, [sp], #16
     ret
 
-    .p2align 2
 skipws:  // a u -> a' u'
     ldr x9, [fp]       // x9 = address
 1:  cbz x0, 2f
@@ -51,13 +50,40 @@ skipws:  // a u -> a' u'
     sub x0, x0, 1
     b 1b
 
-    .p2align 2
+skip:  // a u delim -> a' u'
+    mov x10, x0    // x10 = delim
+    drop_          // x0 = length
+    ldr x9, [fp]   // x9 = address
+1:  cbz x0, 2f
+    ldrb w11, [x9] // w11 = current byte
+    cmp w11, w10
+    b.ne 2f
+    add x9, x9, 1
+    sub x0, x0, 1
+    b 1b
+2:  str x9, [fp]
+    ret
+
 scanws:  // a u -> a' u'
     ldr x9, [fp]       // x9 = address
 1:  cbz x0, 2f
     ldrb w10, [x9]
     cmp x10, #0x20     // ascii space
     b.le 2f
+    add x9, x9, 1
+    sub x0, x0, 1
+    b 1b
+2:  str x9, [fp]
+    ret
+
+scan:  // a u delim -> a' u'
+    mov x10, x0    // x10 = delim
+    drop_          // x0 = length
+    ldr x9, [fp]   // x9 = address
+1:  cbz x0, 2f
+    ldrb w11, [x9] // w11 = current byte
+    cmp w11, w10
+    b.eq 2f
     add x9, x9, 1
     sub x0, x0, 1
     b 1b
