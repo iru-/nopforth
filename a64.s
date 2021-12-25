@@ -267,8 +267,7 @@ parse:  // delim -> a u
     ret
 
     .data
-hellostr: .ascii "hello"
-          .byte '\n'
+hellostr: .ascii "hello\n"
 hellolen= . - hellostr
     .text
 hello:
@@ -335,22 +334,36 @@ hello_header:
 
     // macro
     .align 8
-colon_header:
-    .quad 0
-    .quad colon
-    .byte 1
-    .ascii ":"
-
-    .align 8
 semicolon_header:
-    .quad colon_header
+    .quad 0
     .quad semicolon
     .byte 1
     .ascii ";"
 
     .align 8
-stopcomp_header:
+colon_header:
     .quad semicolon_header
+    .quad colon
+    .byte 1
+    .ascii ":"
+
+    .align 8
+cdup_header:
+    .quad colon_header
+    .quad cdup
+    .byte 3
+    .ascii "dup"
+
+    .align 8
+cdrop_header:
+    .quad cdup_header
+    .quad cdrop
+    .byte 4
+    .ascii "drop"
+
+    .align 8
+stopcomp_header:
+    .quad cdrop_header
     .quad stopcomp
     .byte 1
     .ascii "["
