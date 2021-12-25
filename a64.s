@@ -306,8 +306,15 @@ parse_header:
     .ascii "parse"
 
     .align 8
-hello_header:
+Br_header:
     .quad parse_header
+    .quad Br
+    .byte 2
+    .ascii "Br"
+
+    .align 8
+hello_header:
+    .quad Br_header
     .quad hello
     .byte 5
     .ascii "hello"
@@ -984,6 +991,10 @@ main:
 warm:
     bl readloop
     b bye
+
+Br:
+    brk #0xf000
+    ret
 
     .p2align 2
 resetstacks:
