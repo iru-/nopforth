@@ -1084,5 +1084,6 @@ resetdict:
 
 _kernbuf:
 .incbin "hello.ns"
+.incbin "src/comments.ns"
 _kerntot = . - _kernbuf
 
