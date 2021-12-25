@@ -632,6 +632,7 @@ ccall:  // a ->
     b.lt 1f
 
     // offset between [-128, 128] MB, compile: bl offset
+    drop_
     mov x0, x19
     asr x0, x0, #2
     and x0, x0, #0x3FFFFFF
