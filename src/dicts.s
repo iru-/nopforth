@@ -314,6 +314,7 @@ macro_header:
     .byte 5
     .ascii "macro"
 
+    .align 8
 forth_header:
     .quad macro_header
     .quad forth
