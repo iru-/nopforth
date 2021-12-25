@@ -75,13 +75,12 @@ def dodh(addr):
         name = mem_bytes(addr + 2 * CELL + 1, namelen).decode("utf-8")
     except:
         name = ""
-        #print('not a dictionary entry')
-        #return 0
 
-    print('link  0x%016x' % link)
-    print('cfa   0x%016x' % cfa)
-    print('#name   %16d'  % namelen)
-    print('name    %16s'  % name)
+    print("0x%016x" % addr)
+    print("link  0x%016x" % link)
+    print("cfa   0x%016x" % cfa)
+    print("#name   %16d"  % namelen)
+    print("name    %16s"  % name)
 
     return link
 
