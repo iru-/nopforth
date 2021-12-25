@@ -299,8 +299,22 @@ type_header:
     .ascii "type"
 
     .align 8
-parse_header:
+macro_header:
     .quad type_header
+    .quad macro
+    .byte 5
+    .ascii "macro"
+
+    .align 8
+forth_header:
+    .quad macro_header
+    .quad forth
+    .byte 5
+    .ascii "forth"
+
+    .align 8
+parse_header:
+    .quad forth_header
     .quad parse
     .byte 5
     .ascii "parse"
@@ -369,6 +383,18 @@ latest:
     dup_
     adrp x0, latestp@PAGE
     add x0, x0, latestp@PAGEOFF
+    ret
+
+macro:
+    adrp x9, mlatestp@PAGE
+    add x9, x9, mlatestp@PAGEOFF
+    b 1f
+forth:
+    adrp x9, flatestp@PAGE
+    add x9, x9, flatestp@PAGEOFF
+1:  adrp x10, latestp@PAGE
+    add x10, x10, latestp@PAGEOFF
+    str x9, [x10]
     ret
 
     .p2align 2
