@@ -235,6 +235,36 @@ word:  // -> a u
     ldp x30, xzr, [sp], #16
     ret
 
+parse:  // delim -> a u
+    stp x30, xzr, [sp, #-16]!
+    mov x19, x0                 // x19 = delimiter
+    drop_
+    bl source
+
+    cbz x0, 2f                  // return on end of input
+    mov x21, x0                 // x21 = length
+    ldr x20, [fp]               // x20 = address
+    dup_
+    mov x0, x19
+    bl scan
+
+    ldr x11, [fp]
+    ldrb w11, [x11]             // x11 = last byte scanned
+    sub x21, x21, x0            // x21 = consumed bytes
+    adrp x9, _inpos@PAGE
+    add x9, x9, _inpos@PAGEOFF
+    ldr x10, [x9]               // x10 = inpos
+
+    cmp x11, x19                // did we scan a delimiter?
+    b.ne 1f                     // no
+    add x21, x21, #1            // yes, consume delimiter
+
+1:  add x0, x21, x10            // x0 = inpos + consumed bytes
+    str x0, [x9]                // update inpos
+    mov x0, x21
+    str x20, [fp]
+2:  ldp x30, xzr, [sp], #16
+    ret
 
     .data
 hellostr: .ascii "hello"
@@ -262,8 +292,22 @@ end_header:
     .ascii "end"
 
     .align 8
-hello_header:
+type_header:
     .quad end_header
+    .quad type
+    .byte 4
+    .ascii "type"
+
+    .align 8
+parse_header:
+    .quad type_header
+    .quad parse
+    .byte 5
+    .ascii "parse"
+
+    .align 8
+hello_header:
+    .quad parse_header
     .quad hello
     .byte 5
     .ascii "hello"
