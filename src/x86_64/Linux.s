@@ -5,15 +5,15 @@
 errnoaddr = __errno_location
 
 .text
-.include "boot.s"
-.include "sysv.s"
+.include "x86_64/boot.s"
+.include "x86_64/sysv.s"
 
 .data
 .include "dicts.s"
 
 _kernbuf:
 .incbin "comments.ns"
-.incbin "arch.ns"
+.incbin "x86_64/arch.ns"
 .incbin "flowcontrol.ns"
 .incbin "interactive.ns"
 .incbin "dictionary.ns"

@@ -1081,9 +1081,3 @@ resetdict:
     ldp x30, xzr, [sp], #16
     ret
 1:  b _exit
-
-_kernbuf:
-.incbin "hello.ns"
-.incbin "src/comments.ns"
-_kerntot = . - _kernbuf
-

@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
 
-NOPSYS != ./getsys.sh
+SYS=$(shell uname -s)
+ARCH=$(shell uname -m)
 
 ASFLAGS += -Isrc
 
 SRC=\
-	src/arch.ns\
 	src/comments.ns\
 	src/dictionary.ns\
 	src/file.ns\
@@ -19,11 +19,12 @@ SRC=\
 	src/pictured.ns\
 	src/shell.ns\
 	src/string.ns\
-	src/boot.s\
 	src/dicts.s\
-	src/${NOPSYS}.s\
+	src/${ARCH}/arch.ns\
+	src/${ARCH}/boot.s\
+	src/${ARCH}/${SYS}.s\
 
-all: ${NOPSYS} test_bootstrap
+all: ${SYS} test_bootstrap
 
 Linux:
 	LDFLAGS=-ldl make bin/nop
@@ -45,10 +46,15 @@ test_bootstrap:
 
 bin/nop.o: ${SRC}
 	mkdir -p bin
-	${AS} -ggdb ${ASFLAGS} -o $@ src/${NOPSYS}.s
+	${AS} -ggdb ${ASFLAGS} -o $@ src/${ARCH}/${SYS}.s
 
-d: all
+d: debug-${ARCH}
+
+debug-x86_64: bin/nop
 	gdb -x cmd.gdb bin/nop
+
+debug-arm64: bin/nop
+	lldb --local-lldbinit
 
 test: all
 	bin/nop test/logic.ns
