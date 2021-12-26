@@ -2,39 +2,41 @@
 Nop is a dialect of the Forth programming language. It provides an environment
 for the user to interact with and control computers.
 
-Currently it runs on x86_64 CPUs and the following operating systems are
-supported
+It runs on x86_64 CPUs and the following operating systems are supported
 
  OS              | Build | Boot | Dynamic libraries |
 -----------------|-------|------|-------------------|
-Linux            | ok    | ok   | ok                |
-FreeBSD          | ok    | ok   | ok                |
-OpenBSD          | ok    | ok   | ok                |
-NetBSD           | ok    | ok   | ok                |
-macOS            | ok    | ok   | ok                |
-Windows (cygwin) | ok    | ok   | not supported     |
+Linux            | ✓     | ✓    | ✓                 |
+FreeBSD          | ✓     | ✓    | ✓                 |
+OpenBSD          | ✓     | ✓    | ✓                 |
+NetBSD           | ✓     | ✓    | ✓                 |
+macOS            | ✓     | ✓    | ✓                 |
+Windows (cygwin) | ✓     | ✓    | ❌                |
+
+Support for arm64 is currently a work in progress and runs on macOS on Apple Silicon.
 
 
 ## Preparing nop for use
 To run nop, you first need to build it using a straightforward
+
 ```
 % make
 ```
 
-If you are on macOS, use the following command instead
-```
-% NOPSYS=Darwin make
-```
+(or `gmake` on BSDs).
+
 
 This will build an executable in `bin/nop` and perform a smoke test of the
 bootstraping procedure. In principle, nop can already be used. However, to be
 sure the environment is behaving as it should, run the tests:
+
 ```
 % make test
 ```
 
 In case a test fails, the whole procedure is aborted and the last line of
 output will be similar to
+
 ```
 make: *** [Makefile:54: test] Error 1
 ```
@@ -46,6 +48,7 @@ used.
 ## Basic usage
 Nop may be run with or without command line arguments. Without arguments, you
 should see
+
 ```
 % nop
 nop forth
@@ -61,6 +64,7 @@ end of transmission control sequence (Control-D on most unix terminals).
 
 If instead of talking to nop directly you want to execute a nop source file,
 pass the file as a command line argument:
+
 ```
 % nop myprogram.ns
 ```
@@ -68,6 +72,7 @@ pass the file as a command line argument:
 Nop will execute the file and immediately exit. Note that only the first
 argument is taken as a source file, the rest are available for the program to
 use. As an example of the latter usage, output this very file with:
+
 ```
 % nop examples/cat.ns README.md
 ```
