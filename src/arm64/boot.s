@@ -18,6 +18,10 @@ _Send: .quad 0  // parameter stack end
 .equ PROT_READ,     0x1
 .equ PROT_WRITE,    0x2
 .equ PROT_EXEC,     0x4
+.equ MAP_PRIVATE,   0x0002
+.equ MAP_JIT,       0x0800
+.equ MAP_ANON,      0x1000
+
 
     .data
 _infd:   .quad 0  // file descriptor feeding the input
@@ -622,33 +626,31 @@ execmode:
     ret
 
 stopcomp:
+codeRX:
     // Based on https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon?preferredLanguage=occ
     stp x30, xzr, [sp, #-16]!
-    stp x19, x20, [sp, #-16]!
-    bl execmode
     dup_
     mov x0, #1
     bl _pthread_jit_write_protect_np
     adrp x0, _codestart@PAGE
     add x0, x0, _codestart@PAGEOFF
     ldr x0, [x0]
-    mov x19, x0  // x19 = address
     mov x1, #(_codesize & 0xFFFF)
-    mov x20, #(_codesize >> 16)
-    add x1, x1, x20, lsl #16
-    mov x20, x1  // x20 = length
-    mov x2, #(PROT_READ | PROT_EXEC)
-    bl _mprotect // TODO abort on error
-    mov x0, x19
-    mov x1, x20
+    mov x9, #(_codesize >> 16)
+    add x1, x1, x9, lsl #16
     bl _sys_icache_invalidate
     drop_
-    ldp x19, x20, [sp], #16
     ldp x30, xzr, [sp], #16
     ret
 
-startcomp:
+stopcomp:
     stp x30, xzr, [sp, #-16]!
+    bl execmode
+    bl codeRX
+    ldp x30, xzr, [sp], #16
+    ret
+
+compmode:
     // search in macro then forth
     adrp x9, _search@PAGE
     add x9, x9, _search@PAGEOFF
@@ -671,21 +673,22 @@ startcomp:
     adrp x11, dictrewind@PAGE
     add x11, x11, dictrewind@PAGEOFF  // rewind dictionary for abort
     stp x10, x11, [x9, #16]
+    ret
 
+codeRW:
     // Based on https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon?preferredLanguage=occ
+    stp x30, xzr, [sp, #-16]!
     dup_
-    adrp x0, _codestart@PAGE
-    add x0, x0, _codestart@PAGEOFF
-    ldr x0, [x0]
-    mov x1, #(_codesize & 0xFFFF)
-    mov x11, #(_codesize >> 16)
-    add x1, x1, x11, lsl #16
-    mov x2, #(PROT_READ | PROT_WRITE)
-    bl _mprotect // TODO abort on error
-
     mov x0, #0
     bl _pthread_jit_write_protect_np
     drop_
+    ldp x30, xzr, [sp], #16
+    ret
+
+startcomp:
+    stp x30, xzr, [sp, #-16]!
+    bl compmode
+    bl codeRW
     ldp x30, xzr, [sp], #16
     ret
 
@@ -823,7 +826,6 @@ ccall:  // a ->
 3:  ldp x19, x20, [sp], #16
     ldp x30, x21, [sp], #16
     ret
-
 
 cdup:
     dup_
@@ -1103,9 +1105,14 @@ resetdict:
     str x0, [x10]
 
     // code space
-    mov x0, #_codesize
-    bl _malloc
-    cmp x0, #0
+    mov x0, #0
+    mov x1, #_codesize
+    mov x2, #(PROT_READ | PROT_WRITE | PROT_EXEC)
+    mov x3, #(MAP_ANON | MAP_PRIVATE | MAP_JIT)
+    mov x4, #-1
+    mov x5, #0
+    bl _mmap
+    cmp x0, #-1
     b.eq 1f
     adrp x9, _h@PAGE
     add x9, x9, _h@PAGEOFF
