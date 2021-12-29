@@ -326,8 +326,36 @@ Br_header:
     .ascii "Br"
 
     .align 8
-hello_header:
+comma1_header:
     .quad Br_header
+    .quad comma1
+    .byte 2
+    .ascii "1,"
+
+    .align 8
+comma2_header:
+    .quad comma1_header
+    .quad comma2
+    .byte 2
+    .ascii "2,"
+
+    .align 8
+comma4_header:
+    .quad comma2_header
+    .quad comma4
+    .byte 2
+    .ascii "4,"
+
+    .align 8
+comma_header:
+    .quad comma4_header
+    .quad comma
+    .byte 1
+    .ascii ","
+
+    .align 8
+hello_header:
+    .quad comma_header
     .quad hello
     .byte 5
     .ascii "hello"
@@ -420,13 +448,22 @@ comma:  // n ->
     str x10, [x9]
     ret
 
-    .text
     .p2align 2
 comma4:  // n ->
     adrp x9, _h@PAGE
     add x9, x9, _h@PAGEOFF
     ldr x10, [x9]
     str w0, [x10], #4
+    drop_
+    str x10, [x9]
+    ret
+
+    .p2align 2
+comma2:  // n ->
+    adrp x9, _h@PAGE
+    add x9, x9, _h@PAGEOFF
+    ldr x10, [x9]
+    strh w0, [x10], #2
     drop_
     str x10, [x9]
     ret
