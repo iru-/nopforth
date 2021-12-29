@@ -46,7 +46,7 @@ test_bootstrap:
 
 bin/nop.o: ${SRC}
 	mkdir -p bin
-	${AS} -ggdb ${ASFLAGS} -o $@ src/${ARCH}/${SYS}.s
+	${CC} -ggdb ${ASFLAGS} -c -o $@ src/${ARCH}/${SYS}.s
 
 d: debug-${ARCH}
 

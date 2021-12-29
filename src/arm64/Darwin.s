@@ -1,4 +1,5 @@
-.include "arm64/boot.s"
+.text
+#include "arm64/boot.s"
 
 .data
 _kernbuf:
