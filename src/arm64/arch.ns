@@ -5,3 +5,8 @@ macro
    $F81F8FA0 i,    \ dup
    $F94003E0 i, ;  \ ldr x0, [sp]
 
+: =
+   $F94003A9 i,    \ ldr x9, [fp]
+   $EB09001F i,    \ cmp x0, x9
+   $F84087A0 i,    \ drop
+   $9A9F17E0 i, ;  \ cset x0, eq
