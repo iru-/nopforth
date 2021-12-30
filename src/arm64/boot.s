@@ -365,8 +365,15 @@ tocfa_header:
     .ascii ">cfa"
 
     .align 8
-hello_header:
+cinstr_header:
     .quad tocfa_header
+    .quad cinstr
+    .byte 2
+    .ascii "i,"
+
+    .align 8
+hello_header:
+    .quad cinstr_header
     .quad hello
     .byte 5
     .ascii "hello"
@@ -489,6 +496,24 @@ comma1:  // n ->
     str x10, [x9]
     ret
 
+cinstr_cb:  // n ->
+    adrp x9, codep@PAGE
+    add x9, x9, codep@PAGEOFF
+    ldr x10, [x9]
+    str w0, [x10], #4
+    str x10, [x9]
+    ret
+
+cinstr:  // n ->
+    stp x30, xzr, [sp, #-16]!
+    mov x1, x0
+    adrp x0, cinstr_cb@PAGE
+    add x0, x0, cinstr_cb@PAGEOFF
+    bl _pthread_jit_write_with_callback_np
+    drop_
+    ldp x30, xzr, [sp], #16
+    ret
+
     .p2align 2
 move:  // src dst count ->
     mov x9, x0   // x9 = count
@@ -576,7 +601,7 @@ anon:  // -> a
     mov x0, #0x7FFE
     movk x0, #0xA9BF, lsl #16
     ldp x30, xzr, [sp], #16
-    b comma4
+    b cinstr
 
 cexit:
     stp x30, xzr, [sp, #-16]!
@@ -585,7 +610,7 @@ cexit:
     dup_
     mov x0, #0x7FFE
     movk x0, #0xA8C1, lsl #16
-    bl comma4
+    bl cinstr
 
     // compile: ret
     dup_
@@ -593,7 +618,7 @@ cexit:
     movk x0, #0xD65F, lsl #16
 
     ldp x30, xzr, [sp], #16
-    b comma4
+    b cinstr
 
 semicolon:
     stp x30, xzr, [sp, #-16]!
@@ -786,7 +811,7 @@ ccall:  // a ->
     and x0, x0, #0x3FFFFFF
     mov x9, #0x94000000        // bl
     orr x0, x0, x9             // offset
-    bl comma4
+    bl cinstr
     b 3f
 
 1:  mov x19, x20               // x19 = target address
@@ -797,7 +822,7 @@ ccall:  // a ->
     lsl x20, x20, #5           // ...
     add x20, x20, #9           // reg = x9
     orr x0, x0, x20
-    bl comma4
+    bl cinstr
 
     lsr x19, x19, #16          // did we exhaust the literal?
     cbz x19, 2f                // yes, we're done
@@ -809,7 +834,7 @@ ccall:  // a ->
     lsl x20, x20, #5           // ...
     add x20, x20, #9           // reg = x9
     orr x0, x0, x20
-    bl comma4
+    bl cinstr
 
     lsr x19, x19, #16          // did we exhaust the literal?
     cbz x19, 2f                // yes, we're done
@@ -821,7 +846,7 @@ ccall:  // a ->
     lsl x20, x20, #5           // ...
     add x20, x20, #9           // reg = x9
     orr x0, x0, x20
-    bl comma4
+    bl cinstr
 
     lsr x19, x19, #16          // did we exhaust the literal?
     cbz x19, 2f                // yes, we're done
@@ -833,13 +858,13 @@ ccall:  // a ->
     lsl x20, x20, #5           // ...
     add x20, x20, #9           // reg = x9
     orr x0, x0, x20
-    bl comma4
+    bl cinstr
 
 2:  movz x0, #0xD63F, lsl #16  // blr
     movz x19, #9               // reg = x9
     lsl x19, x19, #5
     add x0, x0, x19
-    bl comma4
+    bl cinstr
 
 3:  ldp x19, x20, [sp], #16
     ldp x30, x21, [sp], #16
@@ -849,13 +874,13 @@ cdup:
     dup_
     mov x0, #0x8FA0
     movk x0, #0xF81F, lsl #16
-    b comma4
+    b cinstr
 
 cdrop:
     dup_
     mov x0, #0x87A0
     movk x0, #0xF840, lsl #16
-    b comma4
+    b cinstr
 
 clit:  // n ->
     stp x30, xzr, [sp, #-16]!
@@ -868,7 +893,7 @@ clit:  // n ->
     and x20, x19, #0xFFFF      // imm16
     lsl x20, x20, #5           // ...
     orr x0, x0, x20
-    bl comma4
+    bl cinstr
 
     lsr x19, x19, #16          // did we exhaust the literal?
     cbz x19, 1f                // yes, we're done
@@ -879,7 +904,7 @@ clit:  // n ->
     and x20, x19, #0xFFFF      // imm16
     lsl x20, x20, #5           // ...
     orr x0, x0, x20
-    bl comma4
+    bl cinstr
 
     lsr x19, x19, #16          // did we exhaust the literal?
     cbz x19, 1f                // yes, we're done
@@ -890,7 +915,7 @@ clit:  // n ->
     and x20, x19, #0xFFFF      // imm16
     lsl x20, x20, #5           // ...
     orr x0, x0, x20
-    bl comma4
+    bl cinstr
 
     lsr x19, x19, #16          // did we exhaust the literal?
     cbz x19, 1f                // yes, we're done
@@ -901,7 +926,7 @@ clit:  // n ->
     and x20, x19, #0xFFFF      // imm16
     lsl x20, x20, #5           // ...
     orr x0, x0, x20
-    bl comma4
+    bl cinstr
 
 1:  ldp x19, x20, [sp], #16
     ldp x30, xzr, [sp], #16
