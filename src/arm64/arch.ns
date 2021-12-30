@@ -1,2 +1,7 @@
 macro
 : @   $F9400000 i, ;  \ ldr x0, [x0]
+
+: r@
+   $F81F8FA0 i,    \ dup
+   $F94003E0 i, ;  \ ldr x0, [sp]
+
