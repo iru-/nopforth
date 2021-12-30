@@ -412,8 +412,8 @@ flatestp: .quad hello_header
 mlatestp: .quad stopcomp_header
 latestp: .quad flatestp
 
-_h: .quad 0   // next code address
-_dp: .quad 0  // next dictionary address
+codep: .quad 0  // next code address
+_h: .quad 0     // next dictionary address
 
     .text
     .p2align 2
@@ -519,8 +519,8 @@ entry:  // -> entry
 
 centry:  // name #name -> entry
     stp x30, xzr, [sp, #-16]!
-    adrp x13, _dp@PAGE
-    add x13, x13, _dp@PAGEOFF
+    adrp x13, _h@PAGE
+    add x13, x13, _h@PAGEOFF
     ldr x13, [x13]     // x13 = entry address
     mov x14, x0        // x14 = name length
 
@@ -549,8 +549,8 @@ centry:  // name #name -> entry
     add x15, x15, x14 // x15 = address after entry
     mov x0, x15
     bl aligned
-    adrp x9, _dp@PAGE
-    add x9, x9, _dp@PAGEOFF
+    adrp x9, _h@PAGE
+    add x9, x9, _h@PAGEOFF
     str x0, [x9]
 
     // update latest definition
@@ -565,7 +565,11 @@ centry:  // name #name -> entry
 anon:  // -> a
     stp x30, xzr, [sp, #-16]!
     bl startcomp
-    bl here
+
+    dup_
+    adrp x0, codep@PAGE
+    add x0, x0, codep@PAGEOFF
+    ldr x0, [x0]               // x0 = code address
 
     // compile: stp x30, xzr, [sp, #-16]!
     dup_
@@ -755,10 +759,13 @@ ccall:  // a ->
     stp x19, x20, [sp, #-16]!
 
     // calculate call offset
-    bl here           // x0 = instruction address
-    ldr x19, [fp]     // x19 = target address
-    mov x20, x19      // x20 = target address
-    sub x19, x19, x0  // x19 = offset to target
+    dup_
+    adrp x0, codep@PAGE
+    add x0, x0, codep@PAGEOFF
+    ldr x0, [x0]               // x0 = instruction address
+    ldr x19, [fp]              // x19 = target address
+    mov x20, x19               // x20 = target address
+    sub x19, x19, x0           // x19 = offset to target
 
     // is offset greater than 128MB?
     mov x10, #0x0800
@@ -1108,8 +1115,8 @@ resetdict:
     bl _malloc
     cmp x0, #0
     b.eq 1f
-    adrp x9, _dp@PAGE
-    add x9, x9, _dp@PAGEOFF
+    adrp x9, _h@PAGE
+    add x9, x9, _h@PAGEOFF
     adrp x10, _dictstart@PAGE
     add x10, x10, _dictstart@PAGEOFF
     str x0, [x9]
@@ -1125,8 +1132,8 @@ resetdict:
     bl _mmap
     cmp x0, #-1
     b.eq 1f
-    adrp x9, _h@PAGE
-    add x9, x9, _h@PAGEOFF
+    adrp x9, codep@PAGE
+    add x9, x9, codep@PAGEOFF
     adrp x10, _codestart@PAGE
     add x10, x10, _codestart@PAGEOFF
     str x0, [x9]
