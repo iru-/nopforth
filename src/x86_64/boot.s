@@ -500,7 +500,7 @@ dfind:  # name #name dict -> entry
     mov (%rax), %rax
     jmp 1b
 
-tocfa:
+tocfa:  # a -> a'
     lea 8(%rax), %rax
     ret
 
