@@ -372,8 +372,36 @@ cinstr_header:
     .ascii "i,"
 
     .align 8
-hello_header:
+word_header:
     .quad cinstr_header
+    .quad word
+    .byte 4
+    .ascii "word"
+
+    .align 8
+mlatest_header:
+    .quad word_header
+    .quad mlatest
+    .byte 7
+    .ascii "mlatest"
+
+    .align 8
+flatest_header:
+    .quad mlatest_header
+    .quad flatest
+    .byte 7
+    .ascii "flatest"
+
+    .align 8
+dfind_header:
+    .quad flatest_header
+    .quad dfind
+    .byte 5
+    .ascii "dfind"
+
+    .align 8
+hello_header:
+    .quad dfind_header
     .quad hello
     .byte 5
     .ascii "hello"
