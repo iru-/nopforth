@@ -358,8 +358,15 @@ comma_header:
     .ascii ","
 
     .align 8
-hello_header:
+tocfa_header:
     .quad comma_header
+    .quad tocfa
+    .byte 4
+    .ascii ">cfa"
+
+    .align 8
+hello_header:
+    .quad tocfa_header
     .quad hello
     .byte 5
     .ascii "hello"
@@ -725,6 +732,10 @@ dfind:  // name #name dict -> entry
 
 5:  ldr x9, [x9]          // load previous dict entry
     b 1b
+
+tocfa:  // a -> a'
+    add x0, x0, #8
+    ret
 
 h:  // -> a
     dup_
