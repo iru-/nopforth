@@ -505,11 +505,20 @@ cinstr_cb:  // n ->
     ret
 
 cinstr:  // n ->
+    // JIT+cache dance based on
+    // https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon?preferredLanguage=occ
     stp x30, xzr, [sp, #-16]!
     mov x1, x0
     adrp x0, cinstr_cb@PAGE
     add x0, x0, cinstr_cb@PAGEOFF
     bl _pthread_jit_write_with_callback_np
+
+    adrp x0, codep@PAGE
+    add x0, x0, codep@PAGEOFF
+    ldr x0, [x0]
+    sub x0, x0, #4  // x0 = address of instruction just compiled
+    mov x1, #4
+    bl _sys_icache_invalidate
     drop_
     ldp x30, xzr, [sp], #16
     ret
@@ -662,27 +671,8 @@ execmode:
     ret
 
 stopcomp:
-codeRX:
-    // Based on https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon?preferredLanguage=occ
-    stp x30, xzr, [sp, #-16]!
-    dup_
-    mov x0, #1
-    bl _pthread_jit_write_protect_np
-    adrp x0, _codestart@PAGE
-    add x0, x0, _codestart@PAGEOFF
-    ldr x0, [x0]
-    mov x1, #(_codesize & 0xFFFF)
-    mov x9, #(_codesize >> 16)
-    add x1, x1, x9, lsl #16
-    bl _sys_icache_invalidate
-    drop_
-    ldp x30, xzr, [sp], #16
-    ret
-
-stopcomp:
     stp x30, xzr, [sp, #-16]!
     bl execmode
-    bl codeRX
     ldp x30, xzr, [sp], #16
     ret
 
@@ -711,20 +701,9 @@ compmode:
     stp x10, x11, [x9, #16]
     ret
 
-codeRW:
-    // Based on https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon?preferredLanguage=occ
-    stp x30, xzr, [sp, #-16]!
-    dup_
-    mov x0, #0
-    bl _pthread_jit_write_protect_np
-    drop_
-    ldp x30, xzr, [sp], #16
-    ret
-
 startcomp:
     stp x30, xzr, [sp, #-16]!
     bl compmode
-    bl codeRW
     ldp x30, xzr, [sp], #16
     ret
 
