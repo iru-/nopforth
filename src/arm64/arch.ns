@@ -85,10 +85,12 @@ macro
    codep @
    $B4000009 i, ;  \ cbz x9, offset = 0
 
-forth
-: ioffset ( a -> n )
-   codep @ swap -  32 *  4 / ;
-
 macro
 : then ( a -> )
-   dup  ioffset  over @ +  swap i! ;
+   dup  codep @ swap - 4 /  32 *  over @ +  swap i! ;
+
+: branch ( dst -> )
+   codep @ -  4 /  $3FFFFFF and  $14000000 +  i, ;  \ b dst
+
+: branch-unresolved ( -> a )
+   codep @  $14000000 i, ;  \ b offset = 0
