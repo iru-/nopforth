@@ -1,16 +1,16 @@
-TODO
-----
-- should file support return errors?
-- search path for include
-- remove syscalls from nop.s
-
-
 Register allocation
 -------------------
+[x86_64]
 rax: top of data stack (T)
 rsp: top of return stack (R)
 rbp: pointer to second cell on data stack (S)
 r13: register A
+
+[arm64]
+x0: top of data stack (T)
+sp: top of return stack (R)
+fp: pointer to second cell on data stack (S)
+x28: register A
 
 
 Dictionary structure
