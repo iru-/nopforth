@@ -414,8 +414,22 @@ codep_header:
     .ascii "codep"
 
     .align 8
-hello_header:
+ccall_header:
     .quad codep_header
+    .quad ccall
+    .byte 5
+    .ascii "call,"
+
+    .align 8
+abort_header:
+    .quad ccall_header
+    .quad abort
+    .byte 5
+    .ascii "abort"
+
+    .align 8
+hello_header:
+    .quad abort_header
     .quad hello
     .byte 5
     .ascii "hello"
@@ -450,8 +464,15 @@ cdrop_header:
     .ascii "drop"
 
     .align 8
-stopcomp_header:
+clit_header:
     .quad cdrop_header
+    .quad clit
+    .byte 3
+    .ascii "lit"
+
+    .align 8
+stopcomp_header:
+    .quad clit_header
     .quad stopcomp
     .byte 1
     .ascii "["
