@@ -24,6 +24,26 @@ macro
    $F81F8FA0 i,    \ dup
    $F94003E0 i, ;  \ ldr x0, [sp]
 
+: +
+   $AA0003E9 i,    \ mov x9, x0
+   $F84087A0 i,    \ drop
+   $8B090000 i, ;  \ add x0, x0, x9
+
+: -
+   $AA0003E9 i,    \ mov x9, x0
+   $F84087A0 i,    \ drop
+   $CB090000 i, ;  \ sub x0, x0, x9
+
+: /
+   $AA0003E9 i,    \ mov x9, x0
+   $F84087A0 i,    \ drop
+   $9AC90C00 i, ;  \ sdiv x0, x0, x9
+
+: *
+   $AA0003E9 i,    \ mov x9, x0
+   $F84087A0 i,    \ drop
+   $9B097C00 i, ;  \ mul x0, x0, x9
+
 : =
    $F94003A9 i,    \ ldr x9, [fp]
    $EB09001F i,    \ cmp x0, x9
