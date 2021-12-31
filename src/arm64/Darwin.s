@@ -4,4 +4,5 @@
 .data
 _kernbuf:
 .incbin "comments.ns"
+.incbin "arm64/arch.ns"
 _kerntot = . - _kernbuf
