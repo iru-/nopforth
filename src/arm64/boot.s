@@ -407,8 +407,15 @@ dfind_header:
     .ascii "dfind"
 
     .align 8
-codep_header:
+here_header:
     .quad dfind_header
+    .quad here
+    .byte 4
+    .ascii "here"
+
+    .align 8
+codep_header:
+    .quad here_header
     .quad codep
     .byte 5
     .ascii "codep"
