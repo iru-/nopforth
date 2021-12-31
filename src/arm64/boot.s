@@ -400,8 +400,15 @@ dfind_header:
     .ascii "dfind"
 
     .align 8
-hello_header:
+codep_header:
     .quad dfind_header
+    .quad codep
+    .byte 5
+    .ascii "codep"
+
+    .align 8
+hello_header:
+    .quad codep_header
     .quad hello
     .byte 5
     .ascii "hello"
@@ -447,8 +454,8 @@ flatestp: .quad hello_header
 mlatestp: .quad stopcomp_header
 latestp: .quad flatestp
 
-codep: .quad 0  // next code address
-_h: .quad 0     // next dictionary address
+codepp: .quad 0  // next code address
+_h: .quad 0      // next dictionary address
 
     .text
     .p2align 2
@@ -525,8 +532,8 @@ comma1:  // n ->
     ret
 
 cinstr_cb:  // n ->
-    adrp x9, codep@PAGE
-    add x9, x9, codep@PAGEOFF
+    adrp x9, codepp@PAGE
+    add x9, x9, codepp@PAGEOFF
     ldr x10, [x9]
     str w0, [x10], #4
     str x10, [x9]
@@ -541,8 +548,8 @@ cinstr:  // n ->
     add x0, x0, cinstr_cb@PAGEOFF
     bl _pthread_jit_write_with_callback_np
 
-    adrp x0, codep@PAGE
-    add x0, x0, codep@PAGEOFF
+    adrp x0, codepp@PAGE
+    add x0, x0, codepp@PAGEOFF
     ldr x0, [x0]
     sub x0, x0, #4  // x0 = address of instruction just compiled
     mov x1, #4
@@ -629,8 +636,8 @@ anon:  // -> a
     bl startcomp
 
     dup_
-    adrp x0, codep@PAGE
-    add x0, x0, codep@PAGEOFF
+    adrp x0, codepp@PAGE
+    add x0, x0, codepp@PAGEOFF
     ldr x0, [x0]               // x0 = code address
 
     // compile: stp x30, xzr, [sp, #-16]!
@@ -786,14 +793,20 @@ here:  // -> a
     ldr x0, [x0]
     ret
 
+codep:  // -> a
+    dup_
+    adrp x0, codepp@PAGE
+    add x0, x0, codepp@PAGEOFF
+    ret
+
 ccall:  // a ->
     stp x30, xzr, [sp, #-16]!
     stp x19, x20, [sp, #-16]!
 
     // calculate call offset
     dup_
-    adrp x0, codep@PAGE
-    add x0, x0, codep@PAGEOFF
+    adrp x0, codepp@PAGE
+    add x0, x0, codepp@PAGEOFF
     ldr x0, [x0]               // x0 = instruction address
     ldr x19, [fp]              // x19 = target address
     mov x20, x19               // x20 = target address
@@ -1164,8 +1177,8 @@ resetdict:
     bl _mmap
     cmp x0, #-1
     b.eq 1f
-    adrp x9, codep@PAGE
-    add x9, x9, codep@PAGEOFF
+    adrp x9, codepp@PAGE
+    add x9, x9, codepp@PAGEOFF
     adrp x10, _codestart@PAGE
     add x10, x10, _codestart@PAGEOFF
     str x0, [x9]
