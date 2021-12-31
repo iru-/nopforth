@@ -1,5 +1,4 @@
 macro
-: @   $F9400000 i, ;  \ ldr x0, [x0]
 : swap
    $AA0003E9 i,    \ mov x9, x0
    $F94003A0 i,    \ ldr x0, [fp]
@@ -9,6 +8,17 @@ macro
    $F94003A9 i,    \ ldr x9, [fp]
    $F81F8FA0 i,    \ dup
    $AA0903E0 i, ;  \ mov x0, x9
+
+
+: @
+   $F9400000 i, ;  \ ldr x0, [x0]
+
+: !
+   $AA0003E9 i,    \ mov x9, x0
+   $F84087A0 i,    \ drop
+   $F9000120 i,    \ str x0, [x9]
+   $F84087A0 i, ;  \ drop
+
 
 : r@
    $F81F8FA0 i,    \ dup
