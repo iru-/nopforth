@@ -69,6 +69,16 @@ macro
    $F84087A0 i,    \ drop
    $9A9F17E0 i, ;  \ cset x0, eq
 
+
+: a
+   $F81F8FA0 i,    \ dup
+   $AA1C03E0 i, ;  \ mov x0, x28
+
+: a!
+   $AA0003FC i,    \ mov x28, x0
+   $F84087A0 i, ;  \ drop
+
+
 : if ( -> a )
    $AA0003E9 i,    \ mov x9, x0
    $F84087A0 i,    \ drop
