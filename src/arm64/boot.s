@@ -365,8 +365,15 @@ tocfa_header:
     .ascii ">cfa"
 
     .align 8
-cinstr_header:
+storeinstr_header:
     .quad tocfa_header
+    .quad storeinstr
+    .byte 2
+    .ascii "i!"
+
+    .align 8
+cinstr_header:
+    .quad storeinstr_header
     .quad cinstr
     .byte 2
     .ascii "i,"
@@ -552,6 +559,40 @@ cinstr:  // n ->
     add x0, x0, codepp@PAGEOFF
     ldr x0, [x0]
     sub x0, x0, #4  // x0 = address of instruction just compiled
+    mov x1, #4
+    bl _sys_icache_invalidate
+    drop_
+    ldp x30, xzr, [sp], #16
+    ret
+
+    .data
+    .p2align 3
+storeinstr_addr: .quad 0  // address to store instruction
+
+    .text
+storeinstr_cb:  // n a ->
+    adrp x9, storeinstr_addr@PAGE
+    add x9, x9, storeinstr_addr@PAGEOFF
+    ldr x9, [x9]
+    str w0, [x9]
+    ret
+
+storeinstr:  // n a ->
+    // JIT+cache dance based on
+    // https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon?preferredLanguage=occ
+    stp x30, xzr, [sp, #-16]!
+    adrp x9, storeinstr_addr@PAGE
+    add x9, x9, storeinstr_addr@PAGEOFF
+    str x0, [x9]
+    drop_
+    mov x1, x0
+    adrp x0, storeinstr_cb@PAGE
+    add x0, x0, storeinstr_cb@PAGEOFF
+    bl _pthread_jit_write_with_callback_np
+
+    adrp x0, storeinstr_addr@PAGE
+    add x0, x0, storeinstr_addr@PAGEOFF
+    ldr x0, [x0]
     mov x1, #4
     bl _sys_icache_invalidate
     drop_
