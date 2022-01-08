@@ -9,6 +9,9 @@ macro
    $F81F8FA0 i,    \ dup
    $AA0903E0 i, ;  \ mov x0, x9
 
+: nip
+   $910023BD i, ;  \ add fp, fp, #8
+
 
 : push
    $A9BF7FE0 i,    \ stp x0, xzr, [sp, #-16]!
