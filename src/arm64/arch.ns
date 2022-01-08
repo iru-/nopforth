@@ -9,6 +9,7 @@ macro
    $F81F8FA0 i,    \ dup
    $AA0903E0 i, ;  \ mov x0, x9
 
+
 : push
    $A9BF7FE0 i,    \ stp x0, xzr, [sp, #-16]!
    $F84087A0 i, ;  \ drop
@@ -16,6 +17,18 @@ macro
 : pop
    $F81F8FA0 i,    \ dup
    $A8C17FE0 i, ;  \ ldp x0, xzr, [sp], #16
+
+: r@
+   $F81F8FA0 i,    \ dup
+   $F94003E0 i, ;  \ ldr x0, [sp]
+
+: rdec
+   $F94003E9 i,    \ ldr x9, [sp]
+   $D1000529 i,    \ sub x9, x9, 1
+   $F90003E9 i, ;  \ str x9, [sp]
+
+: rdrop
+   $910043FF i, ;  \ add sp, sp, #16
 
 
 : @
@@ -26,10 +39,6 @@ macro
    $F84087A0 i,    \ drop
    $F9000120 i,    \ str x0, [x9]
    $F84087A0 i, ;  \ drop
-
-: r@
-   $F81F8FA0 i,    \ dup
-   $F94003E0 i, ;  \ ldr x0, [sp]
 
 
 : +
