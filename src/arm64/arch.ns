@@ -119,10 +119,31 @@ macro
    $F84087A0 i,    \ drop
    $8A090000 i, ;  \ and x0, x0, x9
 
+: or
+   $AA0003E9 i,    \ mov x9, x0
+   $F84087A0 i,    \ drop
+   $AA090000 i, ;  \ orr x0, x0, x9
+
 : xor
    $AA0003E9 i,    \ mov x9, x0
    $F84087A0 i,    \ drop
    $CA090000 i, ;  \ eor x0, x0, x9
+
+: lshift
+   $AA0003E9 i,    \ mov x9, x0
+   $F84087A0 i,    \ drop
+   $9AC92000 i, ;  \ lsl x0, x0, x9
+
+: rshift
+   $AA0003E9 i,    \ mov x9, x0
+   $F84087A0 i,    \ drop
+   $9AC92400 i, ;  \ lsr x0, x0, x9
+
+: ~
+   $AA2003E0 i, ;  \ mvn x0, x0
+
+: negate
+   $CB0003E0 i, ;  \ neg x0, x0
 
 : =
    $F94003A9 i,    \ ldr x9, [fp]
