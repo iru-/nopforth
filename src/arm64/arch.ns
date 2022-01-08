@@ -43,6 +43,30 @@ macro
    $F9000120 i,    \ str x0, [x9]
    $F84087A0 i, ;  \ drop
 
+: a
+   $F81F8FA0 i,    \ dup
+   $AA1C03E0 i, ;  \ mov x0, x28
+
+: a!
+   $AA0003FC i,    \ mov x28, x0
+   $F84087A0 i, ;  \ drop
+
+: @+
+   $F81F8FA0 i,    \ dup
+   $F8408780 i, ;  \ ldr x0, [x28], #8
+
+: 1@+
+   $F81F8FA0 i,    \ dup
+   $38401780 i, ;  \ ldrb w0, [x28], #1
+
+: !+
+   $f8008780 i,    \ str x0, [x28], #8
+   $F84087A0 i, ;  \ drop
+
+: 1!+
+   $38001780 i,    \ strb w0, [x28], #1
+   $F84087A0 i, ;  \ drop
+
 
 : +
    $AA0003E9 i,    \ mov x9, x0
@@ -82,13 +106,7 @@ macro
    $9A9F17E0 i, ;  \ cset x0, eq
 
 
-: a
-   $F81F8FA0 i,    \ dup
-   $AA1C03E0 i, ;  \ mov x0, x28
 
-: a!
-   $AA0003FC i,    \ mov x28, x0
-   $F84087A0 i, ;  \ drop
 
 
 : if ( -> a )
