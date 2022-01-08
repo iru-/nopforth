@@ -97,6 +97,22 @@ macro
    $F84087A0 i,    \ drop
    $9B097C00 i, ;  \ mul x0, x0, x9
 
+: mod
+   $AA0003E9 i,    \ mov x9, x0          x9  = d            (divisor)
+   $F84087A0 i,    \ drop                x0  = a            (dividend)
+   $9AC90C0A i,    \ sdiv x10, x0, x9    x10 = q = a/d      (ratio)
+   $9B097D4B i,    \ mul x11, x10, x9    x11 =     q*d
+   $CB0B0000 i, ;  \ sub x0, x0, x11     x0  = r = a - q*d  (remainder)
+
+: /mod
+   $AA0003E9 i,    \ mov x9, x0          x9  = d            (divisor)
+   $F84087A0 i,    \ drop                x0  = a            (dividend)
+   $9AC90C0A i,    \ sdiv x10, x0, x9    x10 = q = a/d      (ratio)
+   $9B097D4B i,    \ mul x11, x10, x9    x11 =     q*d
+   $CB0B0000 i,    \ sub x0, x0, x11     x0  = r = a - q*d  (remainder)
+   $F81F8FA0 i,    \ dup
+   $AA0A03E0 i, ;  \ mov x0, x10
+
 
 : and
    $AA0003E9 i,    \ mov x9, x0
