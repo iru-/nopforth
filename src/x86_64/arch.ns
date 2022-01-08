@@ -61,3 +61,4 @@ forth
 : call! ( 'code dst -> #consumed )
    here hole !  over over abs>off 32bits? if call-rel! exit then call-abs! ;
 
+: codep   h ;
