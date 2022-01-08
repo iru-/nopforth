@@ -145,14 +145,42 @@ macro
 : negate
    $CB0003E0 i, ;  \ neg x0, x0
 
+
 : =
    $F94003A9 i,    \ ldr x9, [fp]
-   $EB09001F i,    \ cmp x0, x9
+   $EB00013F i,    \ cmp x9, x0
    $F84087A0 i,    \ drop
    $9A9F17E0 i, ;  \ cset x0, eq
 
+: ~=
+   $F94003A9 i,    \ ldr x9, [fp]
+   $EB00013F i,    \ cmp x9, x0
+   $F84087A0 i,    \ drop
+   $9A9F07E0 i, ;  \ cset x0, ne
 
+: <
+   $F94003A9 i,    \ ldr x9, [fp]
+   $EB00013F i,    \ cmp x9, x0
+   $F84087A0 i,    \ drop
+   $9A9FA7E0 i, ;  \ cset x0, lt
 
+: <=
+   $F94003A9 i,    \ ldr x9, [fp]
+   $EB00013F i,    \ cmp x9, x0
+   $F84087A0 i,    \ drop
+   $9A9FC7E0 i, ;  \ cset x0, le
+
+: >
+   $F94003A9 i,    \ ldr x9, [fp]
+   $EB00013F i,    \ cmp x9, x0
+   $F84087A0 i,    \ drop
+   $9A9FD7E0 i, ;  \ cset x0, gt
+
+: >=
+   $F94003A9 i,    \ ldr x9, [fp]
+   $EB00013F i,    \ cmp x9, x0
+   $F84087A0 i,    \ drop
+   $9A9FB7E0 i, ;  \ cset x0, ge
 
 
 : if ( -> a )
@@ -161,7 +189,6 @@ macro
    codep @
    $B4000009 i, ;  \ cbz x9, offset = 0
 
-macro
 : then ( a -> )
    dup  codep @ swap - 4 /  32 *  over @ +  swap i! ;
 
