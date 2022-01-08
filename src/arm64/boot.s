@@ -478,8 +478,15 @@ clit_header:
     .ascii "lit"
 
     .align 8
-stopcomp_header:
+cexit_header:
     .quad clit_header
+    .quad cexit
+    .byte 4
+    .ascii "exit"
+
+    .align 8
+stopcomp_header:
+    .quad cexit_header
     .quad stopcomp
     .byte 1
     .ascii "["
