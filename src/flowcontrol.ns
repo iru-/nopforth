@@ -17,7 +17,7 @@ macro
 : asave   ` a    ` push ;
 : arest   ` pop  ` a! ;
 
-: begin ( -> a )        here ;
+: begin ( -> a )        codep @ ;
 : while ( a -> a' a )   ` if swap ;
 : again ( a -> )        ` branch ;
 : repeat ( a a' -> )    ` again ` then ;
