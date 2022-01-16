@@ -99,6 +99,14 @@ def dh(debugger, command, exe_ctx, result, internal_dict):
 
     dodh(addr)
 
+def dodict(addr):
+    if addr == 0:
+        return
+
+    dodict(mem_value(addr, CELL))
+    dodh(addr)
+    print()
+
 def ddict(debugger, command, exe_ctx, result, internal_dict):
     args = shlex.split(command)
     if len(args) < 1:
@@ -115,10 +123,8 @@ def ddict(debugger, command, exe_ctx, result, internal_dict):
         except:
             print("invalid address", args[0])
             return
-    
-    while addr != 0:
-        addr = dodh(addr)
-        print()
+
+    dodict(addr)
 
 def __lldb_init_module(debugger, internal_dict):
     debugger.HandleCommand("command script add state -f a64.state")
