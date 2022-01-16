@@ -400,22 +400,43 @@ flatest_header:
     .ascii "flatest"
 
     .align 8
-dfind_header:
+latest_header:
     .quad flatest_header
+    .quad latest
+    .byte 6
+    .ascii "latest"
+
+    .align 8
+dfind_header:
+    .quad latest_header
     .quad dfind
     .byte 5
     .ascii "dfind"
 
     .align 8
-here_header:
+centry_header:
     .quad dfind_header
+    .quad centry
+    .byte 6
+    .ascii "entry,"
+
+    .align 8
+here_header:
+    .quad centry_header
     .quad here
     .byte 4
     .ascii "here"
 
     .align 8
-codep_header:
+h_header:
     .quad here_header
+    .quad h
+    .byte 1
+    .ascii "h"
+
+    .align 8
+codep_header:
+    .quad h_header
     .quad codep
     .byte 5
     .ascii "codep"
@@ -485,8 +506,15 @@ cexit_header:
     .ascii "exit"
 
     .align 8
-stopcomp_header:
+startcomp_header:
     .quad cexit_header
+    .quad startcomp
+    .byte 1
+    .ascii "]"
+
+    .align 8
+stopcomp_header:
+    .quad startcomp_header
     .quad stopcomp
     .byte 1
     .ascii "["
