@@ -33,9 +33,9 @@ define instate
 end
 
 define dh
-  x/zg $arg0
-  x/zg $arg0+8
-  x/zb $arg0+16
+  x/gx $arg0
+  x/gx $arg0+8
+  x/bx $arg0+16
   set $namelen = (char)*($arg0+16)
   set $i = 0
   while $i < $namelen
