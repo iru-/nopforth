@@ -16,28 +16,28 @@ macro
 : rdec    $240CFF48 4, ;   \ decq (%rsp)
 
 : rshift ( n places -> n' )
-   $C18948 3,           \ mov %rax, %rcx
    $086D8D4800458B48 ,  \ drop
-   $E8D348 3, ;         \ shr %cl, %rax
+   $48 1, $C189 2,      \ mov %rax, %rcx
+   $48 1, $E8D3 2, ;    \ shr %cl, %rax
 
 : lshift ( n places -> n' )
-   $C18948 3,           \ mov %rax, %rcx
    $086D8D4800458B48 ,  \ drop
-   $E0D348 3, ;         \ shl %cl, %rax
+   $48 1, $C189 2,      \ mov %rax, %rcx
+   $48 1, $E0D3 2, ;    \ shl %cl, %rax
 
 : if ( -> a )
-   $C08548 3,           \ test %rax, %rax
    $086D8D4800458B48 ,  \ drop
    $840F 2,             \ jz...
    here
    0 4, ;               \ ...0
+   $48 1, $C085 2,     \ test %rax, %rax
 
 : then ( a -> )   0 hole !  here  over 4 + -  swap 4! ;
 
 : branch ( dst -> )   here 5 +  -  $E9 1, 4, ;
 : branch-unresolved ( -> a )   $E9 1,  here  0 4, ;
 
-: negate ( n -> n' )   $D8F748 3, ;  \ neg %rax
+: negate ( n -> n' )   $48 1, $D8F7 2, ;  \ neg %rax
 
 forth
 : call-rel! ( 'code dst -> #used )

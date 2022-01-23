@@ -336,15 +336,8 @@ comma4_header:
     .ascii "4,"
 
     .align 8
-comma3_header:
-    .quad comma4_header
-    .quad comma3
-    .byte 2
-    .ascii "3,"
-
-    .align 8
 comma2_header:
-    .quad comma3_header
+    .quad comma4_header
     .quad comma2
     .byte 2
     .ascii "2,"

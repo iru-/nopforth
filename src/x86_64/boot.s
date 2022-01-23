@@ -353,10 +353,6 @@ comma2:  # n ->
     drop_
     ret
 
-# XXX off-by-one
-comma3:  # n ->
-    call comma4
-    decq _h(%rip)
     ret
 
 aligned:  # a -> a'
@@ -563,9 +559,13 @@ cswap:
     dup_
     mov $0x00458948005D8B48, %rax     # mov (%rbp), %rbx; mov %rax, (%rbp)
     call comma
+    # compile: mov %rbx, %rax
     dup_
-    mov $0xD88948, %rax               # mov %rbx, %rax
-    jmp comma3
+    mov $0x48, %rax
+    call comma1
+    dup_
+    mov $0xD889, %rax
+    jmp comma2
 
 cnip:
     dup_
@@ -592,20 +592,32 @@ cpush:
 
 ca:
     call cdup
+    # compile: mov %r13, %rax
     dup_
-    mov $0xE8894C, %rax    # mov %r13, %rax
-    jmp comma3
+    mov $0x4C, %rax
+    call comma1
+    dup_
+    mov $0xE889, %rax
+    jmp comma2
 
 castore:
+    # compile: mov %rax, %r13
     dup_
-    mov $0xC58949, %rax    # mov %rax, %r13
-    call comma3
+    mov $0x49, %rax
+    call comma1
+    dup_
+    mov $0xC589, %rax
+    call comma2
     jmp cdrop
 
 cfetch:
+    # compile: mov (%rax), %rax
     dup_
-    mov $0x008B48, %rax    # mov (%rax), %rax
-    jmp comma3
+    mov $0x48, %rax
+    call comma1
+    dup_
+    mov $0x008B, %rax
+    jmp comma2
 
 cfetchplus:
     call cdup
@@ -638,9 +650,13 @@ cstore:
     dup_
     mov $0x004D8B48, %rax    # mov (%rbp), %rcx
     call comma4
+    # compile: mov %rcx, (%rax)
     dup_
-    mov $0x088948, %rax      # mov %rcx, (%rax)
-    call comma3
+    mov $0x48, %rax
+    call comma1
+    dup_
+    mov $0x0889, %rax
+    call comma2
     call cdrop
     jmp cdrop
 
@@ -724,51 +740,63 @@ cxor:
     jmp cnip
 
 clnot:
+    # compile: not %rax
     dup_
-    mov $0xD0F748, %rax    # not %rax
-    jmp comma3
+    mov $0x48, %rax
+    call comma1
+    dup_
+    mov $0xD0F7, %rax
+    jmp comma2
 
 cne:
     dup_
-    mov $0x9500, %rax
+    mov $0x95, %rax
     jmp ccmp
 
 cle:
     dup_
-    mov $0x9E00, %rax
+    mov $0x9E, %rax
     jmp ccmp
 
 cge:
     dup_
-    mov $0x9D00, %rax
+    mov $0x9D, %rax
     jmp ccmp
 
 clt:
     dup_
-    mov $0x9C00, %rax
+    mov $0x9C, %rax
     jmp ccmp
 
 cgt:
     dup_
-    mov $0x9F00, %rax
+    mov $0x9F, %rax
     jmp ccmp
 
 ceq:
     dup_
-    mov $0x9400, %rax
+    mov $0x94, %rax
 
-ccmp:
+ccmp:  # condition ->
     dup_
     mov $0x00453948, %rax          # cmp %rax, (%rbp)
     call comma4
-    or $0xC0000F, %rax             # setX %al
-    call comma3
+    # compile: setX %al
+    dup_
+    mov $0x0F, %rax
+    call comma1
+    or $0xC000, %rax
+    call comma2
     dup_
     mov $0x086D8D48C0B60F48, %rax  # movzbq %al, %rax; lea 8(%rbp), %rbp
     call comma
+    # compile: neg %rax
     dup_
-    mov $0xD8F748, %rax            # neg %rax
-    jmp comma3
+    mov $0x48, %rax
+    call comma1
+    dup_
+    mov $0xD8F7, %rax
+    jmp comma2
 
 clit:
     call cdup

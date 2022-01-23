@@ -2,8 +2,8 @@
 \ Copyright (c) 2018-2020 Iruatã Martins dos Santos Souza
 
 macro
-: 1+   $C0FF48 3, ;
-: 1-   $C8FF48 3, ;
+: 1+   $48 1, $C0FF 2, ;
+: 1-   $48 1, $C8FF 2, ;
 
 forth
 anon:

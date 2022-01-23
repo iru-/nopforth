@@ -21,14 +21,14 @@
 \ saved by the callee, and so is guaranteed to be preserved across the call.
 \ Lastly, the prolog forces the stack alignment. The epilog thus restores
 \ the return stack pointer, which may or may not be aligned.
-: prolog   $E38948 3, $F0E48348 4, ;   \ mov %rbp, %rbx; and $-16, %rsp
-: epilog   $DC8948 3, ;                \ mov %rbx, %rsp
+: prolog   $48 1, $E389 2, $F0E48348 4, ;   \ mov %rbp, %rbx; and $-16, %rsp
+: epilog   $48 1, $DC89 2, ;                \ mov %rbx, %rsp
 
-: callC5   $C08949 3, ` drop ;
-: callC4   $C18948 3, ` drop ;
-: callC3   $C28948 3, ` drop ;
-: callC2   $C68948 3, ` drop ;
-: callC1   $C78948 3, ;
+: callC5   $49 1, $C089 2, ` drop ;
+: callC4   $48 1, $C189 2, ` drop ;
+: callC3   $48 1, $C289 2, ` drop ;
+: callC2   $48 1, $C689 2, ` drop ;
+: callC1   $48 1, $C789 2, ;
 
 : callC0  \ no input arguments, only create space for return value
    ` dup ;
