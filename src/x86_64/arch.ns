@@ -16,21 +16,21 @@ macro
 : rdec    $240CFF48 4, ;   \ decq (%rsp)
 
 : rshift ( n places -> n' )
-   $086D8D4800458B48 ,  \ drop
    $48 1, $C189 2,      \ mov %rax, %rcx
+   $086D8D4800458B48 ,  \ drop
    $48 1, $E8D3 2, ;    \ shr %cl, %rax
 
 : lshift ( n places -> n' )
-   $086D8D4800458B48 ,  \ drop
    $48 1, $C189 2,      \ mov %rax, %rcx
+   $086D8D4800458B48 ,  \ drop
    $48 1, $E0D3 2, ;    \ shl %cl, %rax
 
 : if ( -> a )
+   $48 1, $C085 2,      \ test %rax, %rax
    $086D8D4800458B48 ,  \ drop
    $840F 2,             \ jz...
    here
-   0 4, ;               \ ...0
-   $48 1, $C085 2,     \ test %rax, %rax
+   0 4, ;                \ ...0
 
 : then ( a -> )   0 hole !  here  over 4 + -  swap 4! ;
 
