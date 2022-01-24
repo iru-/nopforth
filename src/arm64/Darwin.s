@@ -10,4 +10,5 @@ _kernbuf:
 .incbin "dictionary.ns"
 .incbin "memory.ns"
 .incbin "string.ns"
+.incbin "pictured.ns"
 _kerntot = . - _kernbuf
