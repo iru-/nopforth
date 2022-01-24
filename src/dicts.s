@@ -322,8 +322,64 @@ forth_header:
     .ascii "forth"
 
     .align 8
-comma_header:
+storeinstr_header:
     .quad forth_header
+    .quad storeinstr
+    .byte 2
+    .ascii "i!"
+
+    .align 8
+storeinstr4_header:
+    .quad storeinstr_header
+    .quad storeinstr4
+    .byte 3
+    .ascii "i4!"
+
+    .align 8
+storeinstr2_header:
+    .quad storeinstr4_header
+    .quad storeinstr2
+    .byte 3
+    .ascii "i2!"
+
+    .align 8
+storeinstr1_header:
+    .quad storeinstr2_header
+    .quad storeinstr1
+    .byte 3
+    .ascii "i1!"
+
+    .align 8
+cinstr_header:
+    .quad storeinstr1_header
+    .quad cinstr
+    .byte 2
+    .ascii "i,"
+
+    .align 8
+cinstr4_header:
+    .quad cinstr_header
+    .quad cinstr4
+    .byte 3
+    .ascii "i4,"
+
+    .align 8
+cinstr2_header:
+    .quad cinstr4_header
+    .quad cinstr2
+    .byte 3
+    .ascii "i2,"
+
+    .align 8
+cinstr1_header:
+    .quad cinstr2_header
+    .quad cinstr1
+    .byte 3
+    .ascii "i1,"
+
+    .align 8
+comma_header:
+    .quad cinstr1_header
     .quad comma
     .byte 1
     .ascii ","
@@ -406,8 +462,15 @@ here_header:
     .ascii "here"
 
     .align 8
-ccall_header:
+codep_header:
     .quad here_header
+    .quad codep
+    .byte 5
+    .ascii "codep"
+
+    .align 8
+ccall_header:
+    .quad codep_header
     .quad ccall
     .byte 5
     .ascii "call,"

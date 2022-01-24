@@ -228,20 +228,37 @@ setupenv:
     mov %rcx, _args(%rip)
     ret
 
+    .data
+_dictstart: .quad 0
+_dictsize = 0x100000
+_codestart: .quad 0
+_codesize = 0x100000
+
+    .text
 resetdict:
+    // dictionary
     dup_
-    mov $0, %rdi         # addr
-    mov $0x100000, %rsi  # length
-    mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rdx  # prot
-    mov $(MAP_ANONYMOUS | MAP_SHARED), %rcx          # flags
-    mov $-1, %r8         # fd
-    mov $0, %r9          # offset (ignored)
-    call mmap@plt
+    mov $_dictsize, %rdi
+    call malloc@plt
     test %rax, %rax
     jz 1f
     mov %rax, _h(%rip)
+    mov %rax, _dictstart(%rip)
+
+    // code space
+    mov $0, %rdi          # addr
+    mov $_codesize, %rsi  # length
+    mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rdx  # prot
+    mov $(MAP_ANONYMOUS | MAP_SHARED), %rcx          # flags
+    mov $-1, %r8          # fd
+    mov $0, %r9           # offset (ignored)
+    call mmap@plt
+    cmp $-1, %rax         # MAP_FAILED?
+    je 1f
+    mov %rax, codepp(%rip)
+    mov %rax, _codestart(%rip)
     drop_
     ret
 1:
     mov $1, %rax
-    call sysexit
+    jmp sysexit

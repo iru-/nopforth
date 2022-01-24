@@ -40,4 +40,3 @@ forth : ."   [char] " parse type ;
 
 : depth ( -> u )   S0 sp@ - 8 /  2 - ;
 
-
