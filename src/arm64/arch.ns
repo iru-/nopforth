@@ -153,37 +153,49 @@ macro
    $F94003A9 i,    \ ldr x9, [fp]
    $EB00013F i,    \ cmp x9, x0
    $F84087A0 i,    \ drop
-   $9A9F17E0 i, ;  \ cset x0, eq
+   $9A9F17E0 i,    \ cset x0, eq
+   $92800009 i,    \ mov x9, #-1
+   $9B097C00 i, ;  \ mul x0, x0, x9
 
 : ~=
    $F94003A9 i,    \ ldr x9, [fp]
    $EB00013F i,    \ cmp x9, x0
    $F84087A0 i,    \ drop
-   $9A9F07E0 i, ;  \ cset x0, ne
+   $9A9F07E0 i,    \ cset x0, ne
+   $92800009 i,    \ mov x9, #-1
+   $9B097C00 i, ;  \ mul x0, x0, x9
 
 : <
    $F94003A9 i,    \ ldr x9, [fp]
    $EB00013F i,    \ cmp x9, x0
    $F84087A0 i,    \ drop
-   $9A9FA7E0 i, ;  \ cset x0, lt
+   $9A9FA7E0 i,    \ cset x0, lt
+   $92800009 i,    \ mov x9, #-1
+   $9B097C00 i, ;  \ mul x0, x0, x9
 
 : <=
    $F94003A9 i,    \ ldr x9, [fp]
    $EB00013F i,    \ cmp x9, x0
    $F84087A0 i,    \ drop
-   $9A9FC7E0 i, ;  \ cset x0, le
+   $9A9FC7E0 i,    \ cset x0, le
+   $92800009 i,    \ mov x9, #-1
+   $9B097C00 i, ;  \ mul x0, x0, x9
 
 : >
    $F94003A9 i,    \ ldr x9, [fp]
    $EB00013F i,    \ cmp x9, x0
    $F84087A0 i,    \ drop
-   $9A9FD7E0 i, ;  \ cset x0, gt
+   $9A9FD7E0 i,    \ cset x0, gt
+   $92800009 i,    \ mov x9, #-1
+   $9B097C00 i, ;  \ mul x0, x0, x9
 
 : >=
    $F94003A9 i,    \ ldr x9, [fp]
    $EB00013F i,    \ cmp x9, x0
    $F84087A0 i,    \ drop
-   $9A9FB7E0 i, ;  \ cset x0, ge
+   $9A9FB7E0 i,    \ cset x0, ge
+   $92800009 i,    \ mov x9, #-1
+   $9B097C00 i, ;  \ mul x0, x0, x9
 
 
 : if ( -> a )
