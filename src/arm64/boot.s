@@ -429,8 +429,15 @@ centry_header:
     .ascii "entry,"
 
     .align 8
-here_header:
+aligned_header:
     .quad centry_header
+    .quad aligned
+    .byte 7
+    .ascii "aligned"
+
+    .align 8
+here_header:
+    .quad aligned_header
     .quad here
     .byte 4
     .ascii "here"

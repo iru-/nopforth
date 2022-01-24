@@ -37,6 +37,9 @@ macro
 : @
    $F9400000 i, ;  \ ldr x0, [x0]
 
+: 4@
+   $B9400000 i, ;  \ ldr w0, [x0]
+
 : 1@
    $39400000 i, ;  \ ldrb w0, [x0]
 
@@ -197,3 +200,20 @@ macro
 
 : branch-unresolved ( -> a )
    codep @  $14000000 i, ;  \ b offset = 0
+
+forth : /branch   4 ;
+
+macro
+: prolog
+   $A9BF7FFE i, ;  \ stp x30, xzr, [sp, #-16]!
+
+forth
+: hole
+   [ here 0 , ] lit ;
+
+: branch? ( a -> bool )
+   4@ $FC000000 and  24 rshift  $14 = ;
+
+: ret?  \ check for: ldp x30, xzr, [sp], #16; ret
+   @ $D65F03C0A8C17FFE = ;
+

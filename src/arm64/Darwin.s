@@ -7,4 +7,5 @@ _kernbuf:
 .incbin "arm64/arch.ns"
 .incbin "flowcontrol.ns"
 .incbin "interactive.ns"
+.incbin "dictionary.ns"
 _kerntot = . - _kernbuf
