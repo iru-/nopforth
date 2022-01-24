@@ -3,48 +3,50 @@
 
 macro
 : 4! ( n a -> )
-   $004D8B48 4,           \ mov (%rbp), %rcx
-   $0889 2,               \ mov %ecx, (%rax)
-   $086D8D4800458B48 ,    \ drop
-   $086D8D4800458B48 , ;  \ drop
+   $004D8B48 i4,           \ mov (%rbp), %rcx
+   $0889 i2,               \ mov %ecx, (%rax)
+   $086D8D4800458B48 i,    \ drop
+   $086D8D4800458B48 i, ;  \ drop
 
 : r@
-   $00458948F86D8D48 ,  \ dup
-   $24048B48 4, ;       \ mov (%rsp), %rax
+   $00458948F86D8D48 i,  \ dup
+   $24048B48 i4, ;       \ mov (%rsp), %rax
 
-: rdrop   $48 1, $0824648D 4, ;  \ lea 8(%rsp), %rsp
-: rdec    $240CFF48 4, ;   \ decq (%rsp)
+: rdrop   $48 i1, $0824648D i4, ;  \ lea 8(%rsp), %rsp
+: rdec    $240CFF48 i4, ;   \ decq (%rsp)
 
 : rshift ( n places -> n' )
-   $48 1, $C189 2,      \ mov %rax, %rcx
-   $086D8D4800458B48 ,  \ drop
-   $48 1, $E8D3 2, ;    \ shr %cl, %rax
+   $48 i1, $C189 i2,     \ mov %rax, %rcx
+   $086D8D4800458B48 i,  \ drop
+   $48 i1, $E8D3 i2, ;   \ shr %cl, %rax
 
 : lshift ( n places -> n' )
-   $48 1, $C189 2,      \ mov %rax, %rcx
-   $086D8D4800458B48 ,  \ drop
-   $48 1, $E0D3 2, ;    \ shl %cl, %rax
+   $48 i1, $C189 i2,     \ mov %rax, %rcx
+   $086D8D4800458B48 i,  \ drop
+   $48 i1, $E0D3 i2, ;   \ shl %cl, %rax
 
 : if ( -> a )
-   $48 1, $C085 2,      \ test %rax, %rax
-   $086D8D4800458B48 ,  \ drop
-   $840F 2,             \ jz...
-   here
-   0 4, ;                \ ...0
+   $48 i1, $C085 i2,     \ test %rax, %rax
+   $086D8D4800458B48 i,  \ drop
+   $840F i2,             \ jz...
+   codep @
+   0 i4, ;               \ ...0
 
-: then ( a -> )   0 hole !  here  over 4 + -  swap 4! ;
+: then ( a -> )   0 hole !  codep @  over 4 + -  swap i4! ;
 
-: branch ( dst -> )   here 5 +  -  $E9 1, 4, ;
-: branch-unresolved ( -> a )   $E9 1,  here  0 4, ;
+: branch ( dst -> )   codep @ 5 +  -  $E9 i1, i4, ;
+: branch-unresolved ( -> a )   $E9 i1,  codep @  0 i4, ;
+forth : /branch   5 ;
 
-: negate ( n -> n' )   $48 1, $D8F7 2, ;  \ neg %rax
+macro
+: negate ( n -> n' )   $48 i1, $D8F7 i2, ;  \ neg %rax
 
 forth
 : call-rel! ( 'code dst -> #used )
-   $E8 over 1!
+   $E8 over i1!
    1 + dup push   \ save address where to store the offset
    4 +   -        \ compute offset
-   pop 4!  5 ;
+   pop i4!  5 ;
 
 \ compile an absolute call:
 \ movabs dst, %r11
@@ -59,6 +61,11 @@ forth
 : 32bits? ( off -> flag )    -2147483648 2147483648 within ;
 
 : call! ( 'code dst -> #consumed )
-   here hole !  over over abs>off 32bits? if call-rel! exit then call-abs! ;
+   codep @ hole !  over over abs>off 32bits? if call-rel! exit then call-abs! ;
 
-: codep   h ;
+macro : prolog ;
+
+forth
+: branch? ( a -> bool )
+   1@ $E9 = ;
+

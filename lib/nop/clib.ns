@@ -14,29 +14,27 @@
    s>z dlsym dup 0 = ?clib-abort ;
 
 : cfunc>entry ( handle Cname #Cname nopname #nopname -> 'func )
-   2push clib-symbol  2pop entry,  here swap >cfa ! ;
+   2push clib-symbol  2pop entry,  codep @ swap >cfa ! ;
 
 \ System V x86-64 ABI requires a stack aligned on a 16 bytes boundary.
 \ The prolog saves the return stack pointer on rbx since the latter must be
 \ saved by the callee, and so is guaranteed to be preserved across the call.
 \ Lastly, the prolog forces the stack alignment. The epilog thus restores
 \ the return stack pointer, which may or may not be aligned.
-: prolog   $48 1, $E389 2, $F0E48348 4, ;   \ mov %rbp, %rbx; and $-16, %rsp
-: epilog   $48 1, $DC89 2, ;                \ mov %rbx, %rsp
+: prolog,   $48 i1, $E389 i2, $F0E48348 i4, ;   \ mov %rbp, %rbx; and $-16, %rsp
+: epilog,   $48 i1, $DC89 i2, ;                 \ mov %rbx, %rsp
 
-: callC5   $49 1, $C089 2, ` drop ;
-: callC4   $48 1, $C189 2, ` drop ;
-: callC3   $48 1, $C289 2, ` drop ;
-: callC2   $48 1, $C689 2, ` drop ;
-: callC1   $48 1, $C789 2, ;
+: callC5   $49 i1, $C089 i2, ` drop ;
+: callC4   $48 i1, $C189 i2, ` drop ;
+: callC3   $48 i1, $C289 i2, ` drop ;
+: callC2   $48 i1, $C689 i2, ` drop ;
+: callC1   $48 i1, $C789 i2, ;
 
 : callC0  \ no input arguments, only create space for return value
    ` dup ;
 
-: xcall,   here call! allot ;
-
 : callC, ( #ret #args 'func -> )
-   push  prolog
+   push  prolog,
    dup 5 > " too many arguments to C function" ?abort
    dup 4 > if callC5 then
    dup 3 > if callC4 then
@@ -44,7 +42,7 @@
    dup 1 > if callC2 then
        0 > if callC1 else
               callC0 then
-   pop xcall,  0 = if ` drop then  epilog ` exit ;
+   pop call,  0 = if ` drop then  epilog, ` exit ;
 
 forth
 

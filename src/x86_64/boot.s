@@ -290,6 +290,7 @@ parse:  # delim -> a u
     ret
 
     .data
+codepp: .quad 0  # next code address
 _h:    .quad 0   # next dictionary address
 _latest: .quad _flatest
 
@@ -328,31 +329,81 @@ forth:
 comma:  # n ->
     mov _h(%rip), %rdx
     mov %rax, (%rdx)
-    addq $8, _h(%rip)
-    drop_
-    ret
+    mov $8, %rcx
+    jmp 1f
 
 comma4:  # n ->
     mov _h(%rip), %rdx
     mov %eax, (%rdx)
-    addq $4, _h(%rip)
-    drop_
-    ret
-
-comma1:  # n ->
-    mov _h(%rip), %rdx
-    movb %al, (%rdx)
-    incq _h(%rip)
-    drop_
-    ret
+    mov $4, %rcx
+    jmp 1f
 
 comma2:  # n ->
     mov _h(%rip), %rdx
     movw %ax, (%rdx)
-    addq $2, _h(%rip)
+    mov $2, %rcx
+    jmp 1f
+
+comma1:  # n ->
+    mov _h(%rip), %rdx
+    movb %al, (%rdx)
+    mov $1, %rcx
+1:  addq %rcx, _h(%rip)
     drop_
     ret
 
+storeinstr:  # n a ->
+    mov %rax, %rdx
+    drop_
+    mov %rax, (%rdx)
+    drop_
+    ret
+
+storeinstr4:  # n a ->
+    mov %rax, %rdx
+    drop_
+    mov %eax, (%rdx)
+    drop_
+    ret
+
+storeinstr2:  # n a ->
+    mov %rax, %rdx
+    drop_
+    movw %ax, (%rdx)
+    drop_
+    ret
+
+storeinstr1:  # n a ->
+    mov %rax, %rdx
+    drop_
+    movb %al, (%rdx)
+    drop_
+    ret
+
+cinstr:  # n ->
+    mov codepp(%rip), %rdx
+    mov %rax, (%rdx)
+    mov $8, %rcx
+    jmp 1f
+
+cinstr4:  # n ->
+    mov codepp(%rip), %rdx
+    mov %eax, (%rdx)
+    mov $4, %rcx
+    jmp 1f
+
+cinstr2:  # n ->
+    mov codepp(%rip), %rdx
+    movw %ax, (%rdx)
+    mov $2, %rcx
+    jmp 1f
+
+cinstr1:  # n ->
+    mov codepp(%rip), %rdx
+    movb %al, (%rdx)
+    mov $1, %rcx
+1:  addq %rcx, codepp(%rip)
+    drop_
     ret
 
 aligned:  # a -> a'
@@ -419,11 +470,12 @@ colon:
 
 anon:  # -> a
     dup_
-    mov _h(%rip), %rax
+    mov codepp(%rip), %rax
     jmp startcomp
 
 cexit:
-    call here
+    dup_
+    mov codepp(%rip), %rax
     sub $5, %rax
     cmpq %rax, _hole(%rip)
     jne 1f
@@ -434,7 +486,7 @@ cexit:
     drop_
     ret
 1:  mov $0xC3, %rax     # or compile a ret
-    jmp comma1
+    jmp cinstr1
 
 semicolon:
     call cexit
@@ -500,23 +552,29 @@ tocfa:  # a -> a'
     lea 8(%rax), %rax
     ret
 
-h:
+h:  # -> a
     dup_
     lea _h(%rip), %rax
     ret
 
-here:
+here:  # -> a
     dup_
     mov _h(%rip), %rax
     ret
 
+codep:  # -> a
+    dup_
+    lea codepp(%rip), %rax
+    ret
+
 ccall:  # a ->
-    mov _h(%rip), %rdx
+    mov codepp(%rip), %rdx
     mov %rdx, _hole(%rip)
 
     # calculate call offset
     dup_
-    call here
+    dup_
+    mov codepp(%rip), %rax
     addq $5, %rax
     sub %rax, (%rbp)
     # data stack: call-destination offset where-to-compile-offset
@@ -531,63 +589,64 @@ ccall:  # a ->
 
     # offset fits
     mov $0xE8, %rax
-    call comma1
-    call comma4
+    call cinstr1
+    call cinstr4
     drop_
     ret
 
     # offset too big
 1:  drop_
     mov $0xB948, %rax   # movabs $dest, %rcx
-    call comma2
-    call comma
+    call cinstr2
+    call cinstr
     dup_
     mov $0xD1FF, %rax   # call *%rcx
-    jmp comma2
+    jmp cinstr2
 
 cdup:
     dup_
     mov $0x00458948F86D8D48, %rax
-    jmp comma
+    jmp cinstr
 
 cdrop:
     dup_
     mov $0x086D8D4800458B48, %rax
-    jmp comma
+    jmp cinstr
 
 cswap:
     dup_
     mov $0x00458948005D8B48, %rax     # mov (%rbp), %rbx; mov %rax, (%rbp)
-    call comma
+    call cinstr
+
     # compile: mov %rbx, %rax
     dup_
     mov $0x48, %rax
-    call comma1
+    call cinstr1
     dup_
     mov $0xD889, %rax
-    jmp comma2
+    jmp cinstr2
 
 cnip:
     dup_
     mov $0x086D8D48, %rax    # lea 8(%rbp), %rbp
-    jmp comma4
+    jmp cinstr4
 
 cover:
     call cdup
     dup_
     mov $0x08458B48, %rax   # mov 8(%rbp), %rax
-    jmp comma4
+    jmp cinstr4
 
 cpop:
     call cdup
     dup_
     mov $0x58, %rax
-    jmp comma1
+    jmp cinstr1
 
 cpush:
     dup_
     mov $0x50, %rax
-    call comma1
+    call cinstr1
     jmp cdrop
 
 ca:
@@ -595,109 +654,109 @@ ca:
     # compile: mov %r13, %rax
     dup_
     mov $0x4C, %rax
-    call comma1
+    call cinstr1
     dup_
     mov $0xE889, %rax
-    jmp comma2
+    jmp cinstr2
 
 castore:
     # compile: mov %rax, %r13
     dup_
     mov $0x49, %rax
-    call comma1
+    call cinstr1
     dup_
     mov $0xC589, %rax
-    call comma2
+    call cinstr2
     jmp cdrop
 
 cfetch:
     # compile: mov (%rax), %rax
     dup_
     mov $0x48, %rax
-    call comma1
+    call cinstr1
     dup_
     mov $0x008B, %rax
-    jmp comma2
+    jmp cinstr2
 
 cfetchplus:
     call cdup
     dup_
     mov $0x00458B49, %rax    # mov (%r13), %rax
-    call comma4
+    call cinstr4
     dup_
     mov $0x086D8D4D, %rax    # lea 8(%r13), %r13
-    jmp comma4
+    jmp cinstr4
 
 c1fetch:
     dup_
     mov $0x00B60F48, %rax    # movzbq (%rax), %rax
-    jmp comma4
+    jmp cinstr4
 
 c1fetchplus:
     call cdup
     # movzbq (%r13), %rax
     dup_
     mov $0x49, %rax
-    call comma1
+    call cinstr1
     dup_
     mov $0x0045B60F, %rax
-    call comma4
+    call cinstr4
     dup_
     mov $0x016D8D4D, %rax    # lea 1(%r13), %r13
-    jmp comma4
+    jmp cinstr4
 
 cstore:
     dup_
     mov $0x004D8B48, %rax    # mov (%rbp), %rcx
-    call comma4
+    call cinstr4
     # compile: mov %rcx, (%rax)
     dup_
     mov $0x48, %rax
-    call comma1
+    call cinstr1
     dup_
     mov $0x0889, %rax
-    call comma2
+    call cinstr2
     call cdrop
     jmp cdrop
 
 cstoreplus:
     dup_
     mov $0x00458949, %rax    # mov %rax, (%r13)
-    call comma4
+    call cinstr4
     dup_
     mov $0x086D8D4D, %rax    # lea 8(%r13), %r13
-    call comma4
+    call cinstr4
     jmp cdrop
 
 c1store:
     dup_
     mov $0x004D8B48, %rax    # mov (%rbp), %rcx
-    call comma4
+    call cinstr4
     dup_
     mov $0x0888, %rax        # mov %cl, (%rax)
-    call comma2
+    call cinstr2
     call cdrop
     jmp cdrop
 
 c1storeplus:
     dup_
     mov $0x00458841, %rax    # mov %al, (%r13)
-    call comma4
+    call cinstr4
     dup_
     mov $0x016D8D4D, %rax    # lea 1(%r13), %r13
-    call comma4
+    call cinstr4
     jmp cdrop
 
 cadd:
     dup_
     mov $0x00450148, %rax    # add %rax, (%rbp)
-    call comma4
+    call cinstr4
     jmp cdrop
 
 csub:
     dup_
     mov $0x00452948, %rax    # sub %rax, (%rbp)
-    call comma4
+    call cinstr4
     jmp cdrop
 
 cmul:
@@ -705,48 +764,48 @@ cmul:
     # lea 0x8(%rbp),%rbp
     dup_
     mov $0x48, %rax
-    call comma1
+    call cinstr1
     dup_
     mov $0x086D8D480045AF0F, %rax
-    jmp comma
+    jmp cinstr
 
 cdivmod:
     call cswap
     dup_
     mov $0x9948, %rax    # cqto
-    call comma2
+    call cinstr2
     dup_
     # idivq (%rbp)
     # xchg %rdx, (%rbp)
     mov $0x00558748007DF748, %rax
-    jmp comma
+    jmp cinstr
 
 cor:
    dup_
    mov $0x00450B48, %rax    # or (%rbp), %rax
-   call comma4
+   call cinstr4
    jmp cnip
 
 cand:
     dup_
     mov $0x00452348, %rax    # and (%rbp), %rax
-    call comma4
+    call cinstr4
     jmp cnip
 
 cxor:
     dup_
     mov $0x00453348, %rax    # xor (%rbp), %rax
-    call comma4
+    call cinstr4
     jmp cnip
 
 clnot:
     # compile: not %rax
     dup_
     mov $0x48, %rax
-    call comma1
+    call cinstr1
     dup_
     mov $0xD0F7, %rax
-    jmp comma2
+    jmp cinstr2
 
 cne:
     dup_
@@ -780,30 +839,30 @@ ceq:
 ccmp:  # condition ->
     dup_
     mov $0x00453948, %rax          # cmp %rax, (%rbp)
-    call comma4
+    call cinstr4
     # compile: setX %al
     dup_
     mov $0x0F, %rax
-    call comma1
+    call cinstr1
     or $0xC000, %rax
-    call comma2
+    call cinstr2
     dup_
     mov $0x086D8D48C0B60F48, %rax  # movzbq %al, %rax; lea 8(%rbp), %rbp
-    call comma
+    call cinstr
     # compile: neg %rax
     dup_
     mov $0x48, %rax
-    call comma1
+    call cinstr1
     dup_
     mov $0xD8F7, %rax
-    jmp comma2
+    jmp cinstr2
 
 clit:
     call cdup
     dup_
     mov $0xB848, %rax
-    call comma2
-    jmp comma
+    call cinstr2
+    jmp cinstr
 
     .data
 _abortxt:  .quad abort1
