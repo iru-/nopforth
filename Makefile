@@ -50,10 +50,10 @@ bin/nop.o: ${SRC}
 
 d: debug-${ARCH}
 
-debug-x86_64: bin/nop
+debug-x86_64: ${SYS}
 	gdb -x cmd.gdb bin/nop
 
-debug-arm64: bin/nop
+debug-arm64: ${SYS}
 	lldb --local-lldbinit
 
 test: all
