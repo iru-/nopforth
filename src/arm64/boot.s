@@ -44,6 +44,18 @@ inpos:
     add x0, x0, _inpos@PAGEOFF
     ret
 
+infd:
+    dup_
+    adrp x0, _infd@PAGE
+    add x0, x0, _infd@PAGEOFF
+    ret
+
+intot:
+    dup_
+    adrp x0, _intot@PAGE
+    add x0, x0, _intot@PAGEOFF
+    ret
+
 inused:
     dup_
     adrp x0, _inused@PAGE
@@ -517,8 +529,22 @@ inpos_header:
     .ascii "inpos"
 
     .align 8
-inused_header:
+infd_header:
     .quad inpos_header
+    .quad infd
+    .byte 4
+    .ascii "infd"
+
+    .align 8
+intot_header:
+    .quad infd_header
+    .quad intot
+    .byte 5
+    .ascii "intot"
+
+    .align 8
+inused_header:
+    .quad intot_header
     .quad inused
     .byte 6
     .ascii "inused"
@@ -573,8 +599,64 @@ resetstacks_header:
     .ascii "resetstacks"
 
     .align 8
-hello_header:
+sysclose_header:
     .quad resetstacks_header
+    .quad sysclose
+    .byte 8
+    .ascii "sysclose"
+
+    .align 8
+syscreate_header:
+    .quad sysclose_header
+    .quad syscreate
+    .byte 9
+    .ascii "syscreate"
+
+    .align 8
+sysopen_header:
+    .quad syscreate_header
+    .quad sysopen
+    .byte 7
+    .ascii "sysopen"
+
+    .align 8
+sysread_header:
+    .quad sysopen_header
+    .quad sysread
+    .byte 7
+    .ascii "sysread"
+
+    .align 8
+syswrite_header:
+    .quad sysread_header
+    .quad syswrite
+    .byte 8
+    .ascii "syswrite"
+
+    .align 8
+sysseek_header:
+    .quad syswrite_header
+    .quad sysseek
+    .byte 7
+    .ascii "sysseek"
+
+    .align 8
+sysmunmap_header:
+    .quad sysseek_header
+    .quad sysmunmap
+    .byte 9
+    .ascii "sysmunmap"
+
+    .align 8
+sysmmap_header:
+    .quad sysmunmap_header
+    .quad sysmmap
+    .byte 7
+    .ascii "sysmmap"
+
+    .align 8
+hello_header:
+    .quad sysmmap_header
     .quad hello
     .byte 5
     .ascii "hello"
