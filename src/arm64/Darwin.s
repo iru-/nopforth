@@ -8,4 +8,5 @@ _kernbuf:
 .incbin "flowcontrol.ns"
 .incbin "interactive.ns"
 .incbin "dictionary.ns"
+.incbin "memory.ns"
 _kerntot = . - _kernbuf

@@ -324,8 +324,15 @@ forth_header:
     .ascii "forth"
 
     .align 8
-parse_header:
+scan_header:
     .quad forth_header
+    .quad scan
+    .byte 4
+    .ascii "scan"
+
+    .align 8
+parse_header:
+    .quad scan_header
     .quad parse
     .byte 5
     .ascii "parse"
