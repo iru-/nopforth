@@ -32,6 +32,24 @@ _inpos:  .quad 0  // input buffer position
 
     .text
     .p2align 2
+inbuf:
+    dup_
+    adrp x0, _inbuf@PAGE
+    add x0, x0, _inbuf@PAGEOFF
+    ret
+
+inpos:
+    dup_
+    adrp x0, _inpos@PAGE
+    add x0, x0, _inpos@PAGEOFF
+    ret
+
+inused:
+    dup_
+    adrp x0, _inused@PAGE
+    add x0, x0, _inused@PAGEOFF
+    ret
+
 type:
     stp x30, xzr, [sp, #-16]!
     mov x9, x0
@@ -436,8 +454,15 @@ centry_header:
     .ascii "entry,"
 
     .align 8
-aligned_header:
+anon_header:
     .quad centry_header
+    .quad anon
+    .byte 5
+    .ascii "anon:"
+
+    .align 8
+aligned_header:
+    .quad anon_header
     .quad aligned
     .byte 7
     .ascii "aligned"
@@ -478,8 +503,29 @@ codep_header:
     .ascii "codep"
 
     .align 8
-ccall_header:
+inbuf_header:
     .quad codep_header
+    .quad inbuf
+    .byte 5
+    .ascii "inbuf"
+
+    .align 8
+inpos_header:
+    .quad inbuf_header
+    .quad inpos
+    .byte 5
+    .ascii "inpos"
+
+    .align 8
+inused_header:
+    .quad inpos_header
+    .quad inused
+    .byte 6
+    .ascii "inused"
+
+    .align 8
+ccall_header:
+    .quad inused_header
     .quad ccall
     .byte 5
     .ascii "call,"
@@ -492,8 +538,43 @@ abort_header:
     .ascii "abort"
 
     .align 8
-hello_header:
+eval_header:
     .quad abort_header
+    .quad eval
+    .byte 4
+    .ascii "eval"
+
+    .align 8
+execute_header:
+    .quad eval_header
+    .quad execute
+    .byte 7
+    .ascii "execute"
+
+    .align 8
+bye_header:
+    .quad execute_header
+    .quad bye
+    .byte 3
+    .ascii "bye"
+
+    .align 8
+resetinput_header:
+    .quad bye_header
+    .quad resetinput
+    .byte 11
+    .ascii "reset-input"
+
+    .align 8
+resetstacks_header:
+    .quad resetinput_header
+    .quad resetstacks
+    .byte 11
+    .ascii "resetstacks"
+
+    .align 8
+hello_header:
+    .quad resetstacks_header
     .quad hello
     .byte 5
     .ascii "hello"

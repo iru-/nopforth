@@ -11,4 +11,5 @@ _kernbuf:
 .incbin "memory.ns"
 .incbin "string.ns"
 .incbin "pictured.ns"
+.incbin "interpreter.ns"
 _kerntot = . - _kernbuf
