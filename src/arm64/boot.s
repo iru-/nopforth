@@ -229,7 +229,13 @@ word:  // -> a u
     sub x0, x20, x0    // x0 = consumed bytes = word length
     add x19, x19, x0   // advance position
 
-    adrp x22, _inpos@PAGE
+    ldr x22, [fp]      // x22 = current byte address
+    ldrb w22, [x22]    // x22 = last byte seen
+    cmp w22, #0x20     // is the last byte seen a white space?
+    b.gt 1f            // no, do nothing
+    add x19, x19, #1   // yes, consume it
+
+1:  adrp x22, _inpos@PAGE
     add x22, x22, _inpos@PAGEOFF
     str x19, [x22]     // update input position
     str x21, [fp]
@@ -275,11 +281,13 @@ hellostr: .ascii "hello\n"
 hellolen= . - hellostr
     .text
 hello:
+    stp x30, xzr, [sp, #-16]!
     dup_
     adrp x0, hellostr@PAGE
     add x0, x0, hellostr@PAGEOFF
     dup_
     mov x0, hellolen
+    ldp x30, xzr, [sp], #16
     b type
 
 bye:
