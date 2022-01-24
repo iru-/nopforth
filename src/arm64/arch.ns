@@ -217,3 +217,5 @@ forth
 : ret?  \ check for: ldp x30, xzr, [sp], #16; ret
    @ $D65F03C0A8C17FFE = ;
 
+: within ( n lo hi -> bool )
+   push over <=  swap pop <  and ;

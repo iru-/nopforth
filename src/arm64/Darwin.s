@@ -9,4 +9,5 @@ _kernbuf:
 .incbin "interactive.ns"
 .incbin "dictionary.ns"
 .incbin "memory.ns"
+.incbin "string.ns"
 _kerntot = . - _kernbuf

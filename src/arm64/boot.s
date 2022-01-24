@@ -443,8 +443,22 @@ aligned_header:
     .ascii "aligned"
 
     .align 8
-here_header:
+spfetch_header:
     .quad aligned_header
+    .quad spfetch
+    .byte 3
+    .ascii "sp@"
+
+    .align 8
+S0_header:
+    .quad spfetch_header
+    .quad S0
+    .byte 2
+    .ascii "S0"
+
+    .align 8
+here_header:
+    .quad S0_header
     .quad here
     .byte 4
     .ascii "here"
@@ -925,6 +939,17 @@ codep:  // -> a
     add x0, x0, codepp@PAGEOFF
     ret
 
+spfetch:  // -> a
+    dup_
+    mov x0, fp
+    ret
+
+S0:  // -> a
+    dup_
+    adrp x0, _S0@PAGE
+    add x0, x0, _S0@PAGEOFF
+    ret
+
 ccall:  // a ->
     stp x30, xzr, [sp, #-16]!
     stp x19, x20, [sp, #-16]!
@@ -1265,8 +1290,18 @@ Br:
 
     .p2align 2
 resetstacks:
+    // we use dstack0+8 so as when something is pushed to S,
+    // fp becomes dstack0
     adrp fp, dstack0+8@PAGE
     add fp, fp, dstack0+8@PAGEOFF
+    adrp x9, _S0@PAGE
+    add x9, x9, _S0@PAGEOFF
+    str fp, [x9]
+    adrp x9, dstack@PAGE
+    add x9, x9, dstack@PAGEOFF
+    adrp x10, _Send@PAGE
+    add x10, x10, _Send@PAGEOFF
+    str x9, [x10]
     ret
 
     .data

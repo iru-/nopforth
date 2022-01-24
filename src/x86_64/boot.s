@@ -1058,7 +1058,7 @@ warm:
 
 resetstacks:
     #
-    # we used dstack0+8 so as when something is pushed to S,
+    # we use dstack0+8 so as when something is pushed to S,
     # %rbp becomes dstack0
     #
     lea dstack0+8(%rip), %rbp
