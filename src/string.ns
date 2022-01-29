@@ -24,9 +24,7 @@ forth
 
 macro
 : memlit ( a len -> )
-   dup push  ` branch-unresolved  here push push
-   \ r: len addr-of-string-start addr-of-branch-dst
-   mem,  pop ` then  pop ` lit  pop ` lit ;
+   over ` lit  dup ` lit  mem, ;
 
 macro : "   [char] " parse  ` memlit ;
 forth : " ( -> a u )
