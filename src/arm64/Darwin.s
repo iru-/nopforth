@@ -20,27 +20,28 @@ syscreate:
     ret
 
 sysclose:
-    stp x30, xzr, [sp, #-16]!
-    bl _close
-    ldp x30, xzr, [sp], #16
-    ret
+    b _close
 
 sysread:
     stp x30, xzr, [sp, #-16]!
+    mov x9, x0
+    drop_
     mov x2, x0
     drop_
     mov x1, x0
-    drop_
+    mov x0, x9
     bl _read
     ldp x30, xzr, [sp], #16
     ret
 
 syswrite:
     stp x30, xzr, [sp, #-16]!
+    mov x9, x0
+    drop_
     mov x2, x0
     drop_
     mov x1, x0
-    drop_
+    mov x0, x9
     bl _write
     ldp x30, xzr, [sp], #16
     ret
