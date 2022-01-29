@@ -288,16 +288,13 @@ parse:  // delim -> a u
     mov x0, x19
     bl scan
 
-    ldr x11, [fp]
-    ldrb w11, [x11]             // x11 = last byte scanned
-    sub x21, x21, x0            // x21 = consumed bytes
+    sub x21, x21, x0            // x21 = consumed bytes before delimiter
     adrp x9, _inpos@PAGE
     add x9, x9, _inpos@PAGEOFF
     ldr x10, [x9]               // x10 = inpos
 
-    cmp x11, x19                // did we scan a delimiter?
-    b.ne 1f                     // no
-    add x21, x21, #1            // yes, consume delimiter
+    cbz x0, 1f                  // did we scan a delimiter? if not, branch
+    add x10, x10, #1            // if we did, consume it in inpos
 
 1:  add x0, x21, x10            // x0 = inpos + consumed bytes
     str x0, [x9]                // update inpos
