@@ -48,10 +48,12 @@ syswrite:
 
 sysseek:
     stp x30, xzr, [sp, #-16]!
+    mov x9, x0
+    drop_
     mov x2, x0
     drop_
     mov x1, x0
-    drop_
+    mov x0, x9
     bl _lseek
     ldp x30, xzr, [sp], #16
     ret
