@@ -1,6 +1,9 @@
 .text
 #include "arm64/boot.s"
 
+sysexit:
+    b _exit
+
 sysopen:
     stp x30, xzr, [sp, #-16]!
     mov x2, x0
@@ -82,6 +85,24 @@ sysmunmap:
     ldp x30, xzr, [sp], #16
     ret
 
+sysgetenv:
+    b _getenv
+
+setupenv:
+    // setup argc, argv and environment
+    sub x0, x0, 1  // discard the interpreter name
+    adrp x9, _nargs@PAGE
+    add x9, x9, _nargs@PAGEOFF
+    str x0, [x9]
+    adrp x9, _interpname@PAGE
+    add x9, x9, _interpname@PAGEOFF
+    str x1, [x9]
+    adrp x9, _args@PAGE
+    add x9, x9, _args@PAGEOFF
+    add x1, x1, 8  // begin args after interpreter name
+    str x1, [x9]
+    ret
+
 .data
 _kernbuf:
 .incbin "comments.ns"
@@ -94,4 +115,5 @@ _kernbuf:
 .incbin "pictured.ns"
 .incbin "interpreter.ns"
 .incbin "file.ns"
+.incbin "shell.ns"
 _kerntot = . - _kernbuf

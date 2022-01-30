@@ -3,8 +3,13 @@ dstack: .space 8192, 0
 dstack0: .quad 0
 
 _R0: .quad 0    // return stack base
-_S0: .quad 0    // parameter stack base
-_Send: .quad 0  // parameter stack end
+_S0: .quad 0          // parameter stack base
+_Send: .quad 0        // parameter stack end
+
+_nargs: .int 0        //  number of command-line arguments, excluding argv[0]
+    .align 8
+_args: .quad 0        // address of argv[1]
+_interpname: .quad 0  // address of argv[0]
 
 .macro dup_
     str x0, [fp, #-8]!
@@ -552,8 +557,15 @@ ccall_header:
     .ascii "call,"
 
     .align 8
-abort_header:
+abortxt_header:
     .quad ccall_header
+    .quad abortxt
+    .byte 6
+    .ascii "'abort"
+
+    .align 8
+abort_header:
+    .quad abortxt_header
     .quad abort
     .byte 5
     .ascii "abort"
@@ -594,8 +606,36 @@ resetstacks_header:
     .ascii "resetstacks"
 
     .align 8
-sysclose_header:
+args_header:
     .quad resetstacks_header
+    .quad args
+    .byte 4
+    .ascii "args"
+
+    .align 8
+nargs_header:
+    .quad args_header
+    .quad nargs
+    .byte 5
+    .ascii "#args"
+
+    .align 8
+interpname_header:
+    .quad nargs_header
+    .quad interpname
+    .byte 10
+    .ascii "interpname"
+
+    .align 8
+sysexit_header:
+    .quad interpname_header
+    .quad sysexit
+    .byte 7
+    .ascii "sysexit"
+
+    .align 8
+sysclose_header:
+    .quad sysexit_header
     .quad sysclose
     .byte 8
     .ascii "sysclose"
@@ -650,8 +690,15 @@ sysmmap_header:
     .ascii "sysmmap"
 
     .align 8
-hello_header:
+sysgetenv_header:
     .quad sysmmap_header
+    .quad sysgetenv
+    .byte 8
+    .ascii "(getenv)"
+
+    .align 8
+hello_header:
+    .quad sysgetenv_header
     .quad hello
     .byte 5
     .ascii "hello"
@@ -1262,11 +1309,19 @@ clit:  // n ->
     ret
 
     .data
-_qmsg:  .ascii "?\n"
-_qlen = . - _qmsg
+_abortxt:  .quad abort1
+_qmsg:     .ascii "?\n"
+_qlen =    . - _qmsg
+
     .text
     .p2align 2
-abort:
+abortxt:
+    dup_
+    adrp x0, _abortxt@PAGE
+    add x0, x0, _abortxt@PAGEOFF
+    ret
+
+abort1:
     stp x30, xzr, [sp, #-16]!
     dup_
     adrp x0, _inbuf@PAGE
@@ -1287,6 +1342,12 @@ abort:
     bl resetstacks
     ldp x30, xzr, [sp], #16
     b warm
+
+abort:
+    adrp x9, _abortxt@PAGE
+    add x9, x9, _abortxt@PAGEOFF
+    ldr x9, [x9]
+    br x9
 
     .data
     .p2align 2
@@ -1427,8 +1488,30 @@ readloop:
     .global main, _main
     .text
     .p2align 2
+args:
+    dup_
+    adrp x0, _args@PAGE
+    add x0, x0, _args@PAGEOFF
+    ldr x0, [x0]
+    ret
+
+nargs:
+    dup_
+    adrp x0, _nargs@PAGE
+    add x0, x0, _nargs@PAGEOFF
+    ldr w0, [x0]
+    ret
+
+interpname:
+    dup_
+    adrp x0, _interpname@PAGE
+    add x0, x0, _interpname@PAGEOFF
+    ldr x0, [x0]
+    ret
+
 _main:
 main:
+    bl setupenv
     bl resetstacks
     dup_
     mov x0, #0xdead
