@@ -256,14 +256,12 @@ word:  // -> a u
     // scan for next word boundary
     mov x20, x0        // x20 = remaining length
     bl scanws
+    mov x9, x0         // x9 = remaining length
     sub x0, x20, x0    // x0 = consumed bytes = word length
     add x19, x19, x0   // advance position
 
-    ldr x22, [fp]      // x22 = current byte address
-    ldrb w22, [x22]    // x22 = last byte seen
-    cmp w22, #0x20     // is the last byte seen a white space?
-    b.gt 1f            // no, do nothing
-    add x19, x19, #1   // yes, consume it
+    cbz x9, 1f         // did we scan a white space? if not, skip
+    add x19, x19, #1   // if we did, consume it
 
 1:  adrp x22, _inpos@PAGE
     add x22, x22, _inpos@PAGEOFF
