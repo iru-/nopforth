@@ -117,4 +117,5 @@ _kernbuf:
 .incbin "file.ns"
 .incbin "shell.ns"
 .incbin "loadpaths.ns"
+.incbin "go.ns"
 _kerntot = . - _kernbuf
