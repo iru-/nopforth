@@ -116,4 +116,5 @@ _kernbuf:
 .incbin "interpreter.ns"
 .incbin "file.ns"
 .incbin "shell.ns"
+.incbin "loadpaths.ns"
 _kerntot = . - _kernbuf
