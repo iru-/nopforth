@@ -69,3 +69,5 @@ forth
 : branch? ( a -> bool )
    1@ $E9 = ;
 
+: branch-offset-multiplier ( -> a )
+   [ here 0 , ] lit ;

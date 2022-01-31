@@ -198,14 +198,24 @@ macro
    $9B097C00 i, ;  \ mul x0, x0, x9
 
 
+forth
+: branch-offset-multiplier ( -> a )
+   \ `if` uses cbz and requires the offset to be multiplied by 32
+   \ `branch` uses b and doesn't require multiplication
+   \ To make `then` work in both cases, it should multiply the offset
+   \ by the value in this variable.
+   [ here 0 , ] lit ;
+macro
+
 : if ( -> a )
+   32 branch-offset-multiplier !
    $AA0003E9 i,    \ mov x9, x0
    $F84087A0 i,    \ drop
    codep @
    $B4000009 i, ;  \ cbz x9, offset = 0
 
 : then ( a -> )
-   dup  codep @ swap - 4 /  32 *  over @ +  swap i! ;
+   dup  codep @ swap - 4 /  branch-offset-multiplier @ *  over @ +  swap i! ;
 
 : branch ( dst -> )
    codep @ -  4 /  $3FFFFFF and  $14000000 +  i, ;  \ b dst
@@ -220,7 +230,7 @@ macro
    $A9BF7FFE i, ;  \ stp x30, xzr, [sp, #-16]!
 
 forth
-: hole
+: hole ( -> a )
    [ here 0 , ] lit ;
 
 : branch? ( a -> bool )
