@@ -518,15 +518,8 @@ readloop_header:
     .ascii "readloop"
 
     .align 8
-banner_header:
-    .quad readloop_header
-    .quad banner
-    .byte 6
-    .ascii "banner"
-
-    .align 8
 bye_header:
-    .quad banner_header
+    .quad readloop_header
     .quad bye
     .byte 3
     .ascii "bye"

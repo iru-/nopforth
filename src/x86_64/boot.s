@@ -998,18 +998,6 @@ readloop:
     drop_
     ret
 
-    .data
-_banner:    .ascii "nop forth\n"
-_blen =     . - _banner
-
-    .text
-banner:
-    dup_
-    lea _banner(%rip), %rax
-    dup_
-    mov $_blen, %rax
-    jmp type
-
 bye:
     xor %rax, %rax
     call sysexit
