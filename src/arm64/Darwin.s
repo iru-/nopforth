@@ -85,6 +85,32 @@ sysmunmap:
     ldp x30, xzr, [sp], #16
     ret
 
+sysdlopen:
+    stp x30, xzr, [sp, #-16]!
+    mov x1, x0
+    drop_
+    bl _dlopen
+    ldp x30, xzr, [sp], #16
+    ret
+
+sysdlsym:
+    stp x30, xzr, [sp, #-16]!
+    mov x1, x0
+    drop_
+    bl _dlsym
+    ldp x30, xzr, [sp], #16
+    ret
+
+sysdlclose:
+    b _dlclose
+
+sysdlerror:
+    stp x30, xzr, [sp, #-16]!
+    dup_
+    bl _dlerror
+    ldp x30, xzr, [sp], #16
+    ret
+
 sysgetenv:
     b _getenv
 

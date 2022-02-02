@@ -690,8 +690,36 @@ sysmmap_header:
     .ascii "sysmmap"
 
     .align 8
-sysgetenv_header:
+sysdlopen_header:
     .quad sysmmap_header
+    .quad sysdlopen
+    .byte 6
+    .ascii "dlopen"
+
+    .align 8
+sysdlsym_header:
+    .quad sysdlopen_header
+    .quad sysdlsym
+    .byte 5
+    .ascii "dlsym"
+
+    .align 8
+sysdlclose_header:
+    .quad sysdlsym_header
+    .quad sysdlclose
+    .byte 7
+    .ascii "dlclose"
+
+    .align 8
+sysdlerror_header:
+    .quad sysdlclose_header
+    .quad sysdlerror
+    .byte 7
+    .ascii "dlerror"
+
+    .align 8
+sysgetenv_header:
+    .quad sysdlerror_header
     .quad sysgetenv
     .byte 8
     .ascii "(getenv)"
