@@ -42,7 +42,7 @@ bin/nop: bin/nop.o
 	${CC} -ggdb -o bin/nop bin/nop.o ${LDFLAGS}
 
 test_bootstrap:
-	@echo -n | bin/nop   # test the bootstrap
+	@echo | bin/nop   # test the bootstrap
 
 bin/nop.o: ${SRC}
 	mkdir -p bin
