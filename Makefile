@@ -56,10 +56,12 @@ debug-x86_64: ${SYS}
 debug-arm64: ${SYS}
 	lldb --local-lldbinit
 
+NOPLIBS?=$(shell pwd)/lib
+
 test: all
 	bin/nop test/logic.ns
 	bin/nop test/fileio.ns && rm -f test.out
-	bin/nop test/clib.ns
+	NOPLIBS=${NOPLIBS} bin/nop test/clib.ns
 	bin/nop test/endian.ns
 
 .PHONY: test
