@@ -697,8 +697,15 @@ sysgetenv_header:
     .ascii "(getenv)"
 
     .align 8
-hello_header:
+number_header:
     .quad sysgetenv_header
+    .quad number
+    .byte 6
+    .ascii "number"
+
+    .align 8
+hello_header:
+    .quad number_header
     .quad hello
     .byte 5
     .ascii "hello"
