@@ -306,20 +306,6 @@ parse:  // delim -> a u
 2:  ldp x30, xzr, [sp], #16
     ret
 
-    .data
-hellostr: .ascii "hello\n"
-hellolen= . - hellostr
-    .text
-hello:
-    stp x30, xzr, [sp, #-16]!
-    dup_
-    adrp x0, hellostr@PAGE
-    add x0, x0, hellostr@PAGEOFF
-    dup_
-    mov x0, hellolen
-    ldp x30, xzr, [sp], #16
-    b type
-
 bye:
     mov x0, #0
     b _exit
@@ -731,13 +717,6 @@ number_header:
     .byte 6
     .ascii "number"
 
-    .align 8
-hello_header:
-    .quad number_header
-    .quad hello
-    .byte 5
-    .ascii "hello"
-
     // macro
     .align 8
 semicolon_header:
@@ -796,7 +775,7 @@ stopcomp_header:
     .ascii "["
 
     .p2align 3
-flatestp: .quad hello_header
+flatestp: .quad number_header
 mlatestp: .quad stopcomp_header
 latestp: .quad flatestp
 
