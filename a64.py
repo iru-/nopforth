@@ -65,7 +65,7 @@ def state(debugger, command, exe_ctx, result, internal_dict):
 def go(debugger, command, exe_ctx, result, internal_dict):
     debugger.HandleCommand("step")
     state(debugger, command, exe_ctx, result, internal_dict)
-   
+
 def dodh(addr):
     link = mem_value(addr, CELL)
     cfa = mem_value(addr + CELL, CELL)
