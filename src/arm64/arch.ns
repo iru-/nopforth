@@ -241,3 +241,6 @@ forth
 
 : within ( n lo hi -> bool )
    push over <=  swap pop <  and ;
+
+: NOPARCH ( -> a u )
+   [ 5 here  $61 1, $72 1, $6D 1, $36 1, $34 1, ] lit lit ;

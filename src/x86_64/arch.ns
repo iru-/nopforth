@@ -71,3 +71,6 @@ forth
 
 : branch-offset-multiplier ( -> a )
    [ here 0 , ] lit ;
+
+: NOPARCH ( -> a u )
+   [ 6 here  $78 1, $38 1, $36 1, $5F 1, $36 1, $34 1, ] lit lit ;
