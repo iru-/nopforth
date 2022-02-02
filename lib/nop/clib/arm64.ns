@@ -1,0 +1,8 @@
+: prolog,   ` prolog ;
+: epilog,   ;
+
+: callC1   ;
+: callC2   $AA0003E1 i, ` drop ;  \ mov x1, x0; drop
+: callC3   $AA0003E2 i, ` drop ;  \ mov x2, x0; drop
+: callC4   $AA0003E3 i, ` drop ;  \ mov x3, x0; drop
+: callC5   $AA0003E4 i, ` drop ;  \ mov x4, x0; drop
