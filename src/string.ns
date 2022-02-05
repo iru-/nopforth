@@ -24,7 +24,7 @@ forth
 
 macro
 : memlit ( a len -> )
-   over ` lit  dup ` lit  mem, ;
+   here ` lit  dup ` lit  mem, ;
 
 macro : "   [char] " parse  ` memlit ;
 forth : " ( -> a u )
