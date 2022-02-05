@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2021-2022 Iruatã Martins dos Santos Souza
+
     .data
 dstack: .space 8192, 0
 dstack0: .quad 0
