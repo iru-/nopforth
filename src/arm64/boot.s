@@ -1497,6 +1497,7 @@ readloop:
 1:  bl word
     cbz x0, 2f
     bl eval
+    bl checkstacks
     b 1b
 2:  drop_
     drop_
@@ -1531,11 +1532,6 @@ _main:
 main:
     bl setupenv
     bl resetstacks
-    dup_
-    mov x0, #0xdead
-    dup_
-    mov x0, #0xbeef
-
     bl resetdict
     bl execmode
     bl setreadkern
@@ -1562,6 +1558,45 @@ resetstacks:
     add x10, x10, _Send@PAGEOFF
     str x9, [x10]
     ret
+
+    .data
+_undererr: .ascii "stack underflow!\n"
+_undererrlen = . - _undererr
+_overerr:  .ascii "stack overflow!\n"
+_overerrlen = . - _overerr
+
+    .text
+checkstacks:
+    adrp x9, _S0@PAGE
+    add x9, x9, _S0@PAGEOFF
+    ldr x9, [x9]
+    cmp fp, x9   // underflow? i.e. stack pointer > top/start of stack space?
+    b.gt 1f
+    adrp x9, _Send@PAGE
+    add x9, x9, _Send@PAGEOFF
+    ldr x9, [x9]
+    cmp fp, x9   // overflow? i.e. stack pointer < bottom/end of stack space?
+    b.lt 2f
+    ret
+1:
+    dup_
+    adrp x0, _undererr@PAGE
+    add x0, x0, _undererr@PAGEOFF
+    dup_
+    mov x0, #_undererrlen
+    b 3f
+2:
+    dup_
+    adrp x0, _overerr@PAGE
+    add x0, x0, _overerr@PAGEOFF
+    dup_
+    mov x0, #_overerrlen
+3:
+    stp x30, xzr, [sp, #-16]!
+    bl type
+    ldp x30, xzr, [sp], #16
+    dup_
+    b abort
 
     .data
 _dictstart: .quad 0
