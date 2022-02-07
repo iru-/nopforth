@@ -1170,6 +1170,7 @@ S0:  // -> a
     dup_
     adrp x0, _S0@PAGE
     add x0, x0, _S0@PAGEOFF
+    ldr x0, [x0]
     ret
 
 ccall:  // a ->
