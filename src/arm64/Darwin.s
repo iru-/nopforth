@@ -28,6 +28,14 @@ syscreate:
 sysclose:
     b _close
 
+syserrno:
+    stp x30, xzr, [sp, #-16]!
+    dup_
+    bl ___error
+    ldr w0, [x0]
+    ldp x30, xzr, [sp], #16
+    ret
+
 sysread:
     stp x30, xzr, [sp, #-16]!
     mov x9, x0
