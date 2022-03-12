@@ -201,32 +201,48 @@ macro
    $9B097C00 i, ;  \ mul x0, x0, x9
 
 
-forth
-: branch-offset-multiplier ( -> a )
-   \ `if` uses cbz and requires the offset to be multiplied by 32
-   \ `branch` uses b and doesn't require multiplication
-   \ To make `then` work in both cases, it should multiply the offset
-   \ by the value in this variable.
-   [ here 0 , ] lit ;
 macro
-
+\ See branch-offset-multiplier for the meaning of the offset-multiplier
 : if ( -> a )
-   32 branch-offset-multiplier !
    $AA0003E9 i,    \ mov x9, x0
    $F84087A0 i,    \ drop
    codep @
-   $B4000009 i, ;  \ cbz x9, offset = 0
-
-: then ( a -> )
-   dup  codep @ swap - 4 /  branch-offset-multiplier @ *  over @ +  swap i! ;
+   $B4000409 i, ;  \ cbz x9, offset-multiplier = 32
 
 : branch ( dst -> )
    codep @ -  4 /  $3FFFFFF and  $14000000 +  i, ;  \ b dst
 
 : branch-unresolved ( -> a )
-   codep @  $14000000 i, ;  \ b offset = 0
+   codep @  $14000020 i, ;  \ b offset-multiplier = 1
 
-forth : /branch   4 ;
+forth
+: /branch   4 ;
+
+: offset-multiplier@ ( 'instr -> u )
+   \ `if` uses cbz and requires the offset to be multiplied by 32,
+   \ `branch-unresolved` uses b and requires multiplication by 1.
+   \ Both macros encode their multiplier in the instruction itself.
+   \ For `then` to work in both cases, it should multiply the given offset
+   \ by the value returned by this routine
+   @ $7E0 and  5 rshift ;
+
+: ~ ~ ;
+: clean-offset@ ( 'instr -> u )
+   @ [ $7E0 ~ ] lit  and ;
+
+: instr-offset ( 'instr -> )
+  codep @ swap -  4 / ;
+
+macro
+: xthen ( 'instr -> )
+   dup instr-offset
+   over offset-multiplier@ *
+   over clean-offset@ +  swap i! ;
+
+: then ( 'instr -> )
+   dup offset-multiplier@  over instr-offset *
+   over clean-offset@ +  swap i! ;
+
 
 macro
 : prolog
