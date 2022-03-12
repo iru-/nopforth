@@ -202,7 +202,7 @@ macro
 
 
 macro
-\ See branch-offset-multiplier for the meaning of the offset-multiplier
+\ See offset-multiplier@ for the meaning of the offset-multiplier
 : if ( -> a )
    $AA0003E9 i,    \ mov x9, x0
    $F84087A0 i,    \ drop
