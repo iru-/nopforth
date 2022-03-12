@@ -83,84 +83,84 @@ sysdlclose_header:
     .byte 7
     .ascii "dlclose"
 
-   .align 8
+    .align 8
 sysdlerror_header:
     .quad sysdlclose_header
     .quad sysdlerror
     .byte 7
     .ascii "dlerror"
 
-   .align 8
+    .align 8
 sysdlsym_header:
     .quad sysdlerror_header
     .quad sysdlsym
     .byte 5
     .ascii "dlsym"
 
-   .align 8
+    .align 8
 sysdlopen_header:
     .quad sysdlsym_header
     .quad sysdlopen
     .byte 6
     .ascii "dlopen"
 
-   .align 8
+    .align 8
 sysalloc_header:
     .quad sysdlopen_header
     .quad sysalloc
     .byte 8
     .ascii "sysalloc"
 
-   .align 8
+    .align 8
 sysresize_header:
     .quad sysalloc_header
     .quad sysresize
     .byte 9
     .ascii "sysresize"
 
-   .align 8
+    .align 8
 sysfree_header:
     .quad sysresize_header
     .quad sysfree
     .byte 7
     .ascii "sysfree"
 
-   .align 8
+    .align 8
 syscall6_header:
     .quad sysfree_header
     .quad syscall6
     .byte 8
     .ascii "syscall6"
 
-   .align 8
+    .align 8
 syscall5_header:
     .quad syscall6_header
     .quad syscall5
     .byte 8
     .ascii "syscall5"
 
-   .align 8
+    .align 8
 syscall4_header:
     .quad syscall5_header
     .quad syscall4
     .byte 8
     .ascii "syscall4"
 
-   .align 8
+    .align 8
 syscall3_header:
     .quad syscall4_header
     .quad syscall3
     .byte 8
     .ascii "syscall3"
 
-   .align 8
+    .align 8
 syscall2_header:
     .quad syscall3_header
     .quad syscall2
     .byte 8
     .ascii "syscall2"
 
-   .align 8
+    .align 8
 syscall1_header:
     .quad syscall2_header
     .quad syscall1
@@ -704,6 +704,7 @@ cfetch_header:
     .byte 1
     .ascii "@"
 
+    .align 8
 cfetchplus_header:
     .quad cfetch_header
     .quad cfetchplus
@@ -717,6 +718,7 @@ c1fetch_header:
     .byte 2
     .ascii "1@"
 
+    .align 8
 c1fetchplus_header:
     .quad c1fetch_header
     .quad c1fetchplus
