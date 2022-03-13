@@ -1,4 +1,4 @@
-name: Run tests (macos/x86_64)
+name: macOS/x86_64
 on:
   pull_request:
     branches:
