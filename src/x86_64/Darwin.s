@@ -9,7 +9,9 @@
 .equ PROT_EXEC,     0x4
 .equ MAP_SHARED,    0x1
 .equ MAP_PRIVATE,   0x2
-.equ MAP_ANONYMOUS, 0x1000
+.equ MAP_JIT,       0x0800
+.equ MAP_ANON,      0x1000
+
 
 # System V x86-64 ABI requires a stack aligned on a 16 bytes boundary.
 # The prolog saves the return stack pointer on rbx since the latter must be
@@ -230,23 +232,40 @@ setupenv:
     mov %rcx, _args(%rip)
     ret
 
+    .data
+_dictstart: .quad 0
+_dictsize = 0x100000
+_codestart: .quad 0
+_codesize = 0x100000
+
+    .text
 resetdict:
+    # dictionary
     dup_
-    mov $0, %rdi         # addr
-    mov $0x100000, %rsi  # length
-    mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rdx  # prot
-    mov $(MAP_ANONYMOUS | MAP_SHARED), %rcx          # flags
-    mov $-1, %r8         # fd
-    mov $0, %r9          # offset (ignored)
-    call _mmap
+    mov $_dictsize, %rdi
+    call _malloc
     test %rax, %rax
     jz 1f
     mov %rax, _h(%rip)
+    mov %rax, _dictstart(%rip)
+
+    # code space
+    mov $0, %rdi          # addr
+    mov $_codesize, %rsi  # length
+    mov $(PROT_READ | PROT_WRITE | PROT_EXEC), %rdx  # prot
+    mov $(MAP_ANON | MAP_PRIVATE | MAP_JIT), %rcx    # flags
+    mov $-1, %r8          # fd
+    mov $0, %r9           # offset (ignored)
+    call _mmap
+    cmp $-1, %rax         # MAP_FAILED?
+    je 1f
+    mov %rax, codepp(%rip)
+    mov %rax, _codestart(%rip)
     drop_
     ret
 1:
     mov $1, %rax
-    call sysexit
+    jmp sysexit
 
 .data
 .include "dicts.s"
