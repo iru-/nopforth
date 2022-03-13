@@ -2,7 +2,7 @@
 # Copyright (c) 2018-2022 Iruatã Martins dos Santos Souza
 
     .text
-.include "boot.s"
+.include "x86_64/boot.s"
 
 .equ PROT_READ,     0x1
 .equ PROT_WRITE,    0x2
@@ -253,7 +253,7 @@ resetdict:
 
 _kernbuf:
 .incbin "comments.ns"
-.incbin "arch.ns"
+.incbin "x86_64/arch.ns"
 .incbin "flowcontrol.ns"
 .incbin "interactive.ns"
 .incbin "dictionary.ns"
