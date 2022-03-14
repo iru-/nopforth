@@ -594,6 +594,7 @@ Br_header:
     .byte 2
     .ascii "Br"
 
+    .align 8
 _flatest: .quad Br_header
 
 #
@@ -858,4 +859,5 @@ clit_header:
     .byte 3
     .ascii "lit"
 
+    .align 8
 _mlatest: .quad clit_header

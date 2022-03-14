@@ -25,6 +25,7 @@ type:  # a u ->
     ret
 
     .data
+    .align 8
 _keyxt: .quad 0
     .text
 keyxt:  # -> a
@@ -190,6 +191,7 @@ number:  # a u -> n err
     ret
 
     .data
+    .align 8
 _infd:   .quad 0    # file descriptor feeding the input
 _inbuf:  .quad 0    # pointer to input buffer
 _intot:  .quad 0    # input buffer total size
@@ -290,6 +292,7 @@ parse:  # delim -> a u
     ret
 
     .data
+    .align 8
 codepp: .quad 0  # next code address
 _h:    .quad 0   # next dictionary address
 _latest: .quad _flatest
@@ -865,6 +868,7 @@ clit:
     jmp cinstr
 
     .data
+    .align 8
 _abortxt:  .quad abort1
 _qmsg:     .ascii "?\n"
 _qlen =    . - _qmsg
@@ -894,6 +898,7 @@ abort:
     jmp *_abortxt(%rip)
 
     .data
+    .align 8
 _search:
   .quad 0          # 1st dictionary to be searched
   .quad 0          # 2nd dictionary to be searched
@@ -1003,6 +1008,7 @@ bye:
     call sysexit
 
     .data
+    .align 8
 dstack: .space 8192, 0
 dstack0: .quad 0
 
@@ -1060,6 +1066,7 @@ resetstacks:
     ret
 
     .data
+    .align 8
 _undererr: .ascii "stack underflow!\n"
 _undererrlen = . - _undererr
 _overerr:  .ascii "stack overflow!\n"
