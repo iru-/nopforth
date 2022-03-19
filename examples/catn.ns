@@ -11,7 +11,7 @@ create line# 1 ,
 
 8192 value /buf
 create buf /buf allot
-: >buf ( fd -> n )  push buf /buf pop read-line ;
+: >buf ( fd -> n )  buf /buf read-line ;
 : .buf ( u -> )     .line  buf swap type ;
 
 : cat ( fd -> )  dup >buf  dup 1 < if drop drop exit then  .buf cat ;
