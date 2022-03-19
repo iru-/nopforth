@@ -59,7 +59,7 @@ sysread ( fd a u -> u' )
    Read at most `u` bytes from file descriptor `fd` into address `a`.
    Return number of bytes read.
 
-syswrite ( a u fd -> u' )
+syswrite ( fd a u -> u' )
    Write `u` bytes starting at address `a` to file descriptor `fd`.
    Return number of bytes written.
 
