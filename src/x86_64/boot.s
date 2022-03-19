@@ -14,7 +14,10 @@
     .text
 expect:  # a u -> #
     dup_
-    mov _infd(%rip), %rax
+    mov 8(%rbp), %rcx
+    mov %rcx, (%rbp)
+    mov _infd(%rip), %rcx
+    mov %rcx, 8(%rbp)
     jmp sysread
 
 type:  # a u ->

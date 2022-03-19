@@ -38,11 +38,11 @@ syserrno:
 
 sysread:
     prolog
-    mov %rax, %rdi
-    drop_
     mov %rax, %rdx
     drop_
     mov %rax, %rsi
+    drop_
+    mov %rax, %rdi
     call _read
     epilog
     ret

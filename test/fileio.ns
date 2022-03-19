@@ -23,7 +23,7 @@ create rbuf #wbuf 5 +  dup allot  value /rbuf
    wbuf #wbuf fd syswrite  #wbuf ~= ?fail ;
 
 : test-read
-   rbuf /rbuf fd sysread
+   fd rbuf /rbuf sysread
    dup 1 < " test-read: read failed" ?abort
 
    push  wbuf rbuf  pop mem= not

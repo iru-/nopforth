@@ -55,7 +55,7 @@ depth ( -> u )
 
 
 # Operating System interface
-sysread ( a u fd -> u' )
+sysread ( fd a u -> u' )
    Read at most `u` bytes from file descriptor `fd` into address `a`.
    Return number of bytes read.
 
