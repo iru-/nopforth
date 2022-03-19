@@ -17,12 +17,12 @@ forth
    next
    drop arest ;
 
-: write-byte ( b fd -> n )
-   swap here 1!  here 1 syswrite ;
+: write-byte ( fd byte -> n )
+   here 1!  here 1 syswrite ;
 
-: write-line ( a u fd -> n )
-   dup push  swap push swap pop  syswrite  10 pop write-byte
-   1 ~= if  drop -1 exit  then 1 + ;
+: write-line ( fd a u -> n )
+   2push dup 2pop  syswrite  dup 0 < if  nip exit  then
+   drop 10 write-byte  1 ~= if  drop -1 exit  then 1 + ;
 
 : file-position ( fd -> n' )   push 0 1 pop sysseek ;
 
