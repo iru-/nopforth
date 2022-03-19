@@ -154,11 +154,11 @@ key ( -> b )
    Run current key routine. By default, read byte from the current input.
    Return byte on success, -1 on failure.
 
-write-byte ( b fd -> n )
+write-byte ( fd byte -> n )
    Write byte to file descriptor.
    Return 1 on success, -1 on failure.
 
-write-line ( a u fd -> # )
+write-line ( fd a u -> # )
    Write buffer followed by a newline to file.
    Return number of bytes written on success, -1 on failure.
 
