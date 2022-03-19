@@ -6,7 +6,7 @@ forth
 : open-file ( a u flags mode -> fd )   2push s>z 2pop sysopen ;
 
 : read-byte ( fd -> b err )
-   push here 1 pop sysread  1 ~= if  0 true exit  then
+   here 1 sysread  1 ~= if  0 true exit  then
    here 1@ false ;
 
 : read-line ( a u fd -> u' )

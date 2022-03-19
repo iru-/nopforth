@@ -34,7 +34,7 @@ variable remaining
 : position ( u -> )   0 fd sysseek 0 < " can't position file" ?abort ;
 : fdclose               fd sysclose drop ;
 : fdread ( a -> u )
-   size fd sysread  dup 0 < " can't read from file" ?abort
+   fd swap size sysread  dup 0 < " can't read from file" ?abort
    dup update ;
 
 : reserve    /line allot ;
