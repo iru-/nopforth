@@ -20,7 +20,7 @@ create rbuf #wbuf 5 +  dup allot  value /rbuf
    dup 0 < ?fail  to fd ;
 
 : test-write
-   wbuf #wbuf fd syswrite  #wbuf ~= ?fail ;
+   fd wbuf #wbuf syswrite  #wbuf ~= ?fail ;
 
 : test-read
    fd rbuf /rbuf sysread

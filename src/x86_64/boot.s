@@ -22,7 +22,9 @@ expect:  # a u -> #
 
 type:  # a u ->
     dup_
-    mov $1, %rax    # stdout
+    mov 8(%rbp), %rcx
+    mov %rcx, (%rbp)
+    movq $1, 8(%rbp)    # stdout
     call syswrite
     drop_
     ret

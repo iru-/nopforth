@@ -48,12 +48,10 @@ sysread:
 
 syswrite:
     stp x30, xzr, [sp, #-16]!
-    mov x9, x0
-    drop_
     mov x2, x0
     drop_
     mov x1, x0
-    mov x0, x9
+    drop_
     bl _write
     ldp x30, xzr, [sp], #16
     ret
