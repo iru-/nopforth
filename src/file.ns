@@ -9,9 +9,9 @@ forth
    here 1 sysread  1 ~= if  0 true exit  then
    here 1@ false ;
 
-: read-line ( a u fd -> u' )
-   asave  push push a! pop pop
-   over for   \ u fd
+: read-line ( fd a u -> u' )
+   asave  swap a!
+   swap over for   \ u fd
      dup read-byte if  drop drop  pop -  arest exit  then
      dup 1!+  10 = if  drop  pop -  1 +  arest exit  then
    next

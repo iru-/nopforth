@@ -17,7 +17,7 @@ marker empty
 
 : term-refill ( -> n )
    ." ok "
-   0 inpos !  inbuf @ intot @ infd @ read-line  dup inused !
+   0 inpos !  infd @ inbuf @ intot @ read-line  dup inused !
    dup 0 = if cr then ;
 
 : term-loop   0  here 128 dup allot  0 0 ['] term-refill input!  rel ;

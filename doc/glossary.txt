@@ -129,7 +129,7 @@ getenv ( var -> value )
 
 
 # I/O
-read-line ( a u fd -> # )
+read-line ( fd a u -> # )
    Read at most `u` bytes from file descriptor into address `a`.
    Return number of bytes read. It will be less then `u` if less bytes are
    available or a newline is found.
