@@ -672,8 +672,22 @@ sysseek_header:
     .ascii "sysseek"
 
     .align 8
-sysmunmap_header:
+sysalloc_header:
     .quad sysseek_header
+    .quad sysalloc
+    .byte 8
+    .ascii "sysalloc"
+
+    .align 8
+sysfree_header:
+    .quad sysalloc_header
+    .quad sysfree
+    .byte 7
+    .ascii "sysfree"
+
+    .align 8
+sysmunmap_header:
+    .quad sysfree_header
     .quad sysmunmap
     .byte 9
     .ascii "sysmunmap"

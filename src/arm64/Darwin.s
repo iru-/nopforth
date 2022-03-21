@@ -68,6 +68,12 @@ sysseek:
     ldp x30, xzr, [sp], #16
     ret
 
+sysalloc:
+    b _malloc
+
+sysfree:
+    b _free
+
 sysmmap:
     stp x30, xzr, [sp, #-16]!
     mov x5, x0
