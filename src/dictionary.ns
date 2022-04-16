@@ -50,6 +50,7 @@ macro
 forth
 : to ( n -> )   ?find pfa  ! ;
 
+: pad ( -> a )   here 1024 + ;
 
 variable mark-h
 variable mark-codep
@@ -63,4 +64,4 @@ variable mark-latest
 
 : empty
    mark-h @ h !  mark-codep @ codep !
-   mark-mlatest @ mlatest ! mark-flatest @ flatest !  mark-latest @ latest ! ;
+   mark-mlatest @ mlatest !  mark-flatest @ flatest !  mark-latest @ latest ! ;

@@ -534,6 +534,11 @@ exit
 lit ( n -> )
    Compile `n` as a literal to be pushed at runtime.
 
+pad ( -> a )
+   Return address of temporary buffer. Note that this address is not fixed,
+   which means data should be copied to a permanent buffer in order to be
+   preserved.
+
 mark
    Save state of the dictionary, code and data pointers.
 
