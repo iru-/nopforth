@@ -534,12 +534,12 @@ exit
 lit ( n -> )
    Compile `n` as a literal to be pushed at runtime.
 
-marker
-   Create marker named by the next input word. When executed, the marker will
-   restore the dictionary to the state before the marker was created.
+mark
+   Save state of the dictionary, code and data pointers.
 
 empty
-   Restore state of dictionary at boot.
+   Restore state saved by `mark`. If `mark` wasn't called by the user, it
+   restores the state at boot.
 
 record:
    Start record definition.

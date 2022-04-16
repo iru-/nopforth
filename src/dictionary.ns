@@ -50,13 +50,17 @@ macro
 forth
 : to ( n -> )   ?find pfa  ! ;
 
-: marker
-   here              \ save current HERE so the marker definition removes itself
-   forth create
-      ,              \ 0:       dictionary pointer
-      flatest @ @ ,  \ cell:    next to last forth definition
-      mlatest @ ,    \ 2 cells: last macro definition
-   does>
-      dup        @ h !
-      dup cell + @ flatest !
-       2 cells + @ mlatest ! ;
+
+variable mark-h
+variable mark-codep
+variable mark-mlatest
+variable mark-flatest
+variable mark-latest
+
+: mark
+   h @ mark-h !  codep @ mark-codep !
+   mlatest @ mark-mlatest !  flatest @ mark-flatest !  latest @ mark-latest ! ;
+
+: empty
+   mark-h @ h !  mark-codep @ codep !
+   mark-mlatest @ mlatest ! mark-flatest @ flatest !  mark-latest @ latest ! ;

@@ -12,9 +12,6 @@ variable arg-offset
    arg-offset @  dup #args >= if  drop 0 0 exit  then
    arg  1 arg-offset +! ;
 
-
-marker empty
-
 : term-refill ( -> n )
    ." ok "
    0 inpos !  infd @ inbuf @ intot @ read-line  dup inused !

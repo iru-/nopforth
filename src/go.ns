@@ -3,12 +3,16 @@
 
 : banner   " nopforth" println ;
 
-anon:
-   init-load-paths
-   #args if
-      1 arg-offset +!  ['] file-abort to 'warm
-      0 arg included  " can't run file" ?abort
-      exit
-   then
-   banner  ['] term-loop to 'warm  term-loop
-; execute
+: run-args
+   1 arg-offset +!  ['] file-abort to 'warm
+   0 arg included  " can't run file" ?abort ;
+
+: run-term
+   banner  ['] term-loop to 'warm  term-loop ;
+
+: start
+   #args if  run-args exit  then  run-term ;
+
+init-load-paths
+mark
+start
