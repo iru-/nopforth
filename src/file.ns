@@ -6,8 +6,8 @@ forth
 : open-file ( a u flags mode -> fd )   2push s>z 2pop sysopen ;
 
 : read-byte ( fd -> b err )
-   here 1 sysread  1 ~= if  0 true exit  then
-   here 1@ false ;
+   [ here dup 0 1, ] lit  1 sysread  1 ~= if  0 true exit  then
+   lit 1@ false ;
 
 : read-line ( fd a u -> u' )
    asave  swap a!
@@ -18,7 +18,7 @@ forth
    drop arest ;
 
 : write-byte ( fd byte -> n )
-   here 1!  here 1 syswrite ;
+   [ here dup 0 1, ] lit  1!  lit 1 syswrite ;
 
 : write-line ( fd a u -> n )
    2push dup 2pop  syswrite  dup 0 < if  nip exit  then
