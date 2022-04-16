@@ -4,7 +4,7 @@
 forth
 32 value bl
 
-: emit ( b -> )   here 1!  here 1 type ;
+: emit ( b -> )   [ here dup 0 1, ] lit  1!  lit 1 type ;
 
 : cr      10 emit ;
 : space   bl emit ;
