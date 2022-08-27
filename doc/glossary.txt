@@ -365,6 +365,9 @@ word ( -> a u )
 " macro
    Compile string inside definition. At runtime, behave as `"`.
 
+s+ ( a1 u1 a2 u2 -> a3 u1+u2 )
+   Return concatenation of string a1 u1 with string a2 u2.
+
 ."
    Output string ended by next " in the input buffer.
 

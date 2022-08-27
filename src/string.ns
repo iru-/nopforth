@@ -30,6 +30,9 @@ macro : "   [char] " parse  ` memlit ;
 forth : " ( -> a u )
   [char] " parse  tuck  here dup push  over allot  swap move  pop swap ;
 
+: s+ ( a1 u1 a2 u2 -> a3 u1+u2 )
+   here push  2push tuck mem,  2pop tuck mem,  + pop swap ;
+
 : println   type cr ;
 
 macro : ."   ` "  [f'] type call, ;
@@ -37,4 +40,3 @@ forth : ."   [char] " parse type ;
 
 
 : depth ( -> u )   S0 sp@ - cell /  2 - ;
-
