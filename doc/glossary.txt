@@ -323,8 +323,8 @@ advance ( a u n -> a+n u-n )
 mem, ( a u -> )
    Write buffer to the dictionary.
 
-mem= ( a1 u1 a2 u2 -> bool )
-   Return true if the two buffer contents are equal, false otherwise.
+mem= ( a1 a2 u -> bool )
+   Return true if the `u` bytes in a1 and a2 are equal, false otherwise.
 
 skip ( a u delim -> a' u' )
    Skip sequence of delimeter byte in buffer.
