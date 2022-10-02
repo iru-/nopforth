@@ -72,7 +72,11 @@ sysalloc:
     b _malloc
 
 sysfree:
-    b _free
+    stp x30, xzr, [sp, #-16]!
+    bl _free
+    drop_
+    ldp x30, xzr, [sp], #16
+    ret
 
 sysmmap:
     stp x30, xzr, [sp, #-16]!
