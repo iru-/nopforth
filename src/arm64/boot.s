@@ -672,8 +672,15 @@ sysseek_header:
     .ascii "sysseek"
 
     .align 8
-sysalloc_header:
+sysrealloc_header:
     .quad sysseek_header
+    .quad sysrealloc
+    .byte 10
+    .ascii "sysrealloc"
+
+    .align 8
+sysalloc_header:
+    .quad sysrealloc_header
     .quad sysalloc
     .byte 8
     .ascii "sysalloc"

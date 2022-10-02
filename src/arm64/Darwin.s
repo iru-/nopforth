@@ -71,6 +71,14 @@ sysseek:
 sysalloc:
     b _malloc
 
+sysrealloc:
+    stp x30, xzr, [sp, #-16]!
+    mov x1, x0
+    drop_
+    bl _realloc
+    ldp x30, xzr, [sp], #16
+    ret
+
 sysfree:
     stp x30, xzr, [sp, #-16]!
     bl _free

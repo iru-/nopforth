@@ -138,7 +138,7 @@ sysalloc:
     epilog
     ret
 
-sysresize:
+sysrealloc:
     prolog
     mov %rax, %rsi
     drop_

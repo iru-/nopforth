@@ -112,15 +112,15 @@ sysalloc_header:
     .ascii "sysalloc"
 
     .align 8
-sysresize_header:
+sysrealloc_header:
     .quad sysalloc_header
-    .quad sysresize
-    .byte 9
-    .ascii "sysresize"
+    .quad sysrealloc
+    .byte 10
+    .ascii "sysrealloc"
 
     .align 8
 sysfree_header:
-    .quad sysresize_header
+    .quad sysrealloc_header
     .quad sysfree
     .byte 7
     .ascii "sysfree"
