@@ -127,7 +127,7 @@ sysmunmap:
     movsx %eax, %rax
     ret
 
-sysalloc:
+sysmalloc:
     prolog
     mov %rax, %rdi
     call malloc@plt

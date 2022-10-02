@@ -105,15 +105,15 @@ sysdlopen_header:
     .ascii "dlopen"
 
     .align 8
-sysalloc_header:
+sysmalloc_header:
     .quad sysdlopen_header
-    .quad sysalloc
-    .byte 8
-    .ascii "sysalloc"
+    .quad sysmalloc
+    .byte 9
+    .ascii "sysmalloc"
 
     .align 8
 sysrealloc_header:
-    .quad sysalloc_header
+    .quad sysmalloc_header
     .quad sysrealloc
     .byte 10
     .ascii "sysrealloc"

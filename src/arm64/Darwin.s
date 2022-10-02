@@ -68,7 +68,7 @@ sysseek:
     ldp x30, xzr, [sp], #16
     ret
 
-sysalloc:
+sysmalloc:
     b _malloc
 
 sysrealloc:
