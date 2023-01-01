@@ -8,7 +8,7 @@ forth
 0 value 'warm
 : warm   'warm dup if execute then  bye ;
 
-: input-start? ( a u -> bool )   over inbuf = ;
+: input-start? ( a u -> bool )   over inbuf @ = ;
 
 : rewind-line ( a u -> a' u' )
    input-start? if  exit  then
@@ -20,8 +20,13 @@ forth
    over 1@ 32 > if  exit  then
    -1 advance -skip-ws ;
 
+: -scan-ws ( a u -> a' u' )
+   input-start? if  exit  then
+   over 1@ 32 <= if  exit  then
+   -1 advance -scan-ws ;
+
 : .abortline
-   inbuf @ inpos @ +  inpos @ -skip-ws dup push  rewind-line  pop - 1 +
+   inbuf @ inpos @ +  0 -scan-ws -skip-ws dup push  rewind-line  pop - 1 +
    type cr [char] ? emit cr ;
 
 : (abort)   reset-input resetstacks warm ;
