@@ -9,7 +9,7 @@ forth
 : <# ( n -> 0 n )               0 swap ;
 : (#)  ( n base -> ... count rem )   /mod swap digit hold ;
 : # ( n -> ... count rem )      10 (#) ;
-: h# ( n -> ... count rem )     16 (#) ;
+: h# ( n -> ... count rem )     dup 4 rshift  swap 15 and digit hold ;
 : #> ( ... count rem -> a u )   asave  drop  pad a!  dup push for 1!+ next  pad pop  arest ;
 : #s ( n -> ... count rem )     begin # dup while repeat ;
 : h#s ( n -> ... count rem )    begin h# dup while repeat ;
