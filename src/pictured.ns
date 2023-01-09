@@ -27,6 +27,9 @@ forth
 : (.r) ( n #column -> a u )   push dup push abs <#  #s pop sign  over pop justify #> ;
 : .r ( n #column -> )   (.r) type space ;
 
+: (h.r) ( n #column -> a u )   push <# h#s  over pop justify #> ;
+: h.r ( n #column -> )     (h.r) type space ;
+
 : .S   depth S0 16 - swap for  dup @ . 8 -  next drop  ." <- top " ;
 : h.S   depth S0 16 - swap for  dup @ h. 8 -  next drop  ." <- top " ;
 
