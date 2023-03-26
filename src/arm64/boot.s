@@ -315,15 +315,8 @@ bye:
 
     .data
     .align 8
-end_header:
-    .quad 0
-    .quad 0
-    .byte 3
-    .ascii "end"
-
-    .align 8
 type_header:
-    .quad end_header
+    .quad 0
     .quad type
     .byte 4
     .ascii "type"
@@ -539,8 +532,15 @@ inused_header:
     .ascii "inused"
 
     .align 8
-ccall_header:
+source_header:
     .quad inused_header
+    .quad source
+    .byte 6
+    .ascii "source"
+
+    .align 8
+ccall_header:
+    .quad source_header
     .quad ccall
     .byte 5
     .ascii "call,"
