@@ -9,11 +9,14 @@ sysexit:
 
 sysopen:
     stp x30, xzr, [sp, #-16]!
-    mov x2, x0
+    sub sp, sp, #16
+    mov x9, sp
+    str x0, [x9]
     drop_
     mov x1, x0
     drop_
     bl _open
+    add sp, sp, #16
     ldp x30, xzr, [sp], #16
     ret
 
