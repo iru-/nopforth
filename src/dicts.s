@@ -196,8 +196,22 @@ key_header:
     .ascii "key"
 
     .align 8
-skip_header:
+skipws_header:
     .quad key_header
+    .quad skipws
+    .byte 6
+    .ascii "skipws"
+
+    .align 8
+scanws_header:
+    .quad skipws_header
+    .quad scanws
+    .byte 6
+    .ascii "scanws"
+
+    .align 8
+skip_header:
+    .quad scanws_header
     .quad skip
     .byte 4
     .ascii "skip"
