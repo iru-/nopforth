@@ -263,8 +263,8 @@ abort
 evaluate ( -> ... )
    Same as `eval` with the input buffer as buffer.
 
-included ( a u -> )
-   Read and `evaluate` file named by buffer.
+included ( a u -> err )
+   Read and `evaluate` file named by buffer. Return error or zero on success.
 
 include
    Same as `included` with the remaining line in the input buffer as file name.
