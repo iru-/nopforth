@@ -2,11 +2,11 @@
 \ Copyright (c) 2018-2022 Iruatã Martins dos Santos Souza
 
 forth
-: create-file ( a u mode -> fd )       push s>z pop syscreate ;
-: open-file ( a u flags mode -> fd )   2push s>z 2pop sysopen ;
+: create-file ( a u mode -> fd )       push s>z pop creat ;
+: open-file ( a u flags mode -> fd )   2push s>z 2pop open ;
 
 : read-byte ( fd -> b err )
-   [ here dup 0 1, ] lit  1 sysread  1 ~= if  0 true exit  then
+   [ here dup 0 1, ] lit  1 read  1 ~= if  0 true exit  then
    lit 1@ false ;
 
 : read-line ( fd a u -> u' )
@@ -18,13 +18,13 @@ forth
    drop arest ;
 
 : write-byte ( fd byte -> n )
-   [ here dup 0 1, ] lit  1!  lit 1 syswrite ;
+   [ here dup 0 1, ] lit  1!  lit 1 write ;
 
 : write-line ( fd a u -> n )
-   2push dup 2pop  syswrite  dup 0 < if  nip exit  then
+   2push dup 2pop  write  dup 0 < if  nip exit  then
    swap 10 write-byte  1 ~= if  drop -1 exit  then 1 + ;
 
-: file-position ( fd -> n' )   push 0 1 pop sysseek ;
+: file-position ( fd -> n' )   push 0 1 pop lseek ;
 
 ( File loading )
 : input@ ( -> fd buf tot used pos 'refill )
@@ -39,13 +39,13 @@ forth
 : restore-input
    pop pop  pop pop pop pop pop pop input!  push push ;
 
-: fsize ( fd -> u )   push 0 2 pop sysseek ;
+: fsize ( fd -> u )   push 0 2 pop lseek ;
 
 : fmap ( fd -> a u ) \ PROT_READ MAP_PRIVATE
-   dup push fsize  0 over 1 2 pop 0 sysmmap  swap ;
+   dup push fsize  0 over 1 2 pop 0 mmap  swap ;
 
 
-\ After a file is mmaped for inclusion the input state is intot = filesize,
+\ After a file is mapped for inclusion the input state is intot = filesize,
 \ inused = 0, inpos = 0. Each refill then advances inused to after the next
 \ newline. Hence, even though the whole file is available at the onset, the
 \ interpreter sees only one line at a time.
@@ -59,7 +59,7 @@ forth
    save-input  dup dup fmap  over -1 = if drop exit then
    0 0 ['] frefill input!
    push rel pop
-   sysclose drop  inbuf @ intot @ sysmunmap drop
+   close drop  inbuf @ intot @ munmap drop
    restore-input  false ;
 
 : include   10 parse included " can't include file" ?abort ;

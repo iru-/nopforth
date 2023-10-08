@@ -57,7 +57,7 @@ sysclose:
     add $(32 + 8), %rsp
     ret
 
-sysseek:
+syslseek:
     sub $(32 + 8), %rsp
     mov %rax, %rcx
     drop_
@@ -154,7 +154,7 @@ sysdlerror:
     add $(32 + 8), %rsp
     ret
 
-_getenv:
+sysgetenv:
     mov %rax, %rcx
     call getenv
     ret

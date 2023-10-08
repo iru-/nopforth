@@ -644,120 +644,120 @@ sysexit_header:
     .ascii "sysexit"
 
     .align 8
-sysclose_header:
+close_header:
     .quad sysexit_header
     .quad sysclose
-    .byte 8
-    .ascii "sysclose"
+    .byte 5
+    .ascii "close"
 
     .align 8
-syscreate_header:
-    .quad sysclose_header
-    .quad syscreate
-    .byte 9
-    .ascii "syscreate"
+creat_header:
+    .quad close_header
+    .quad syscreat
+    .byte 5
+    .ascii "creat"
 
     .align 8
-sysopen_header:
-    .quad syscreate_header
+open_header:
+    .quad creat_header
     .quad sysopen
-    .byte 7
-    .ascii "sysopen"
+    .byte 4
+    .ascii "open"
 
     .align 8
-syserrno_header:
-    .quad sysopen_header
+errno_header:
+    .quad open_header
     .quad syserrno
-    .byte 8
-    .ascii "syserrno"
+    .byte 5
+    .ascii "errno"
 
     .align 8
-sysread_header:
-    .quad syserrno_header
+read_header:
+    .quad errno_header
     .quad sysread
-    .byte 7
-    .ascii "sysread"
+    .byte 4
+    .ascii "read"
 
     .align 8
-syswrite_header:
-    .quad sysread_header
+write_header:
+    .quad read_header
     .quad syswrite
-    .byte 8
-    .ascii "syswrite"
+    .byte 5
+    .ascii "write"
 
     .align 8
-sysseek_header:
-    .quad syswrite_header
-    .quad sysseek
-    .byte 7
-    .ascii "sysseek"
+lseek_header:
+    .quad write_header
+    .quad syslseek
+    .byte 5
+    .ascii "lseek"
 
     .align 8
-sysrealloc_header:
-    .quad sysseek_header
+realloc_header:
+    .quad lseek_header
     .quad sysrealloc
-    .byte 10
-    .ascii "sysrealloc"
+    .byte 7
+    .ascii "realloc"
 
     .align 8
-sysmalloc_header:
-    .quad sysrealloc_header
+malloc_header:
+    .quad realloc_header
     .quad sysmalloc
-    .byte 9
-    .ascii "sysmalloc"
+    .byte 6
+    .ascii "malloc"
 
     .align 8
-sysfree_header:
-    .quad sysmalloc_header
+free_header:
+    .quad malloc_header
     .quad sysfree
-    .byte 7
-    .ascii "sysfree"
+    .byte 4
+    .ascii "free"
 
     .align 8
-sysmunmap_header:
-    .quad sysfree_header
+munmap_header:
+    .quad free_header
     .quad sysmunmap
-    .byte 9
-    .ascii "sysmunmap"
+    .byte 6
+    .ascii "munmap"
 
     .align 8
-sysmmap_header:
-    .quad sysmunmap_header
+mmap_header:
+    .quad munmap_header
     .quad sysmmap
-    .byte 7
-    .ascii "sysmmap"
+    .byte 4
+    .ascii "mmap"
 
     .align 8
-sysdlopen_header:
-    .quad sysmmap_header
+dlopen_header:
+    .quad mmap_header
     .quad sysdlopen
     .byte 6
     .ascii "dlopen"
 
     .align 8
-sysdlsym_header:
-    .quad sysdlopen_header
+dlsym_header:
+    .quad dlopen_header
     .quad sysdlsym
     .byte 5
     .ascii "dlsym"
 
     .align 8
-sysdlclose_header:
-    .quad sysdlsym_header
+dlclose_header:
+    .quad dlsym_header
     .quad sysdlclose
     .byte 7
     .ascii "dlclose"
 
     .align 8
-sysdlerror_header:
-    .quad sysdlclose_header
+dlerror_header:
+    .quad dlclose_header
     .quad sysdlerror
     .byte 7
     .ascii "dlerror"
 
     .align 8
 sysgetenv_header:
-    .quad sysdlerror_header
+    .quad dlerror_header
     .quad sysgetenv
     .byte 8
     .ascii "(getenv)"
