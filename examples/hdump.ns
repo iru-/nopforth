@@ -10,7 +10,7 @@
 0 value r/o
 
 : ?fsize ( a u -> u' )
-  r/o 0 open-file  dup fsize  swap sysclose " can't retrieve file size" ?abort ;
+  r/o 0 open-file  dup fsize  swap close " can't retrieve file size" ?abort ;
 
 0 value /line
 variable off
@@ -31,10 +31,10 @@ variable remaining
 : update ( u -> )       negate remaining +! ;
 
 : open ( a u -> )     r/o 0 open-file dup 0 < " can't open file" ?abort to fd ;
-: position ( u -> )   0 fd sysseek 0 < " can't position file" ?abort ;
-: fdclose               fd sysclose drop ;
+: position ( u -> )   0 fd lseek 0 < " can't position file" ?abort ;
+: fdclose               fd close drop ;
 : fdread ( a -> u )
-   fd swap size sysread  dup 0 < " can't read from file" ?abort
+   fd swap size read  dup 0 < " can't read from file" ?abort
    dup update ;
 
 : reserve    /line allot ;

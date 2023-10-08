@@ -20,7 +20,7 @@ sysopen:
     ldp x30, xzr, [sp], #16
     ret
 
-syscreate:
+syscreat:
     stp x30, xzr, [sp, #-16]!
     mov x1, x0
     drop_
@@ -59,7 +59,7 @@ syswrite:
     ldp x30, xzr, [sp], #16
     ret
 
-sysseek:
+syslseek:
     stp x30, xzr, [sp, #-16]!
     mov x9, x0
     drop_

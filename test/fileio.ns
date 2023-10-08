@@ -13,17 +13,17 @@ create rbuf #wbuf 5 +  dup allot  value /rbuf
    fname #fname 420 create-file
    dup 0 < ?fail  to fd ;
 
-: test-close   fd sysclose ?fail ;
+: test-close   fd close ?fail ;
 
 : test-open
    fname #fname 2 0 open-file
    dup 0 < ?fail  to fd ;
 
 : test-write
-   fd wbuf #wbuf syswrite  #wbuf ~= ?fail ;
+   fd wbuf #wbuf write  #wbuf ~= ?fail ;
 
 : test-read
-   fd rbuf /rbuf sysread
+   fd rbuf /rbuf read
    dup 1 < " test-read: read failed" ?abort
 
    push  wbuf rbuf  pop mem= not

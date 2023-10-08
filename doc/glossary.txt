@@ -55,11 +55,11 @@ depth ( -> u )
 
 
 # Operating System interface
-sysread ( fd a u -> u' )
+read ( fd a u -> u' )
    Read at most `u` bytes from file descriptor `fd` into address `a`.
    Return number of bytes read.
 
-syswrite ( fd a u -> u' )
+write ( fd a u -> u' )
    Write `u` bytes starting at address `a` to file descriptor `fd`.
    Return number of bytes written.
 
@@ -74,11 +74,11 @@ create-file ( a u mode -> fd )
    Create file named by buffer and open it in given `mode`.
    Return file descriptor.
 
-sysclose ( fd -> err )
+close ( fd -> err )
    Close file descriptor `fd`.
    Return error code, 0 on success.
 
-sysseek ( off ref fd -> off' )
+lseek ( off ref fd -> off' )
    Reposition file descriptor `fd` to offset `off` relative to `ref`.
    On success, return resulting offset from beginning of file. On error,
    return -1.
@@ -89,7 +89,7 @@ file-position ( fd -> u  )
 fsize ( fd -> u )
    Return file size.
 
-sysmmap ( addr length prot flags fh offset -> addr' )
+mmap ( addr length prot flags fh offset -> addr' )
    Map file to memory.
    Check OS manuals for the meaning of arguments and return value.
 
@@ -97,7 +97,7 @@ fmap ( fd -> a u )
    Map file to memory.
    Return pointer to mapped file.
 
-sysmunmap ( a u -> err )
+munmap ( a u -> err )
    Unmap file mapping at `a` with length `u`.
 
 syscall1 ( n1 syscall# -> nr )

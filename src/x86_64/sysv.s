@@ -71,7 +71,7 @@ sysopen:
     epilog
     ret
 
-syscreate:
+syscreat:
     prolog
     mov %rax, %rsi
     drop_
@@ -89,7 +89,7 @@ sysclose:
     epilog
     ret
 
-sysseek:
+syslseek:
     prolog
     mov %rax, %rdi
     drop_
