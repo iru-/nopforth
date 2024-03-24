@@ -2,6 +2,7 @@
 # Copyright (c) 2021-2022 Iruatã Martins dos Santos Souza
 
     .data
+    .align 8
 dstack: .space 8192, 0
 dstack0: .quad 0
 
@@ -32,6 +33,7 @@ _interpname: .quad 0  // address of argv[0]
 
 
     .data
+    .align 8
 _infd:   .quad 0  // file descriptor feeding the input
 _inbuf:  .quad 0  // pointer to input buffer
 _intot:  .quad 0  // input buffer total size
@@ -1376,9 +1378,11 @@ clit:  // n ->
     ret
 
     .data
+    .align 8
 _abortxt:  .quad abort1
 _qmsg:     .ascii "?\n"
 _qlen =    . - _qmsg
+    .align 8
 
     .text
     .p2align 2
@@ -1609,6 +1613,7 @@ resetstacks:
     ret
 
     .data
+    .align 8
 _undererr: .ascii "stack underflow!\n"
 _undererrlen = . - _undererr
 _overerr:  .ascii "stack overflow!\n"
@@ -1648,6 +1653,7 @@ checkstacks:
     b abort
 
     .data
+    .align 8
 _dictstart: .quad 0
 _dictsize = 0x100000
 _codestart: .quad 0
