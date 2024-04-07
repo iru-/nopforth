@@ -1,2 +1,3 @@
 *.o
 sysdefs.inc
+.DS_Store
