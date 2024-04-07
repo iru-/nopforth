@@ -39,4 +39,4 @@ macro : ."   ` "  [f'] type call, ;
 forth : ."   [char] " parse type ;
 
 
-: depth ( -> u )   S0 sp@ - cell /  2 - ;
+: depth ( -> u )   sp@ S0 swap - cell / ;

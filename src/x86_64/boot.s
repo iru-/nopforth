@@ -1105,8 +1105,9 @@ S0:
     ret
 
 spfetch:
+    mov %rbp, %rcx
     dup_
-    mov %rbp, %rax
+    mov %rcx, %rax
     ret
 
 Br:

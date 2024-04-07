@@ -1213,8 +1213,9 @@ codep:  // -> a
     ret
 
 spfetch:  // -> a
+    mov x9, fp
     dup_
-    mov x0, fp
+    mov x0, x9
     ret
 
 S0:  // -> a
