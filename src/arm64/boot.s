@@ -758,8 +758,29 @@ dlerror_header:
     .ascii "dlerror"
 
     .align 8
-sysgetenv_header:
+syssigaction_header:
     .quad dlerror_header
+    .quad syssigaction
+    .byte 9
+    .ascii "sigaction"
+
+    .align 8
+syssigsetjmp_header:
+    .quad syssigaction_header
+    .quad syssigsetjmp
+    .byte 9
+    .ascii "sigsetjmp"
+
+    .align 8
+syssiglongjmp_header:
+    .quad syssigsetjmp_header
+    .quad syssiglongjmp
+    .byte 10
+    .ascii "siglongjmp"
+
+    .align 8
+sysgetenv_header:
+    .quad syssiglongjmp_header
     .quad sysgetenv
     .byte 8
     .ascii "(getenv)"

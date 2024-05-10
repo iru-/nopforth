@@ -30,8 +30,8 @@ forth
 : (h.r) ( n #column -> a u )   push <# h#s  over pop justify #> ;
 : h.r ( n #column -> )     (h.r) type space ;
 
-: .S   depth S0 16 - swap for  dup @ . 8 -  next drop  ." <- top " ;
-: h.S   depth S0 16 - swap for  dup @ h. 8 -  next drop  ." <- top " ;
+: .S   depth S0 2 cells - swap for  dup @ . cell -  next drop  ." <- top " ;
+: h.S   depth S0 2 cells - swap for  dup @ h. cell -  next drop  ." <- top " ;
 
 : spfill ( u -> )    16 swap - 3 * spaces  space ;
 : .addr ( a -> )     <# cell for h# h# next #> type ;
