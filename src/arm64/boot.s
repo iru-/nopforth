@@ -1584,6 +1584,10 @@ interpname:
 
 _main:
 main:
+    adrp x9, _R0@PAGE
+    add x9, x9, _R0@PAGEOFF
+    mov x10, sp
+    str x10, [x9]
     bl setupenv
     bl resetstacks
     bl resetdict
@@ -1611,6 +1615,11 @@ resetstacks:
     adrp x10, _Send@PAGE
     add x10, x10, _Send@PAGEOFF
     str x9, [x10]
+
+    adrp x9, _R0@PAGE
+    add x9, x9, _R0@PAGEOFF
+    ldr x9, [x9]
+    mov sp, x9
     ret
 
     .data
