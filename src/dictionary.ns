@@ -17,8 +17,12 @@ forth
 : cell   8 ;
 : cells ( -> u )   cell * ;
 
-: pfa ( 'def -> 'data )   \ return a pointer to a definition's data area
-   2 cells +  dup 1@ +  1 +  aligned ;
+\ Definition fields
+: definition-link ( def -> link ) ;
+: definition-cfa ( def -> cfa )   cell + ;
+: definition-name ( def -> 'name )   2 cells + ;
+: definition-name@ ( def -> name #name )   definition-name  dup 1 + swap  1@ ;
+: definition-pfa ( def -> pfa )   definition-name@ +  aligned ;
 
 : (does>) ( R: caller's-return-address code-after-does> )
    codep @ /branch - branch? if  codep @ /branch -  codep !  then
@@ -46,9 +50,9 @@ forth
 : ?find ( -> a )   word find   dup 0 = if drop abort then ;
 
 macro
-: to ( n -> )   ?find pfa  ` lit ` ! ;
+: to ( n -> )   ?find definition-pfa  ` lit ` ! ;
 forth
-: to ( n -> )   ?find pfa  ! ;
+: to ( n -> )   ?find definition-pfa  ! ;
 
 : pad ( -> a )   here 1024 + ;
 
@@ -65,3 +69,42 @@ variable mark-latest
 : empty
    mark-h @ h !  mark-codep @ codep !
    mark-mlatest @ mlatest !  mark-flatest @ flatest !  mark-latest @ latest ! ;
+
+
+\ Find which definition an address belongs to, if any.
+\
+\ An address A belongs to the code X for definition D iff
+\ 1. A >= X, i.e. A is an address _after_ the start of the code for D
+\ 2. The distance from A to X is smaller than the same distance computed for
+\    every other definition.
+
+variable candidate-distance
+variable candidate-definition
+
+: reset-candidate
+   1024 1024 * candidate-distance !  0 candidate-definition ! ;
+
+: distance ( target definition -> n )   cfa - ;
+
+: ?update-candidate ( definition distance -> )
+   dup candidate-distance @ < if
+      candidate-distance !  candidate-definition !
+   else
+      drop drop
+   then ;
+
+: process-candidate ( target definition -> )
+   tuck  distance  dup 0 < if  ( definition distance )
+      drop drop   \ target is before definition, not a possible candidate
+   else
+      ?update-candidate
+   then ;
+
+: process-dictionary ( target definition -> )
+   dup 0 = if   drop drop exit   then
+   2dup process-candidate  @ process-dictionary ;
+
+: address->definition ( target -> distance definition )
+   reset-candidate
+   dup flatest @ process-dictionary  mlatest @ process-dictionary
+   candidate-distance @ candidate-definition @ ;

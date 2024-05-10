@@ -1,0 +1,147 @@
+macro
+: CB-reserve-stack
+   \ When the signal trampoline jumps into the handler, it will have sp
+   \ (return stack top) and fp (data stack second element) close to each other,
+   \ as is usual in C. Set the handler's data stack to 16 words (128 bytes)
+   \ below the return stack to give us some room.
+   $D10203FD i, ;  \ sub x29, sp, #128
+
+: CB-3args  \ compiles code that pushes, respectively, x0 x1 x2
+   ` dup
+   $AA0103E0 i,    \ mov x0, x1
+   ` dup
+   $AA0203E0 i, ;  \ mov x0, x2
+
+forth
+: .match ( target -> )
+   dup address->definition dup if
+      definition-name@ type  ."  + " . drop
+   else
+      drop drop h.
+   then ;
+
+
+\ from macOS's mach/arm/_structs.h
+record:
+   8 field: exception-state-far
+   4 field: exception-state-esr
+   4 field: exception-state-exception
+value /exception-state
+
+record:
+   29 8 * field: thread-state-x
+   8 field: thread-state-fp
+   8 field: thread-state-lr
+   8 field: thread-state-sp
+   8 field: thread-state-pc
+   4 field: thread-state-cpsr
+   4 field: thread-state-pad
+value /thread-state
+
+record:
+   32 16 * field: neon-state-v
+   4 field: neon-state-fpsr
+   4 field: neon-state-fpcr
+value /neon-state
+
+record:
+   /exception-state field: mcontext-es
+   /thread-state field: mcontext-ss
+   /neon-state field: mcontext-ns
+value /mcontext
+
+record:
+   cell field: sigaltstack-ss_sp
+   8 field: sigaltstack-ss_size
+   4 field: sigaltstack-ss_flags
+   4 +  \ padding
+value /sigaltstack
+
+record:
+   4 field: ucontext-uc_onstack
+   4 field: ucontext-uc_sigmask
+   /sigaltstack field: ucontext-uc_stack
+   cell field: ucontext-uc_link
+   8 field: ucontext-uc_mcsize
+   cell field: ucontext-uc_mcontext
+value /ucontext
+
+create ctx /ucontext allot
+create mctx /mcontext allot
+variable last-signal
+
+: thread-state ( -> a )   mctx mcontext-ss ;
+
+49 4 * value /sigjmp_buf
+create sigjmpenv /sigjmp_buf allot
+
+3 value max-data-stack-items  \ This excludes the top
+create saved-return-stack  60 cells allot
+create saved-data-stack  max-data-stack-items cells allot
+
+: thread-state-depth ( ts -> u )   thread-state thread-state-fp @  S0 swap -  cell / ;
+
+: save-data-stack
+   thread-state thread-state-fp @  max-data-stack-items for
+      r@ 1 - cells over + @  r@ 1 - cells saved-data-stack + !
+   next
+   drop ;
+
+: save-return-stack
+   thread-state thread-state-pc @  saved-return-stack !  0 saved-return-stack cell + !
+   thread-state thread-state-sp @  saved-return-stack 2 cells +  58 cells  move ;
+
+: save-contexts ( uap -> )
+   dup ctx /ucontext move  ucontext-uc_mcontext @ mctx /mcontext move ;
+
+: handler ( sig info uap -> )
+   CB-reserve-stack CB-3args
+   nip swap last-signal !
+   save-contexts save-return-stack save-data-stack
+   sigjmpenv $feed siglongjmp ;
+
+10 value SIGBUS
+11 value SIGSEGV
+$40 value SA_SIGINFO
+
+create sigdata
+   ' handler ,    \ sa_sigaction
+   0 4,           \ sa_mask
+   SA_SIGINFO 4,  \ sa_flags
+
+: .signal ( sig -> )
+   ." Received signal: "
+   dup SIGBUS = if   drop ." SIGBUS" exit   then
+   dup SIGSEGV = if   drop ." SIGSEGV" exit   then
+   . ;
+
+: .backtrace
+   cr  saved-return-stack begin  dup @  while
+      dup @ .addr  2 spaces  dup @ .match cr
+      2 cells +
+   repeat  drop ;
+
+: .reg ( value -> )   .addr ;
+
+: (.stack)
+   thread-state-depth 1 > if
+      thread-state-depth 1 -  max-data-stack-items min for
+         saved-data-stack r@ 1 - cells + @ h.
+      next
+   then
+   thread-state thread-state-x @ h. ;
+
+: .partial
+   thread-state-depth max-data-stack-items > if   ." ... "   then ;
+
+: .stack
+   ." Data stack ["  thread-state-depth .  ." items]: "
+   thread-state-depth 0 > if   .partial (.stack) cr   then ;
+
+: .registers
+   ." data stack pointer (fp):    " thread-state thread-state-fp @ .reg cr
+   ." return stack pointer (sp):  " thread-state thread-state-sp @ .reg cr
+   ." program counter (pc):       " thread-state thread-state-pc @ .reg cr ;
+
+
+: segv!!   $aaaa $bbbb $cccc $dddd $eeee $ffff $f0f0f0fa @ ;

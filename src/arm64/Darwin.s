@@ -139,6 +139,33 @@ sysdlerror:
     ldp x30, xzr, [sp], #16
     ret
 
+syssigaction:
+    stp x30, xzr, [sp, #-16]!
+    mov x2, x0
+    drop_
+    mov x1, x0
+    drop_
+    bl _sigaction
+    ldp x30, xzr, [sp], #16
+    ret
+
+syssigsetjmp:
+    stp x30, xzr, [sp, #-16]!
+    mov x1, x0
+    drop_
+    bl _sigsetjmp
+    ldp x30, xzr, [sp], #16
+    ret
+
+syssiglongjmp:
+    stp x30, xzr, [sp, #-16]!
+    mov x1, x0
+    drop_
+    bl _siglongjmp
+    drop_
+    ldp x30, xzr, [sp], #16
+    ret
+
 sysgetenv:
     b _getenv
 
@@ -167,6 +194,7 @@ _kernbuf:
 .incbin "memory.ns"
 .incbin "string.ns"
 .incbin "pictured.ns"
+.incbin "arm64/signals.ns"
 .incbin "interpreter.ns"
 .incbin "file.ns"
 .incbin "shell.ns"

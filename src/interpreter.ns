@@ -42,8 +42,23 @@ forth
    word dup 0 = if  2drop exit  then
    eval ?underflow evaluate ;
 
+: .signal-state
+   NOPARCH " arm64" string= if
+      last-signal @ if
+         last-signal @  0 last-signal !
+         .signal cr cr .stack cr .registers .backtrace
+         drop   \ drop the value passed to siglongjmp(3)
+         (abort)
+      then
+   then ;
+
 variable 'refill  \ must be set before use
 : refill               'refill @ execute ;
-: refilled? ( -> n )   inpos @ inused @ ~= if true exit then  refill ;
+: refilled? ( -> n )
+   sigjmpenv 1 sigsetjmp drop .signal-state
+   inpos @ inused @ ~= if true exit then  refill ;
 
 anon: begin refilled? while evaluate repeat ;  to 'rel
+
+SIGSEGV sigdata 0 sigaction  0 < " can't register signal handler for SIGSEGV" ?abort
+SIGBUS sigdata 0 sigaction  0 < " can't register signal handler for SIGBUS" ?abort
