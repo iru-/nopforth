@@ -1,3 +1,5 @@
+\ SPDX-License-Identifier: MIT
+\ Copyright (c) 2024 Iruatã Martins dos Santos Souza
 macro
 : CB-reserve-stack
    \ When the signal trampoline jumps into the handler, it will have sp
