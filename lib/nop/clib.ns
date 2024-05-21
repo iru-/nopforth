@@ -10,6 +10,8 @@ arch-lib floaded
 forth
 1 value RTLD_LAZY
 
+variable handle
+
 : errorstr ( -> a u )   dlerror dup if z>mem exit then  0 ;
 : ?clib-abort ( flag -> )   errorstr ?abort ;
 
@@ -19,10 +21,10 @@ forth
 : clib-open ( name #name -> handle )
    (clib-open) dup 0 = ?clib-abort ;
 
-: clib-symbol ( handle a u -> 'func )
-   s>z dlsym dup 0 = ?clib-abort ;
+: clib-symbol ( a u -> 'func )
+   s>z handle @ swap  dlsym dup 0 = ?clib-abort ;
 
-: cfunc>entry ( handle Cname #Cname nopname #nopname -> definition )
+: cfunc>entry ( Cname #Cname nopname #nopname -> definition )
    2push clib-symbol  2pop entry,  codep @ swap >cfa ! ;
 
 
@@ -49,17 +51,14 @@ forth
 
 ( User API )
 : Clibrary:
-   create  latest @ @ definition-name@ shortcut->real-name clib-open ,
-   does> @ ;
-
-: rot  push swap pop swap ;
+   create  latest @ @ definition-name@ shortcut->real-name clib-open  dup , handle !
+   does> @ handle ! ;
 
 \ Return the local name by which Cname will be called
 : local-name ( Cname #Cname -> Cname #Cname localname #localname )
    word dup 0 = if  2drop 2dup  then ;
 
-: Cfunction: ( handle #args #ret -> ) ( input: "Cname" "localname" )
-   rot ( #args #ret handle )  word ( #args ret handle Cname #Cname )
-   local-name  cfunc>entry callC, ;
+: Cfunction: ( #args #ret -> ) ( input: "Cname" "localname" )
+   word local-name  cfunc>entry callC, ;
 
 Clibrary: libc
