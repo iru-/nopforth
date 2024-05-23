@@ -1,4 +1,4 @@
-name: macOS/x86_64
+name: macOS/arm64
 on:
   pull_request:
     branches:
@@ -8,9 +8,9 @@ on:
       - main
 jobs:
   build:
-    # According to the link below, macos-13 runs on intel
+    # According to the link below, macos-lates runs on Apple Silicon
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
 
