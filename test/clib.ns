@@ -1,11 +1,9 @@
 \ SPDX-License-Identifier: MIT
-\ Copyright (c) 2018-2022 Iruatã Martins dos Santos Souza
+\ Copyright (c) 2018-2024 Iruatã Martins dos Santos Souza
 
-include lib/nop/clib.ns
-
-library:
-1 1 Cfunction: puts puts
-0 1 Cfunction: fork fork
+Clibrary: libc
+libc 1 1 Cfunction: puts
+libc 0 1 Cfunction: fork
 
 z" clib test" puts drop
 
