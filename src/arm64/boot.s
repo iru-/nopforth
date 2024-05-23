@@ -1433,8 +1433,9 @@ abort1:
     bl type
     bl resetinput
     bl resetstacks
-    ldp x30, xzr, [sp], #16
-    b warm
+    dup_
+    mov x0, #0xff
+    b sysexit
 
 abort:
     adrp x9, _abortxt@PAGE
@@ -1614,7 +1615,6 @@ main:
     bl resetdict
     bl execmode
     bl setreadkern
-warm:
     bl readloop
     b bye
 

@@ -897,7 +897,9 @@ abort1:
     call type
     call resetinput
     call resetstacks
-    jmp warm
+    dup_
+    mov $0xff, %rax
+    jmp sysexit
 
 abort:
     jmp *_abortxt(%rip)
@@ -1051,7 +1053,6 @@ main:
     call resetdict
     call stopcomp
     call setreadkern
-warm:
     call readloop
     jmp bye
 
