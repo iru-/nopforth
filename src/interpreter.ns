@@ -1,38 +1,9 @@
 \ SPDX-License-Identifier: MIT
-\ Copyright (c) 2018-2022 Iruatã Martins dos Santos Souza
+\ Copyright (c) 2018-2024 Iruatã Martins dos Santos Souza
 
 forth
 0 value 'rel
 : rel   'rel execute ;
-
-0 value 'warm
-: warm   'warm dup if execute then  bye ;
-
-: input-start? ( a u -> bool )   over inbuf @ = ;
-
-: rewind-line ( a u -> a' u' )
-   input-start? if  exit  then
-   over 1@ 10 = if  1 advance exit  then
-   -1 advance rewind-line ;
-
-: -skip-ws ( a u -> a' u' )
-   input-start? if  exit  then
-   over 1@ 32 > if  exit  then
-   -1 advance -skip-ws ;
-
-: -scan-ws ( a u -> a' u' )
-   input-start? if  exit  then
-   over 1@ 32 <= if  exit  then
-   -1 advance -scan-ws ;
-
-: .abortline
-   inbuf @ inpos @ +  0 -scan-ws -skip-ws dup push  rewind-line  pop - 1 +
-   type cr [char] ? emit cr ;
-
-: (abort)   reset-input resetstacks warm ;
-: abort   .abortline (abort) ;
-: ?abort ( flag msg # -> )
-   2push if  2pop println (abort)  then  2pop 2drop ;
 
 : ?underflow
    depth 0 >= if exit then
@@ -42,23 +13,12 @@ forth
    word dup 0 = if  2drop exit  then
    eval ?underflow evaluate ;
 
-: .signal-state
-   NOPARCH " arm64" string= if
-      last-signal @ if
-         last-signal @  0 last-signal !
-         .signal cr cr .stack cr .registers .backtrace
-         drop   \ drop the value passed to siglongjmp(3)
-         (abort)
-      then
-   then ;
-
 variable 'refill  \ must be set before use
 : refill               'refill @ execute ;
 : refilled? ( -> n )
-   sigjmpenv 1 sigsetjmp drop .signal-state
+   mark-recovery-point .signal-state
    inpos @ inused @ ~= if true exit then  refill ;
 
 anon: begin refilled? while evaluate repeat ;  to 'rel
 
-SIGSEGV sigdata 0 sigaction  0 < " can't register signal handler for SIGSEGV" ?abort
-SIGBUS sigdata 0 sigaction  0 < " can't register signal handler for SIGBUS" ?abort
+install-signal-handlers
