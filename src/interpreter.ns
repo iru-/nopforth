@@ -1,5 +1,5 @@
 \ SPDX-License-Identifier: MIT
-\ Copyright (c) 2018-2022 Iruatã Martins dos Santos Souza
+\ Copyright (c) 2018-2024 Iruatã Martins dos Santos Souza
 
 forth
 0 value 'rel
@@ -41,16 +41,6 @@ forth
 : evaluate
    word dup 0 = if  2drop exit  then
    eval ?underflow evaluate ;
-
-: .signal-state
-   NOPARCH " arm64" string= if
-      last-signal @ if
-         last-signal @  0 last-signal !
-         .signal cr cr .stack cr .registers .backtrace
-         drop   \ drop the value passed to siglongjmp(3)
-         (abort)
-      then
-   then ;
 
 variable 'refill  \ must be set before use
 : refill               'refill @ execute ;
