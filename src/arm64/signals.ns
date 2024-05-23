@@ -145,5 +145,22 @@ create sigdata
    ." return stack pointer (sp):  " thread-state thread-state-sp @ .reg cr
    ." program counter (pc):       " thread-state thread-state-pc @ .reg cr ;
 
+macro
+: mark-recovery-point
+   \ XXX I don't understand why this needs to be a macro
+   sigjmpenv ` lit  1 ` lit  [f'] sigsetjmp call,  ` drop ;
 
-: segv!!   $aaaa $bbbb $cccc $dddd $eeee $ffff $f0f0f0fa @ ;
+forth
+: .signal-state
+   last-signal @ if
+      last-signal @  0 last-signal !
+      .signal cr cr .stack cr .registers .backtrace
+      drop   \ drop the value passed to siglongjmp(3)
+      (abort)
+   then ;
+
+: segv!!   ( $aaaa $bbbb $cccc $dddd $eeee $ffff ) ( $f0f0f0fa ) 0 @ ;
+
+: install-signal-handlers
+   SIGSEGV sigdata 0 sigaction  0 < " can't register signal handler for SIGSEGV" ?abort
+   SIGBUS sigdata 0 sigaction  0 < " can't register signal handler for SIGBUS" ?abort ;

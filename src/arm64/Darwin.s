@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# Copyright (c) 2021-2022 Iruatã Martins dos Santos Souza
+# Copyright (c) 2021-2024 Iruatã Martins dos Santos Souza
 
 .text
 #include "arm64/boot.s"
@@ -194,6 +194,7 @@ _kernbuf:
 .incbin "memory.ns"
 .incbin "string.ns"
 .incbin "pictured.ns"
+.incbin "abort.ns"
 .incbin "arm64/signals.ns"
 .incbin "interpreter.ns"
 .incbin "file.ns"
