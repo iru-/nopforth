@@ -21,7 +21,7 @@ _kernbuf:
 .incbin "string.ns"
 .incbin "pictured.ns"
 .incbin "interpreter.ns"
-.incbin "../lib/nop/clib/arm64.ns"
+.incbin "../lib/nop/clib/x86_64.ns"
 .incbin "../lib/nop/clib/elf-extension.ns"
 .incbin "../lib/nop/clib.ns"
 .incbin "file.ns"
