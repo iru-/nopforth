@@ -1,11 +1,5 @@
 \ SPDX-License-Identifier: MIT
-\ Copyright (c) 2018-2022 Iruatã Martins dos Santos Souza
-
-: arch-lib
-   here " nop/clib/" dup push  mem,  NOPARCH dup push mem,
-   pop pop + ;
-
-arch-lib floaded
+\ Copyright (c) 2018-2024 Iruatã Martins dos Santos Souza
 
 forth
 1 value RTLD_LAZY
@@ -43,8 +37,6 @@ variable handle
    pop call,  0 = if ` drop then  epilog, ` exit ;
 
 : no-dot? ( a u -> bool )   [char] . scan nip 0 = ;
-
-: extension ( -> a u )   " .dylib" ;
 
 : shortcut->real-name ( a u -> a' u' )
    2dup no-dot? if   extension string+   then ;

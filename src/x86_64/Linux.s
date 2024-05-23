@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# Copyright (c) 2018-2022 Iruatã Martins dos Santos Souza
+# Copyright (c) 2018-2024 Iruatã Martins dos Santos Souza
 
 .equ MAP_ANONYMOUS, 0x20
 errnoaddr = __errno_location
@@ -21,6 +21,9 @@ _kernbuf:
 .incbin "string.ns"
 .incbin "pictured.ns"
 .incbin "interpreter.ns"
+.incbin "../lib/nop/clib/arm64.ns"
+.incbin "../lib/nop/clib/elf-extension.ns"
+.incbin "../lib/nop/clib.ns"
 .incbin "file.ns"
 .incbin "shell.ns"
 .incbin "loadpaths.ns"
