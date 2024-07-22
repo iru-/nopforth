@@ -17,7 +17,7 @@ macro
 : [char] ( -> b )   char ` lit ;
 forth
 
-: s>z ( a u -> a' )     here push  dup allot  r@ swap move  0 1,  pop ;
+: s>z ( a u -> a' )     tuck here swap move  here + 0 swap 1!  here ;
 : zlen ( a -> u )       a! 0 begin 1@+ while 1 + repeat ;
 : z" ( -> a )           [char] " parse s>z ;
 : z>mem ( a -> a' u )   dup zlen ;
@@ -30,8 +30,10 @@ macro : "   [char] " parse  ` memlit ;
 forth : " ( -> a u )
   [char] " parse  tuck  here dup push  over allot  swap move  pop swap ;
 
-: string+ ( a1 u1 a2 u2 -> a3 u1+u2 )
-   here push  2push tuck mem,  2pop tuck mem,  + pop swap ;
+: string+ ( a1 u1 a2 u2 -> a3 u1+u2 ) \ XXX shouldn't allot
+   2push tuck  pad swap move   ( u1 ) ( r: a2 u2 )
+   pad + pop over r@   ( pad+u1 a2 pad+u1 u2 )   move
+   pop +   ( pad+u1+u2 )   pad swap over - ;
 
 : string= ( a1 u1 a2 u2 -> bool )
    swap push over ~= if   2drop rdrop false exit   then

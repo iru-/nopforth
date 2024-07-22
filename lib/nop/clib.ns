@@ -1,34 +1,32 @@
 \ SPDX-License-Identifier: MIT
-\ Copyright (c) 2018-2022 Iruatã Martins dos Santos Souza
-
-: arch-lib
-   here " nop/clib/" dup push  mem,  NOPARCH dup push mem,
-   pop pop + ;
-
-arch-lib floaded
+\ Copyright (c) 2018-2024 Iruatã Martins dos Santos Souza
 
 forth
 1 value RTLD_LAZY
 
+variable handle
+
 : errorstr ( -> a u )   dlerror dup if z>mem exit then  0 ;
 : ?clib-abort ( flag -> )   errorstr ?abort ;
 
-: clib-load ( a u -> handle )
-   dup if  s>z  else  2drop 0  then
-   RTLD_LAZY dlopen dup 0 = ?clib-abort ;
+: (clib-open) ( name #name -> handle )
+   dup if  s>z  else  nip 0  then   RTLD_LAZY dlopen ;
 
-: clib-symbol ( handle a u -> 'func )
-   s>z dlsym dup 0 = ?clib-abort ;
+: clib-open ( name #name -> handle )
+   (clib-open) dup 0 = ?clib-abort ;
 
-: cfunc>entry ( handle Cname #Cname nopname #nopname -> 'func )
+: clib-symbol ( a u -> 'func )
+   s>z handle @ swap  dlsym dup 0 = ?clib-abort ;
+
+: cfunc>entry ( Cname #Cname nopname #nopname -> definition )
    2push clib-symbol  2pop entry,  codep @ swap >cfa ! ;
 
 
 : callC0  \ no input arguments, only create space for return value
    ` dup ;
 
-: callC, ( #ret #args 'func -> )
-   push  prolog,
+: callC, ( #args #ret definition -> )
+   push swap  prolog,
    dup 5 > " too many arguments to C function" ?abort
    dup 4 > if callC5 then
    dup 3 > if callC4 then
@@ -38,14 +36,21 @@ forth
               callC0 then
    pop call,  0 = if ` drop then  epilog, ` exit ;
 
-forth
+: no-dot? ( a u -> bool )   [char] . scan nip 0 = ;
+
+: shortcut->real-name ( a u -> a' u' )
+   2dup no-dot? if   extension string+   then ;
 
 ( User API )
-0 value handle
+: Clibrary:
+   create  latest @ @ definition-name@ shortcut->real-name clib-open  dup , handle !
+   does> @ handle ! ;
 
-: library:
-   handle if handle dlclose drop then
-   word clib-load to handle ;
+\ Return the local name by which Cname will be called
+: local-name ( Cname #Cname -> Cname #Cname localname #localname )
+   word dup 0 = if  2drop 2dup  then ;
 
-: Cfunction: ( #args #ret "Cname" "nopname" -> )
-   swap  handle word word cfunc>entry  callC, ;
+: Cfunction: ( #args #ret -> ) ( input: "Cname" "localname" )
+   word local-name  cfunc>entry callC, ;
+
+Clibrary: libc
