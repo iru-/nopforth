@@ -4,7 +4,7 @@
 SYS=$(shell uname -s)
 ARCH=$(shell uname -m)
 
-ASFLAGS += -Isrc
+ASFLAGS += -Isrc -Isrc/${ARCH}
 
 SRC=\
 	src/comments.ns\
